@@ -20,7 +20,7 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: siteConfig.seoTitle,
   description: siteConfig.seoDescription,
-  keywords: siteConfig.seoKeywords,
+  keywords: [...siteConfig.seoKeywords],
   openGraph: {
     title: siteConfig.seoTitle,
     description: siteConfig.seoDescription,
