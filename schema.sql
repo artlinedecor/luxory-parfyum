@@ -27,7 +27,9 @@ CREATE TABLE orders (
     items JSONB NOT NULL, -- Format: [{ product_id, quantity, price_at_purchase }]
     client_name TEXT NOT NULL,
     client_phone TEXT NOT NULL,
+    client_address TEXT,
     region TEXT NOT NULL,
+    receipt_url TEXT,
     order_type TEXT CHECK (order_type IN ('full_payment', 'deposit_50')) NOT NULL,
     status TEXT CHECK (status IN ('pending', 'accepted', 'delivered', 'cancelled')) DEFAULT 'pending',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

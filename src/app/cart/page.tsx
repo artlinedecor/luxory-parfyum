@@ -126,48 +126,22 @@ export default function CartPage() {
         return;
       }
 
-      // 4. Send Telegram Bot notification (with fallback to deep-link)
-      let botSent = false;
-      try {
-        const res = await fetch("/api/telegram-notify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            clientName,
-            clientPhone,
-            region: t(clientRegion),
-            address: clientAddress,
-            items: orderItems,
-            totalAmount: paymentAmount,
-            orderType: hasOriginal ? "deposit_50" : "full_payment",
-            receiptUrl: receiptPublicUrl,
-          }),
-        });
-        const notifyResult = await res.json();
-        if (notifyResult.ok && !notifyResult.skipped && notifyResult.error !== "notification_failed") {
-          botSent = true;
-        }
-      } catch (e) {
-        console.warn("Telegram notification failed, falling back to manual PM link:", e);
-      }
+      // 4. Directly open merchant's personal Telegram PM with pre-filled order details
+      const productLines = items
+        .map((item) => {
+          const type = item.product.product_type === "original" ? "Original" : "Lux";
+          const price = item.product.product_type === "original"
+              ? `$${siteConfig.depositAmount} zaklad`
+              : `$${item.product.price_usd}`;
+          return `- ${item.product.title} (${type}) x${item.quantity} - ${price}`;
+        })
+        .join("\n");
 
-      // If bot not configured or failed, open manual Telegram PM link as fallback
-      if (!botSent) {
-        const productLines = items
-          .map((item) => {
-            const type = item.product.product_type === "original" ? "Original" : "Lux";
-            const price = item.product.product_type === "original"
-                ? `$${siteConfig.depositAmount} zaklad`
-                : `$${item.product.price_usd}`;
-            return `- ${item.product.title} (${type}) x${item.quantity} - ${price}`;
-          })
-          .join("\n");
+      const paymentType = hasOriginal 
+        ? `$${paymentAmount} ($${siteConfig.depositAmount} zaklad)` 
+        : `$${paymentAmount} (to'liq narx)`;
 
-        const paymentType = hasOriginal 
-          ? `$${paymentAmount} ($${siteConfig.depositAmount} zaklad)` 
-          : `$${paymentAmount} (to'liq narx)`;
-
-        const textMessage = `🛍 YANGI BUYURTMA!
+      const textMessage = `🛍 YANGI BUYURTMA!
 👤 Mijoz: ${clientName}
 📞 Telefon: ${clientPhone}
 📍 Viloyat: ${t(clientRegion)}
@@ -179,12 +153,11 @@ ${productLines}
 💰 Jami Summa: ${paymentType}
 ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
 
-📎 Iltimos, ushbu xabarga to'lov chekining (skrinshotini) biriktirib adminga yuboring!`;
+📎 Iltimos, ushbu xabarga to'lov chekining (skrinshotini) biriktirib yuboring!`;
 
-        const encodedMessage = encodeURIComponent(textMessage);
-        const telegramUrl = `https://t.me/${siteConfig.telegramAdminUsername}?text=${encodedMessage}`;
-        window.open(telegramUrl, "_blank");
-      }
+      const encodedMessage = encodeURIComponent(textMessage);
+      const telegramUrl = `https://t.me/${siteConfig.telegramAdminUsername}?text=${encodedMessage}`;
+      window.open(telegramUrl, "_blank");
 
       setSubmitted(true);
       clearCart();
