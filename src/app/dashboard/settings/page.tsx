@@ -114,7 +114,7 @@ export default function SettingsPage() {
               <div className="flex items-center gap-4 p-3 bg-secondary/35 border border-border/40 rounded-xl">
                 <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-secondary border border-border flex items-center justify-center flex-shrink-0">
                   {logoUrl ? (
-                    <Image src={logoUrl} alt="Logo" fill className="object-cover" sizes="56px" />
+                    <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
                   ) : (
                     <span className="text-gold font-bold text-lg">{shopName.charAt(0)}</span>
                   )}

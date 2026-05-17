@@ -212,12 +212,13 @@ export default function InventoryPage() {
                 <tr key={product.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                   <td className="px-6 py-3">
                     <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-secondary">
-                      <Image
+                      <img
                         src={product.image_url || "/products/default.png"}
                         alt={product.title}
-                        fill
-                        className="object-cover"
-                        sizes="40px"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/products/default.png";
+                        }}
                       />
                     </div>
                   </td>
