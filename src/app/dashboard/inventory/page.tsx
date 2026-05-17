@@ -113,7 +113,9 @@ export default function InventoryPage() {
     };
 
     try {
-      if (editingProduct) {
+      const isUUID = editingProduct && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(editingProduct.id);
+
+      if (editingProduct && isUUID) {
         // Update product in Supabase
         const { error } = await supabase
           .from("products")
@@ -131,7 +133,7 @@ export default function InventoryPage() {
           )
         );
       } else {
-        // Insert new product in Supabase
+        // Insert new product in Supabase (handles new creations and mock product conversions)
         const { data, error } = await supabase
           .from("products")
           .insert([productData])
@@ -140,7 +142,15 @@ export default function InventoryPage() {
         if (error) throw error;
         
         if (data && data[0]) {
-          setProducts([data[0], ...products]);
+          if (editingProduct && !isUUID) {
+            // Remove mock product from list and put the new database product in its place
+            setProducts((prev) =>
+              prev.map((p) => (p.id === editingProduct.id ? data[0] : p))
+            );
+          } else {
+            // Simply prepend the new product
+            setProducts([data[0], ...products]);
+          }
         } else {
           fetchProducts();
         }
@@ -154,15 +164,20 @@ export default function InventoryPage() {
 
   const handleDelete = async (id: string) => {
     if (confirm("Rostdan ham ushbu mahsulotni o'chirmoqchimisiz?")) {
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      
       try {
-        const supabase = createClient();
-        const { error } = await supabase
-          .from("products")
-          .delete()
-          .eq("id", id);
+        if (isUUID) {
+          const supabase = createClient();
+          const { error } = await supabase
+            .from("products")
+            .delete()
+            .eq("id", id);
 
-        if (error) throw error;
+          if (error) throw error;
+        }
         
+        // Always remove from local state regardless of database presence
         setProducts((prev) => prev.filter((p) => p.id !== id));
       } catch (error) {
         console.error("Error deleting product in database:", error);
