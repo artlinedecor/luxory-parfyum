@@ -51,8 +51,57 @@ export default function OrdersPage() {
   };
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
+    // 1. Update local state
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus as Order["status"] } : o));
+    
     const supabase = createClient();
+    
+    // 2. Fetch order details before updating database (to see if it's transitioning to "delivered")
+    const { data: orderData, error: fetchErr } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("id", orderId)
+      .single();
+
+    if (!fetchErr && orderData) {
+      const order = orderData as Order;
+      
+      // 3. If transitioning to "delivered" AND wasn't delivered before
+      if (newStatus === "delivered" && order.status !== "delivered") {
+        // Decrease stock in products table
+        if (order.items && Array.isArray(order.items)) {
+          for (const item of order.items) {
+            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.product_id);
+            if (isUUID) {
+              const { data: prod } = await supabase
+                .from("products")
+                .select("stock")
+                .eq("id", item.product_id)
+                .single();
+              
+              if (prod) {
+                const currentStock = prod.stock !== undefined && prod.stock !== null ? prod.stock : 10;
+                const newStock = Math.max(0, currentStock - item.quantity);
+                await supabase
+                  .from("products")
+                  .update({ stock: newStock })
+                  .eq("id", item.product_id);
+              }
+            }
+          }
+        }
+
+        // Add income transaction to transactions table
+        const total = calculateTotal(order);
+        await supabase.from("transactions").insert({
+          type: "income",
+          amount: total,
+          description: `Buyurtma #${orderId.slice(0, 8)} yetkazildi - Daromad`,
+        });
+      }
+    }
+
+    // 4. Update the order status in Supabase database
     await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
   };
 

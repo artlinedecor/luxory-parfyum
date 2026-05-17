@@ -1,45 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Transaction } from "@/lib/types";
-
-// Demo ma'lumotlar
-const initialTransactions: Transaction[] = [
-  { id: "1", merchant_id: "m1", type: "income", amount: 35, description: "Buyurtma #1: Baccarat Rouge 540", created_at: "2026-05-15T10:00:00Z" },
-  { id: "2", merchant_id: "m1", type: "income", amount: 40, description: "Buyurtma #2: Tom Ford Lost Cherry", created_at: "2026-05-15T14:30:00Z" },
-  { id: "3", merchant_id: "m1", type: "expense", amount: 15, description: "Kuryer xizmati (kunlik)", created_at: "2026-05-15T18:00:00Z" },
-  { id: "4", merchant_id: "m1", type: "income", amount: 50, description: "Buyurtma #3: Creed Aventus (Zaklad)", created_at: "2026-05-16T09:15:00Z" },
-  { id: "5", merchant_id: "m1", type: "expense", amount: 200, description: "Yangi tovarlar xaridi", created_at: "2026-05-16T11:00:00Z" },
-];
+import { createClient } from "@/utils/supabase/client";
 
 export default function CashflowPage() {
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [type, setType] = useState<"income" | "expense">("income");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  import("react").then((React) => {
-    React.useEffect(() => {
-      setIsMounted(true);
-    }, []);
-  });
+  const fetchTransactions = async () => {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-  const handleSave = (e: React.FormEvent) => {
+      if (error) throw error;
+      setTransactions(data || []);
+    } catch (e) {
+      console.error("Error fetching transactions:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setIsMounted(true);
+    fetchTransactions();
+  }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newTx: Transaction = {
-      id: Math.random().toString(36).substring(7),
-      merchant_id: "m1",
+    const supabase = createClient();
+
+    const txData = {
       type,
       amount: Number(amount),
       description,
-      created_at: new Date().toISOString(),
     };
-    setTransactions([newTx, ...transactions]);
-    setIsModalOpen(false);
-    setAmount("");
-    setDescription("");
+
+    try {
+      const { data, error } = await supabase
+        .from("transactions")
+        .insert([txData])
+        .select();
+
+      if (error) throw error;
+
+      if (data && data[0]) {
+        setTransactions([data[0], ...transactions]);
+      } else {
+        fetchTransactions();
+      }
+      setIsModalOpen(false);
+      setAmount("");
+      setDescription("");
+    } catch (err) {
+      console.error("Error saving transaction:", err);
+      alert("Tranzaksiyani saqlashda xatolik yuz berdi!");
+    }
   };
 
   const totalIncome = transactions.filter(t => t.type === "income").reduce((acc, t) => acc + t.amount, 0);

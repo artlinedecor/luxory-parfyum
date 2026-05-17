@@ -7,7 +7,7 @@ import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 
 export default function InventoryPage() {
-  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -16,6 +16,7 @@ export default function InventoryPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [costPrice, setCostPrice] = useState("");
   const [type, setType] = useState<"lux_copy" | "original">("lux_copy");
   const [imageUrl, setImageUrl] = useState("");
   const [stock, setStock] = useState("10");
@@ -30,9 +31,7 @@ export default function InventoryPage() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      if (data && data.length > 0) {
-        setProducts(data);
-      }
+      setProducts(data || []);
     } catch (e) {
       console.error("Error fetching database products in inventory:", e);
     } finally {
@@ -50,6 +49,8 @@ export default function InventoryPage() {
       setTitle(product.title);
       setDescription(product.description || "");
       setPrice(product.price_usd.toString());
+      const rawCost = (product as unknown as Record<string, unknown>).cost_price_usd;
+      setCostPrice(rawCost !== undefined && rawCost !== null ? rawCost.toString() : "0");
       setType(product.product_type);
       setImageUrl(product.image_url || "");
       setStock(product.stock !== undefined ? product.stock.toString() : "10");
@@ -58,6 +59,7 @@ export default function InventoryPage() {
       setTitle("");
       setDescription("");
       setPrice("");
+      setCostPrice("");
       setType("lux_copy");
       setImageUrl("");
       setStock("10");
@@ -106,6 +108,7 @@ export default function InventoryPage() {
       title,
       description: description || null,
       price_usd: Number(price),
+      cost_price_usd: Number(costPrice) || 0,
       product_type: type,
       image_url: imageUrl || null,
       stock: Number(stock),
@@ -305,9 +308,15 @@ export default function InventoryPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs text-muted-foreground uppercase tracking-wider">Narxi ($)</label>
+                  <label className="text-xs text-muted-foreground uppercase tracking-wider">Sotish Narxi ($)</label>
                   <input required type="number" min="0" value={price} onChange={(e) => setPrice(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
                 </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground uppercase tracking-wider">Tan Narxi ($)</label>
+                  <input required type="number" min="0" value={costPrice} onChange={(e) => setCostPrice(e.target.value)} placeholder="0" className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground uppercase tracking-wider">Turi</label>
                   <select value={type} onChange={(e) => setType(e.target.value as any)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50 appearance-none">
@@ -315,10 +324,10 @@ export default function InventoryPage() {
                     <option value="original">Original</option>
                   </select>
                 </div>
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs text-muted-foreground uppercase tracking-wider">Soni (Ombordagi qoldiq)</label>
-                <input required type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground uppercase tracking-wider">Soni (Ombordagi qoldiq)</label>
+                  <input required type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
+                </div>
               </div>
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground uppercase tracking-wider">Rasm Yuklash</label>
