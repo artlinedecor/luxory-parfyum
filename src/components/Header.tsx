@@ -12,15 +12,22 @@ export default function Header() {
   const { totalItems } = useCart();
   const { t, lang, setLang } = useI18n();
   const [shopName, setShopName] = useState<string>(siteConfig.siteName);
+  const [logoUrl, setLogoUrl] = useState<string>("");
 
   useEffect(() => {
-    const s = localStorage.getItem("shop_settings");
-    if (s) {
-      try {
-        const parsed = JSON.parse(s);
-        if (parsed.shopName) setShopName(parsed.shopName);
-      } catch { /* ignore */ }
-    }
+    const loadSettings = () => {
+      const s = localStorage.getItem("shop_settings");
+      if (s) {
+        try {
+          const parsed = JSON.parse(s);
+          if (parsed.shopName) setShopName(parsed.shopName);
+          if (parsed.logoUrl) setLogoUrl(parsed.logoUrl);
+        } catch { /* ignore */ }
+      }
+    };
+    loadSettings();
+    window.addEventListener("shop_settings_updated", loadSettings);
+    return () => window.removeEventListener("shop_settings_updated", loadSettings);
   }, []);
 
   // Don't show on dashboard routes
@@ -35,8 +42,12 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-gold flex items-center justify-center shadow-lg shadow-gold/20 group-hover:shadow-gold/40 transition-shadow duration-300">
-              <span className="text-black font-bold text-sm">{siteConfig.logoInitial}</span>
+            <div className="w-8 h-8 rounded-lg overflow-hidden bg-gradient-gold flex items-center justify-center shadow-lg shadow-gold/20 group-hover:shadow-gold/40 transition-shadow duration-300 relative">
+              {logoUrl ? (
+                <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-black font-bold text-sm">{siteConfig.logoInitial}</span>
+              )}
             </div>
             <span className="font-heading text-xl font-semibold tracking-wide text-gradient-gold">
               {shopName}

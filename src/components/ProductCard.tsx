@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { Product } from "@/lib/types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useI18n } from "@/lib/i18n-context";
 
 interface ProductCardProps {
@@ -18,8 +19,14 @@ export default function ProductCard({
 }: ProductCardProps) {
   const [imageError, setImageError] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const isOriginal = product.product_type === "original";
   const { t } = useI18n();
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   return (
     <>
@@ -103,12 +110,12 @@ export default function ProductCard({
         </div>
       </div>
 
-      {/* Modal for Details */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" onClick={() => setIsModalOpen(false)}>
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+      {/* Modal for Details (rendered via Portal to break out of transformed card grids) */}
+      {isModalOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6" onClick={() => setIsModalOpen(false)}>
+          <div className="absolute inset-0 bg-black/85 backdrop-blur-md" />
           <div 
-            className="relative w-full max-w-lg bg-[#0d0d0d] border border-gold/30 rounded-3xl overflow-hidden shadow-2xl shadow-gold/10 animate-scale-in max-h-[92vh] flex flex-col"
+            className="relative w-[92%] sm:w-full max-w-xl bg-[#0d0d0d] border border-gold/30 rounded-3xl overflow-hidden shadow-2xl shadow-gold/20 animate-scale-in max-h-[85vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
@@ -128,7 +135,7 @@ export default function ProductCard({
                   alt={product.title}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 640px) 100vw, 500px"
+                  sizes="(max-width: 640px) 100vw, 600px"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-transparent to-transparent" />
               </div>
@@ -195,7 +202,8 @@ export default function ProductCard({
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

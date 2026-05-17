@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/lib/cart-context";
 import { siteConfig } from "@/config/site";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useI18n } from "@/lib/i18n-context";
 import { createClient } from "@/utils/supabase/client";
 
@@ -40,6 +40,22 @@ export default function CartPage() {
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
   const [telegramUrl, setTelegramUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [dynPaymentCard, setDynPaymentCard] = useState<string>(siteConfig.paymentCard);
+  const [dynPaymentCardHolder, setDynPaymentCardHolder] = useState<string>(siteConfig.paymentCardHolder);
+  const [dynTelegramAdminUsername, setDynTelegramAdminUsername] = useState<string>(siteConfig.telegramAdminUsername);
+
+  useEffect(() => {
+    const s = localStorage.getItem("shop_settings");
+    if (s) {
+      try {
+        const parsed = JSON.parse(s);
+        if (parsed.paymentCard) setDynPaymentCard(parsed.paymentCard);
+        if (parsed.paymentCardHolder) setDynPaymentCardHolder(parsed.paymentCardHolder);
+        if (parsed.telegramAdminUsername) setDynTelegramAdminUsername(parsed.telegramAdminUsername);
+      } catch { /* ignore */ }
+    }
+  }, []);
 
   const hasOriginal = items.some(
     (item) => item.product.product_type === "original"
@@ -157,7 +173,7 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
 📎 Iltimos, ushbu xabarga to'lov chekining (skrinshotini) biriktirib yuboring!`;
 
       const encodedMessage = encodeURIComponent(textMessage);
-      const generatedTelegramUrl = `https://t.me/${siteConfig.telegramAdminUsername}?text=${encodedMessage}`;
+      const generatedTelegramUrl = `https://t.me/${dynTelegramAdminUsername}?text=${encodedMessage}`;
       setTelegramUrl(generatedTelegramUrl);
 
       // Open automatically in new tab
@@ -211,18 +227,18 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
             <p className="text-sm text-muted-foreground leading-relaxed">
               {t("cart_success_desc")}
             </p>
-            <div className="glass-card rounded-xl p-4 space-y-2">
+             <div className="glass-card rounded-xl p-4 space-y-2">
               <p className="text-xs text-muted-foreground">{t("cart_payment_card")}:</p>
               <p className="text-gold font-mono font-bold text-lg tracking-wider">
-                {siteConfig.paymentCard}
+                {dynPaymentCard}
               </p>
               <p className="text-xs text-muted-foreground">
-                {siteConfig.paymentCardHolder}
+                {dynPaymentCardHolder}
               </p>
             </div>
             <div className="flex flex-col gap-3">
               <a
-                href={telegramUrl || siteConfig.telegramAdmin}
+                href={telegramUrl || `https://t.me/${dynTelegramAdminUsername}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0088cc] text-white font-bold text-sm uppercase tracking-wider hover:opacity-90 transition-opacity"

@@ -62,15 +62,22 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [shopName, setShopName] = useState<string>(siteConfig.siteName);
+  const [logoUrl, setLogoUrl] = useState<string>("");
 
   useEffect(() => {
-    const s = localStorage.getItem("shop_settings");
-    if (s) {
-      try {
-        const parsed = JSON.parse(s);
-        if (parsed.shopName) setShopName(parsed.shopName);
-      } catch { /* ignore */ }
-    }
+    const loadSettings = () => {
+      const s = localStorage.getItem("shop_settings");
+      if (s) {
+        try {
+          const parsed = JSON.parse(s);
+          if (parsed.shopName) setShopName(parsed.shopName);
+          if (parsed.logoUrl) setLogoUrl(parsed.logoUrl);
+        } catch { /* ignore */ }
+      }
+    };
+    loadSettings();
+    window.addEventListener("shop_settings_updated", loadSettings);
+    return () => window.removeEventListener("shop_settings_updated", loadSettings);
   }, []);
 
   return (
@@ -94,8 +101,12 @@ export default function DashboardLayout({
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center gap-2 px-5 h-16 border-b border-sidebar-border">
-            <div className="w-8 h-8 rounded-lg bg-gradient-gold flex items-center justify-center">
-              <span className="text-black font-bold text-sm">{siteConfig.logoInitial}</span>
+            <div className="w-8 h-8 rounded-lg overflow-hidden bg-gradient-gold flex items-center justify-center relative">
+              {logoUrl ? (
+                <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-black font-bold text-sm">{siteConfig.logoInitial}</span>
+              )}
             </div>
             <span className="font-heading text-lg font-semibold text-gradient-gold">
               {shopName}
