@@ -7,6 +7,7 @@ export interface Product {
   product_type: "lux_copy" | "original";
   image_url: string | null;
   is_available: boolean;
+  stock?: number;
   created_at: string;
 }
 

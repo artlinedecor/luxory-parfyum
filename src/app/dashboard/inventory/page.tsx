@@ -17,6 +17,7 @@ export default function InventoryPage() {
   const [price, setPrice] = useState("");
   const [type, setType] = useState<"lux_copy" | "original">("lux_copy");
   const [imageUrl, setImageUrl] = useState("");
+  const [stock, setStock] = useState("10");
   const [uploading, setUploading] = useState(false);
 
   const handleOpenModal = (product?: Product) => {
@@ -27,6 +28,7 @@ export default function InventoryPage() {
       setPrice(product.price_usd.toString());
       setType(product.product_type);
       setImageUrl(product.image_url || "");
+      setStock(product.stock !== undefined ? product.stock.toString() : "10");
     } else {
       setEditingProduct(null);
       setTitle("");
@@ -34,6 +36,7 @@ export default function InventoryPage() {
       setPrice("");
       setType("lux_copy");
       setImageUrl("");
+      setStock("10");
     }
     setIsModalOpen(true);
   };
@@ -77,7 +80,7 @@ export default function InventoryPage() {
       setProducts((prev) =>
         prev.map((p) =>
           p.id === editingProduct.id
-            ? { ...p, title, description, price_usd: Number(price), product_type: type, image_url: imageUrl }
+            ? { ...p, title, description, price_usd: Number(price), product_type: type, image_url: imageUrl, stock: Number(stock) }
             : p
         )
       );
@@ -91,6 +94,7 @@ export default function InventoryPage() {
         product_type: type,
         image_url: imageUrl,
         is_available: true,
+        stock: Number(stock),
         created_at: new Date().toISOString(),
       };
       setProducts([newProduct, ...products]);
@@ -136,6 +140,7 @@ export default function InventoryPage() {
                 <th className="px-6 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Nomi</th>
                 <th className="px-6 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Turi</th>
                 <th className="px-6 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Narxi</th>
+                <th className="px-6 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Qoldiq (Soni)</th>
                 <th className="px-6 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right">Amallar</th>
               </tr>
             </thead>
@@ -160,6 +165,11 @@ export default function InventoryPage() {
                     </span>
                   </td>
                   <td className="px-6 py-3 text-sm font-semibold text-gradient-gold">${product.price_usd}</td>
+                  <td className="px-6 py-3 text-sm text-foreground">
+                    <span className={`font-semibold px-2.5 py-1 rounded-full text-xs ${product.stock !== undefined && product.stock > 3 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                      {product.stock !== undefined ? `${product.stock} ta` : "10 ta"}
+                    </span>
+                  </td>
                   <td className="px-6 py-3 text-right space-x-2">
                     <button
                       onClick={() => handleOpenModal(product)}
@@ -226,6 +236,10 @@ export default function InventoryPage() {
                     <option value="original">Original</option>
                   </select>
                 </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground uppercase tracking-wider">Soni (Ombordagi qoldiq)</label>
+                <input required type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
               </div>
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground uppercase tracking-wider">Rasm Yuklash</label>

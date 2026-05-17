@@ -108,81 +108,91 @@ export default function ProductCard({
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" onClick={() => setIsModalOpen(false)}>
           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
           <div 
-            className="relative w-full max-w-lg bg-[#0a0a0a] border border-gold/20 rounded-3xl overflow-hidden shadow-2xl shadow-gold/10 animate-scale-in"
+            className="relative w-full max-w-lg bg-[#0d0d0d] border border-gold/30 rounded-3xl overflow-hidden shadow-2xl shadow-gold/10 animate-scale-in max-h-[92vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close button */}
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 z-10 p-2 bg-black/50 backdrop-blur-md rounded-full text-white/70 hover:text-white transition-colors"
+              className="absolute top-4 right-4 z-20 p-2 bg-black/60 backdrop-blur-md rounded-full text-white/80 hover:text-white hover:bg-black/80 transition-colors shadow-lg"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
 
-            <div className="relative aspect-square sm:aspect-[4/3] w-full bg-secondary">
-              <Image
-                src={imageError ? "/products/default.png" : (product.image_url || "/products/default.png")}
-                alt={product.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, 500px"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
-            </div>
-
-            <div className="p-6 space-y-4 relative z-10 -mt-12">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2 mb-2">
-                  {isOriginal ? (
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gradient-gold text-black text-[10px] font-bold uppercase tracking-wider">
-                      Premium Original
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/10 text-white text-[10px] font-semibold uppercase tracking-wider border border-white/10">
-                      Lux Copy
-                    </span>
-                  )}
-                </div>
-                <h2 className="font-heading text-xl sm:text-2xl font-bold text-foreground">
-                  {product.title}
-                </h2>
-                <div className="flex items-baseline gap-1 mt-1">
-                  <span className="text-2xl font-bold text-gradient-gold">
-                    ${product.price_usd}
-                  </span>
-                </div>
+            {/* Scrollable container */}
+            <div className="overflow-y-auto scrollbar-hide flex-1">
+              {/* Image Section */}
+              <div className="relative aspect-[4/3] w-full bg-secondary">
+                <Image
+                  src={imageError ? "/products/default.png" : (product.image_url || "/products/default.png")}
+                  alt={product.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 100vw, 500px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-transparent to-transparent" />
               </div>
 
-              {product.description && (
-                <div className="prose prose-sm prose-invert text-muted-foreground">
-                  <p>{product.description}</p>
+              {/* Text details content */}
+              <div className="px-6 pb-6 pt-2 space-y-4">
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    {isOriginal ? (
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gradient-gold text-black text-[10px] font-bold uppercase tracking-wider">
+                        Premium Original
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/10 text-white text-[10px] font-semibold uppercase tracking-wider border border-white/10">
+                        Lux Copy
+                      </span>
+                    )}
+                  </div>
+                  <h2 className="font-heading text-xl sm:text-2xl font-bold text-foreground tracking-tight leading-snug text-left">
+                    {product.title}
+                  </h2>
+                  <div className="flex items-baseline gap-1 mt-1">
+                    <span className="text-2xl font-bold text-gradient-gold">
+                      ${product.price_usd}
+                    </span>
+                  </div>
                 </div>
-              )}
 
-              <div className="pt-4 border-t border-border flex gap-3">
-                {isOriginal ? (
-                  <button
-                    onClick={() => {
-                      onOrder?.(product);
-                      setIsModalOpen(false);
-                    }}
-                    className="flex-1 py-3.5 rounded-xl bg-gradient-gold text-black text-sm font-bold uppercase tracking-wider
-                               hover:opacity-90 active:scale-[0.98] transition-all duration-300 shadow-lg shadow-gold/20"
-                  >
-                    {t("btn_order_deposit")}
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      onAddToCart?.(product);
-                      setIsModalOpen(false);
-                    }}
-                    className="flex-1 py-3.5 rounded-xl border border-gold/30 text-gold text-sm font-bold uppercase tracking-wider
-                               hover:bg-gold/10 active:scale-[0.98] transition-all duration-300"
-                  >
-                    {t("btn_add_cart")}
-                  </button>
+                {product.description && (
+                  <div className="space-y-2 pt-4 border-t border-border/40 text-left">
+                    <h4 className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Tavsif (Opisaniya)</h4>
+                    <p className="text-sm text-foreground/90 leading-relaxed font-normal whitespace-pre-line text-left">
+                      {product.description}
+                    </p>
+                  </div>
                 )}
               </div>
+            </div>
+
+            {/* Action button sticky at the bottom */}
+            <div className="p-4 bg-[#0d0d0d] border-t border-border/40 flex gap-3">
+              {isOriginal ? (
+                <button
+                  onClick={() => {
+                    onOrder?.(product);
+                    setIsModalOpen(false);
+                  }}
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-gold text-black text-sm font-bold uppercase tracking-wider
+                             hover:opacity-90 active:scale-[0.98] transition-all duration-300 shadow-lg shadow-gold/20"
+                >
+                  {t("btn_order_deposit")}
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    onAddToCart?.(product);
+                    setIsModalOpen(false);
+                  }}
+                  className="flex-1 py-3.5 rounded-xl border border-gold/30 text-gold text-sm font-bold uppercase tracking-wider
+                             hover:bg-gold/10 active:scale-[0.98] transition-all duration-300"
+                >
+                  {t("btn_add_cart")}
+                </button>
+              )}
             </div>
           </div>
         </div>
