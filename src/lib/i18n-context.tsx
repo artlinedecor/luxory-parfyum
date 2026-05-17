@@ -17,11 +17,16 @@ const translations: Record<Language, Record<string, string>> = {
     catalog: "Katalog",
     cart: "Savatcha",
     login: "Kirish",
-    // Home
-    hero_title: "Atirning Hashamatli Dunyosi",
-    hero_desc: "Original va Lux kopiya parfyumeriya — eng mashhur brendlarning atirlari. Toshkentda yetkazib berish xizmati bilan.",
+    // Home — Premium Hero
+    hero_badge: "Premium Parfyumeriya",
+    hero_title_1: "Atirning",
+    hero_title_2: "Hashamatli",
+    hero_title_3: "Dunyosi",
+    hero_desc: "Dunyoning eng nufuzli brendlari — Baccarat Rouge 540, Tom Ford, Creed Aventus. Original va Lux kopiya parfyumeriya kolleksiyamiz bilan tanishing.",
+    hero_delivery_badge: "🚚 O'zbekiston bo'ylab yetkazib berish mavjud",
     btn_catalog: "Katalogni ko'rish",
     btn_original: "Original atirlar",
+    hero_scroll: "Pastga",
     stats_products: "Mahsulotlar",
     stats_brands: "Brendlar",
     stats_support: "Qo'llab-quvvatlash",
@@ -53,12 +58,15 @@ const translations: Record<Language, Record<string, string>> = {
     cart_region: "Viloyat",
     cart_region_placeholder: "Viloyatni tanlang",
     cart_address: "Manzil / Lokatsiya",
-    cart_btn_checkout: "To'lov chekini yuborish va Tasdiqlash",
+    cart_btn_checkout: "Buyurtmani tasdiqlash",
     cart_payment_card: "To'lov kartasi",
     cart_success_title: "Buyurtma yuborildi!",
-    cart_success_desc: "Telegram orqali adminga xabar yuborildi. Iltimos, to'lov chekining skrinshotini ham biriktiring.",
+    cart_success_desc: "Buyurtmangiz qabul qilindi va adminga xabar yuborildi. Tez orada siz bilan bog'lanamiz.",
     cart_send_check_btn: "Telegram orqali chekni yuboring",
     cart_back_btn: "Katalogga qaytish",
+    cart_receipt_label: "To'lov cheki (skrinshot)",
+    cart_receipt_placeholder: "Chek rasmini yuklash uchun bosing",
+    cart_receipt_hint: "PNG, JPG — ixtiyoriy",
     // Regions
     region_tashkent_city: "Toshkent shahri",
     region_tashkent: "Toshkent viloyati",
@@ -85,11 +93,16 @@ const translations: Record<Language, Record<string, string>> = {
     catalog: "Каталог",
     cart: "Корзина",
     login: "Войти",
-    // Home
-    hero_title: "Роскошный Мир Парфюмерии",
-    hero_desc: "Оригиналы и люкс копии парфюмерии — ароматы самых известных брендов. С доставкой по Ташкенту.",
+    // Home — Premium Hero
+    hero_badge: "Премиум Парфюмерия",
+    hero_title_1: "Роскошный",
+    hero_title_2: "Мир",
+    hero_title_3: "Парфюмерии",
+    hero_desc: "Самые престижные бренды мира — Baccarat Rouge 540, Tom Ford, Creed Aventus. Откройте нашу коллекцию оригиналов и люкс-копий.",
+    hero_delivery_badge: "🚚 Доставка по всему Узбекистану",
     btn_catalog: "Смотреть каталог",
     btn_original: "Оригинальные ароматы",
+    hero_scroll: "Вниз",
     stats_products: "Товаров",
     stats_brands: "Брендов",
     stats_support: "Поддержка",
@@ -121,12 +134,15 @@ const translations: Record<Language, Record<string, string>> = {
     cart_region: "Регион",
     cart_region_placeholder: "Выберите регион",
     cart_address: "Адрес / Локация",
-    cart_btn_checkout: "Отправить чек и Подтвердить",
+    cart_btn_checkout: "Подтвердить заказ",
     cart_payment_card: "Карта для оплаты",
     cart_success_title: "Заказ отправлен!",
-    cart_success_desc: "Сообщение отправлено администратору в Telegram. Пожалуйста, прикрепите скриншот чека об оплате.",
+    cart_success_desc: "Ваш заказ принят и администратор уведомлён. Мы свяжемся с вами в ближайшее время.",
     cart_send_check_btn: "Отправить чек через Telegram",
     cart_back_btn: "Вернуться в каталог",
+    cart_receipt_label: "Чек оплаты (скриншот)",
+    cart_receipt_placeholder: "Нажмите, чтобы загрузить скриншот",
+    cart_receipt_hint: "PNG, JPG — необязательно",
     // Regions
     region_tashkent_city: "г. Ташкент",
     region_tashkent: "Ташкентская область",
@@ -156,7 +172,6 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check localStorage on mount
     const saved = localStorage.getItem("lang") as Language;
     if (saved && (saved === "uz" || saved === "ru")) {
       setLang(saved);

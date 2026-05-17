@@ -1,7 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n-context";
 
 export default function HeroSection() {
+  const { t } = useI18n();
+
   return (
     <section
       id="hero"
@@ -32,23 +37,29 @@ export default function HeroSection() {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gold/20 bg-gold/5 backdrop-blur-sm">
           <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
           <span className="text-gold text-xs font-medium tracking-widest uppercase">
-            Premium Parfyumeriya
+            {t("hero_badge")}
           </span>
         </div>
 
         {/* Heading */}
         <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl font-bold leading-tight tracking-tight">
-          <span className="text-foreground">Atirning </span>
-          <span className="text-gradient-gold">Hashamatli</span>
+          <span className="text-foreground">{t("hero_title_1")} </span>
+          <span className="text-gradient-gold">{t("hero_title_2")}</span>
           <br />
-          <span className="text-foreground">Dunyosi</span>
+          <span className="text-foreground">{t("hero_title_3")}</span>
         </h1>
 
         {/* Description */}
         <p className="max-w-xl mx-auto text-muted-foreground text-sm sm:text-base leading-relaxed">
-          Original va Lux kopiya parfyumeriya — eng mashhur brendlarning atirlari.
-          Toshkentda yetkazib berish xizmati bilan.
+          {t("hero_desc")}
         </p>
+
+        {/* Delivery Badge */}
+        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-green-500/10 border border-green-500/20 backdrop-blur-sm">
+          <span className="text-green-400 text-xs sm:text-sm font-medium">
+            {t("hero_delivery_badge")}
+          </span>
+        </div>
 
         {/* CTA */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -59,7 +70,7 @@ export default function HeroSection() {
                        hover:opacity-90 active:scale-[0.98] transition-all duration-300
                        shadow-xl shadow-gold/25 hover:shadow-gold/40"
           >
-            Katalogni ko&apos;rish
+            {t("btn_catalog")}
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
               <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
             </svg>
@@ -71,7 +82,7 @@ export default function HeroSection() {
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-gold/30 text-gold font-semibold text-sm uppercase tracking-wider
                        hover:bg-gold/10 transition-all duration-300"
           >
-            Original Atirlar
+            {t("btn_original")}
           </Link>
         </div>
 
@@ -79,24 +90,24 @@ export default function HeroSection() {
         <div className="flex items-center justify-center gap-8 sm:gap-12 pt-8">
           <div className="text-center">
             <div className="text-2xl sm:text-3xl font-bold text-gradient-gold">500+</div>
-            <div className="text-xs text-muted-foreground mt-1">Mahsulotlar</div>
+            <div className="text-xs text-muted-foreground mt-1">{t("stats_products")}</div>
           </div>
           <div className="w-px h-10 bg-border" />
           <div className="text-center">
             <div className="text-2xl sm:text-3xl font-bold text-gradient-gold">50+</div>
-            <div className="text-xs text-muted-foreground mt-1">Brendlar</div>
+            <div className="text-xs text-muted-foreground mt-1">{t("stats_brands")}</div>
           </div>
           <div className="w-px h-10 bg-border" />
           <div className="text-center">
             <div className="text-2xl sm:text-3xl font-bold text-gradient-gold">24/7</div>
-            <div className="text-xs text-muted-foreground mt-1">Qo&apos;llab-quvvatlash</div>
+            <div className="text-xs text-muted-foreground mt-1">{t("stats_support")}</div>
           </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
-        <span className="text-[10px] text-muted-foreground tracking-widest uppercase">Pastga</span>
+        <span className="text-[10px] text-muted-foreground tracking-widest uppercase">{t("hero_scroll")}</span>
         <div className="w-5 h-8 rounded-full border border-gold/30 flex items-start justify-center p-1.5">
           <div className="w-1 h-2 rounded-full bg-gold animate-bounce" />
         </div>

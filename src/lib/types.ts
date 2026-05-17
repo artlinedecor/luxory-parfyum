@@ -22,7 +22,9 @@ export interface Order {
   }[];
   client_name: string;
   client_phone: string;
+  client_address?: string;
   region: string;
+  receipt_url?: string;
   order_type: "full_payment" | "deposit_50";
   status: "pending" | "accepted" | "delivered" | "cancelled";
   created_at: string;
