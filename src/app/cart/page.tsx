@@ -126,9 +126,10 @@ export default function CartPage() {
         return;
       }
 
-      // 4. Send Telegram Bot notification (fire-and-forget, never blocks UI)
+      // 4. Send Telegram Bot notification (with fallback to deep-link)
+      let botSent = false;
       try {
-        await fetch("/api/telegram-notify", {
+        const res = await fetch("/api/telegram-notify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -142,9 +143,47 @@ export default function CartPage() {
             receiptUrl: receiptPublicUrl,
           }),
         });
-      } catch {
-        // Telegram failure must never block the user
-        console.warn("Telegram notification skipped or failed.");
+        const notifyResult = await res.json();
+        if (notifyResult.ok && !notifyResult.skipped && notifyResult.error !== "notification_failed") {
+          botSent = true;
+        }
+      } catch (e) {
+        console.warn("Telegram notification failed, falling back to manual PM link:", e);
+      }
+
+      // If bot not configured or failed, open manual Telegram PM link as fallback
+      if (!botSent) {
+        const productLines = items
+          .map((item) => {
+            const type = item.product.product_type === "original" ? "Original" : "Lux";
+            const price = item.product.product_type === "original"
+                ? `$${siteConfig.depositAmount} zaklad`
+                : `$${item.product.price_usd}`;
+            return `- ${item.product.title} (${type}) x${item.quantity} - ${price}`;
+          })
+          .join("\n");
+
+        const paymentType = hasOriginal 
+          ? `$${paymentAmount} ($${siteConfig.depositAmount} zaklad)` 
+          : `$${paymentAmount} (to'liq narx)`;
+
+        const textMessage = `🛍 YANGI BUYURTMA!
+👤 Mijoz: ${clientName}
+📞 Telefon: ${clientPhone}
+📍 Viloyat: ${t(clientRegion)}
+📍 Manzil: ${clientAddress}
+
+📦 Tanlangan Atirlar:
+${productLines}
+
+💰 Jami Summa: ${paymentType}
+${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
+
+📎 Iltimos, ushbu xabarga to'lov chekining (skrinshotini) biriktirib adminga yuboring!`;
+
+        const encodedMessage = encodeURIComponent(textMessage);
+        const telegramUrl = `https://t.me/${siteConfig.telegramAdminUsername}?text=${encodedMessage}`;
+        window.open(telegramUrl, "_blank");
       }
 
       setSubmitted(true);
