@@ -38,6 +38,7 @@ export default function CartPage() {
   const [loading, setLoading] = useState(false);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
+  const [telegramUrl, setTelegramUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const hasOriginal = items.some(
@@ -126,7 +127,43 @@ export default function CartPage() {
         return;
       }
 
-      // 4. Send Telegram Bot notification in the background (fire-and-forget, never blocks the user)
+      // 4. Generate beautiful prefilled template message for shaxsiy telegram
+      const productLines = items
+        .map((item) => {
+          const type = item.product.product_type === "original" ? "Original" : "Lux";
+          const price = item.product.product_type === "original"
+              ? `$${siteConfig.depositAmount} zaklad`
+              : `$${item.product.price_usd}`;
+          return `- ${item.product.title} (${type}) x${item.quantity} - ${price}`;
+        })
+        .join("\n");
+
+      const paymentType = hasOriginal 
+        ? `$${paymentAmount} ($${siteConfig.depositAmount} zaklad)` 
+        : `$${paymentAmount} (to'liq narx)`;
+
+      const textMessage = `🛍 YANGI BUYURTMA!
+👤 Mijoz: ${clientName}
+📞 Telefon: ${clientPhone}
+📍 Viloyat: ${t(clientRegion)}
+📍 Manzil: ${clientAddress}
+
+📦 Tanlangan Atirlar:
+${productLines}
+
+💰 Jami Summa: ${paymentType}
+${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
+
+📎 Iltimos, ushbu xabarga to'lov chekining (skrinshotini) biriktirib yuboring!`;
+
+      const encodedMessage = encodeURIComponent(textMessage);
+      const generatedTelegramUrl = `https://t.me/${siteConfig.telegramAdminUsername}?text=${encodedMessage}`;
+      setTelegramUrl(generatedTelegramUrl);
+
+      // Open automatically in new tab
+      window.open(generatedTelegramUrl, "_blank");
+
+      // 5. Send Telegram Bot notification in the background (fire-and-forget, never blocks the user)
       try {
         await fetch("/api/telegram-notify", {
           method: "POST",
@@ -185,7 +222,7 @@ export default function CartPage() {
             </div>
             <div className="flex flex-col gap-3">
               <a
-                href={siteConfig.telegramAdmin}
+                href={telegramUrl || siteConfig.telegramAdmin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0088cc] text-white font-bold text-sm uppercase tracking-wider hover:opacity-90 transition-opacity"
