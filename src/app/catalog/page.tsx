@@ -6,9 +6,33 @@ import ProductGrid from "@/components/ProductGrid";
 import { MOCK_PRODUCTS } from "@/lib/mock-data";
 import { siteConfig } from "@/config/site";
 import { useI18n } from "@/lib/i18n-context";
+import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
+import { Product } from "@/lib/types";
 
 export default function CatalogPage() {
   const { t } = useI18n();
+  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setProducts(data);
+        }
+      } catch (e) {
+        console.error("Error fetching database products in catalog:", e);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   return (
     <>
@@ -31,7 +55,7 @@ export default function CatalogPage() {
           </div>
 
           {/* Products Grid */}
-          <ProductGrid products={MOCK_PRODUCTS} />
+          <ProductGrid products={products} />
         </div>
       </main>
       <BottomNav />

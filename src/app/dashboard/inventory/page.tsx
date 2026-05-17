@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Product } from "@/lib/types";
 import { MOCK_PRODUCTS } from "@/lib/mock-data";
 import Image from "next/image";
@@ -10,6 +10,7 @@ export default function InventoryPage() {
   const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [loadingProducts, setLoadingProducts] = useState(true);
 
   // Form states
   const [title, setTitle] = useState("");
@@ -19,6 +20,29 @@ export default function InventoryPage() {
   const [imageUrl, setImageUrl] = useState("");
   const [stock, setStock] = useState("10");
   const [uploading, setUploading] = useState(false);
+
+  const fetchProducts = async () => {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      if (data && data.length > 0) {
+        setProducts(data);
+      }
+    } catch (e) {
+      console.error("Error fetching database products in inventory:", e);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const handleOpenModal = (product?: Product) => {
     if (product) {
@@ -74,37 +98,76 @@ export default function InventoryPage() {
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingProduct) {
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === editingProduct.id
-            ? { ...p, title, description, price_usd: Number(price), product_type: type, image_url: imageUrl, stock: Number(stock) }
-            : p
-        )
-      );
-    } else {
-      const newProduct: Product = {
-        id: Math.random().toString(36).substring(7),
-        merchant_id: "m1",
-        title,
-        description,
-        price_usd: Number(price),
-        product_type: type,
-        image_url: imageUrl,
-        is_available: true,
-        stock: Number(stock),
-        created_at: new Date().toISOString(),
-      };
-      setProducts([newProduct, ...products]);
+    const supabase = createClient();
+    
+    const productData = {
+      title,
+      description: description || null,
+      price_usd: Number(price),
+      product_type: type,
+      image_url: imageUrl || null,
+      stock: Number(stock),
+      is_available: true,
+    };
+
+    try {
+      if (editingProduct) {
+        // Update product in Supabase
+        const { error } = await supabase
+          .from("products")
+          .update(productData)
+          .eq("id", editingProduct.id);
+
+        if (error) throw error;
+        
+        // Also update local state
+        setProducts((prev) =>
+          prev.map((p) =>
+            p.id === editingProduct.id
+              ? { ...p, ...productData }
+              : p
+          )
+        );
+      } else {
+        // Insert new product in Supabase
+        const { data, error } = await supabase
+          .from("products")
+          .insert([productData])
+          .select();
+
+        if (error) throw error;
+        
+        if (data && data[0]) {
+          setProducts([data[0], ...products]);
+        } else {
+          fetchProducts();
+        }
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error saving product in database:", error);
+      alert("Mahsulotni saqlashda xatolik yuz berdi!");
     }
-    setIsModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Rostdan ham ushbu mahsulotni o'chirmoqchimisiz?")) {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+      try {
+        const supabase = createClient();
+        const { error } = await supabase
+          .from("products")
+          .delete()
+          .eq("id", id);
+
+        if (error) throw error;
+        
+        setProducts((prev) => prev.filter((p) => p.id !== id));
+      } catch (error) {
+        console.error("Error deleting product in database:", error);
+        alert("Mahsulotni o'chirishda xatolik yuz berdi!");
+      }
     }
   };
 
