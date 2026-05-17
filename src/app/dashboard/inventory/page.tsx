@@ -104,7 +104,7 @@ export default function InventoryPage() {
     e.preventDefault();
     const supabase = createClient();
     
-    const productData = {
+    const productDataWithCost: any = {
       title,
       description: description || null,
       price_usd: Number(price),
@@ -115,34 +115,74 @@ export default function InventoryPage() {
       is_available: true,
     };
 
+    const productDataWithoutCost: any = {
+      title,
+      description: description || null,
+      price_usd: Number(price),
+      product_type: type,
+      image_url: imageUrl || null,
+      stock: Number(stock),
+      is_available: true,
+    };
+
     try {
       const isUUID = editingProduct && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(editingProduct.id);
 
       if (editingProduct && isUUID) {
-        // Update product in Supabase
-        const { error } = await supabase
+        // Try updating WITH cost_price_usd first
+        let { error } = await supabase
           .from("products")
-          .update(productData)
+          .update(productDataWithCost)
           .eq("id", editingProduct.id);
 
-        if (error) throw error;
+        let savedCost = true;
+
+        if (error) {
+          console.warn("Retrying update without cost_price_usd...");
+          // Fallback: Try updating WITHOUT cost_price_usd
+          const fallbackResult = await supabase
+            .from("products")
+            .update(productDataWithoutCost)
+            .eq("id", editingProduct.id);
+          
+          if (fallbackResult.error) throw fallbackResult.error;
+          savedCost = false;
+        }
         
         // Also update local state
         setProducts((prev) =>
           prev.map((p) =>
             p.id === editingProduct.id
-              ? { ...p, ...productData }
+              ? { ...p, ...(savedCost ? productDataWithCost : productDataWithoutCost) }
               : p
           )
         );
+
+        if (!savedCost) {
+          alert("Mahsulot saqlandi, biroq Supabase bazasida 'cost_price_usd' ustuni yo'qligi sababli 'Tan Narxi' saqlanmadi. Uni saqlash uchun Supabase SQL Editor-da SQL buyrug'ini ishga tushiring!");
+        }
       } else {
-        // Insert new product in Supabase (handles new creations and mock product conversions)
-        const { data, error } = await supabase
+        // Insert new product
+        // Try inserting WITH cost_price_usd first
+        let { data, error } = await supabase
           .from("products")
-          .insert([productData])
+          .insert([productDataWithCost])
           .select();
 
-        if (error) throw error;
+        let savedCost = true;
+
+        if (error) {
+          console.warn("Retrying insert without cost_price_usd...");
+          // Fallback: Try inserting WITHOUT cost_price_usd
+          const fallbackResult = await supabase
+            .from("products")
+            .insert([productDataWithoutCost])
+            .select();
+          
+          if (fallbackResult.error) throw fallbackResult.error;
+          data = fallbackResult.data;
+          savedCost = false;
+        }
         
         if (data && data[0]) {
           if (editingProduct && !isUUID) {
@@ -156,6 +196,10 @@ export default function InventoryPage() {
           }
         } else {
           fetchProducts();
+        }
+
+        if (!savedCost) {
+          alert("Mahsulot saqlandi, biroq Supabase bazasida 'cost_price_usd' ustuni yo'qligi sababli 'Tan Narxi' saqlanmadi. Uni saqlash uchun Supabase SQL Editor-da SQL buyrug'ini ishga tushiring!");
         }
       }
       setIsModalOpen(false);
