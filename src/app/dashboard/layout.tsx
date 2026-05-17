@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { siteConfig } from "@/config/site";
 
 const navItems = [
@@ -61,6 +61,17 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [shopName, setShopName] = useState<string>(siteConfig.siteName);
+
+  useEffect(() => {
+    const s = localStorage.getItem("shop_settings");
+    if (s) {
+      try {
+        const parsed = JSON.parse(s);
+        if (parsed.shopName) setShopName(parsed.shopName);
+      } catch { /* ignore */ }
+    }
+  }, []);
 
   return (
     <div className="flex h-screen bg-background">
@@ -87,7 +98,7 @@ export default function DashboardLayout({
               <span className="text-black font-bold text-sm">{siteConfig.logoInitial}</span>
             </div>
             <span className="font-heading text-lg font-semibold text-gradient-gold">
-              {siteConfig.siteName}
+              {shopName}
             </span>
           </div>
 

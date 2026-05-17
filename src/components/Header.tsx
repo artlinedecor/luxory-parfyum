@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import { siteConfig } from "@/config/site";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
@@ -10,6 +11,17 @@ export default function Header() {
   const pathname = usePathname();
   const { totalItems } = useCart();
   const { t, lang, setLang } = useI18n();
+  const [shopName, setShopName] = useState<string>(siteConfig.siteName);
+
+  useEffect(() => {
+    const s = localStorage.getItem("shop_settings");
+    if (s) {
+      try {
+        const parsed = JSON.parse(s);
+        if (parsed.shopName) setShopName(parsed.shopName);
+      } catch { /* ignore */ }
+    }
+  }, []);
 
   // Don't show on dashboard routes
   if (pathname.startsWith("/dashboard")) return null;
@@ -27,7 +39,7 @@ export default function Header() {
               <span className="text-black font-bold text-sm">{siteConfig.logoInitial}</span>
             </div>
             <span className="font-heading text-xl font-semibold tracking-wide text-gradient-gold">
-              {siteConfig.siteName}
+              {shopName}
             </span>
           </Link>
 
