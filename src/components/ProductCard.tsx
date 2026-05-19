@@ -137,7 +137,6 @@ export default function ProductCard({
                   className="object-cover"
                   sizes="(max-width: 640px) 100vw, 600px"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-transparent to-transparent" />
               </div>
 
               {/* Text details content */}
