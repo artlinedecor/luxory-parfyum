@@ -17,21 +17,32 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const { t } = useI18n();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
 
-    if (!isLogin && email !== ALLOWED_ADMIN) {
-      setErrorMsg("Xatolik: Tizimga kirish faqat bosh admin uchun ruxsat etilgan.");
-      return;
-    }
-
     setLoading(true);
-    // Simulate API call for Supabase Auth
-    setTimeout(() => {
-      setLoading(false);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const resData = await response.json();
+      if (!response.ok) {
+        setErrorMsg(resData.message || "Xatolik yuz berdi!");
+        setLoading(false);
+        return;
+      }
+
       window.location.href = "/dashboard";
-    }, 1000);
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg("Tizimga kirishda xatolik yuz berdi. Iltimos qayta urinib ko'ring.");
+      setLoading(false);
+    }
   };
 
   return (
