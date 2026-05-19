@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { event_name, event_id, user_data = {}, custom_data = {}, event_source_url } = body;
 
-    const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+    const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1576987160104483";
     const accessToken = process.env.META_ACCESS_TOKEN;
 
     if (!pixelId || !accessToken) {

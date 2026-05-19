@@ -22,7 +22,7 @@ function MetaPixelTracker() {
 }
 
 export default function MetaPixel() {
-  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1576987160104483";
 
   if (!pixelId) return null;
 
