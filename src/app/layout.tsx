@@ -4,6 +4,7 @@ import { siteConfig } from "@/config/site";
 import { CartProvider } from "@/lib/cart-context";
 import { I18nProvider } from "@/lib/i18n-context";
 import FloatingCart from "@/components/FloatingCart";
+import MetaPixel from "@/components/MetaPixel";
 import "./globals.css";
 
 const inter = Inter({
@@ -41,6 +42,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <I18nProvider>
           <CartProvider>
+            <MetaPixel />
             {children}
             <FloatingCart />
           </CartProvider>

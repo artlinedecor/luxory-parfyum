@@ -10,6 +10,7 @@ import { useI18n } from "@/lib/i18n-context";
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Product } from "@/lib/types";
+import { trackMetaEvent } from "@/lib/meta-tracker";
 
 export default function Home() {
   const { t } = useI18n();
@@ -126,10 +127,26 @@ export default function Home() {
               {siteConfig.siteDescription} — {siteConfig.location}
             </p>
             <div className="flex items-center justify-center gap-4 pt-2">
-              <a href={siteConfig.telegramChannel} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-gold transition-colors">
+              <a
+                href={siteConfig.telegramChannel}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  const leadEventId = `lead_channel_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+                  trackMetaEvent("Lead", leadEventId);
+                }}
+                className="text-muted-foreground hover:text-gold transition-colors"
+              >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.96 6.504-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
               </a>
-              <a href={`tel:${siteConfig.phone.replace(/\s/g, '')}`} className="text-muted-foreground hover:text-gold transition-colors">
+              <a
+                href={`tel:${siteConfig.phone.replace(/\s/g, '')}`}
+                onClick={() => {
+                  const leadEventId = `lead_phone_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+                  trackMetaEvent("Lead", leadEventId);
+                }}
+                className="text-muted-foreground hover:text-gold transition-colors"
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 006.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z" clipRule="evenodd" /></svg>
               </a>
             </div>
