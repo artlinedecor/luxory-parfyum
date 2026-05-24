@@ -8,7 +8,7 @@ export const siteConfig = {
   // ── Brend ────────────────────────────────────────
   siteName: "Lux Atir",
   siteDescription: "Premium parfyumeriya — Original va Lux kopiya atirlar",
-  siteUrl: "https://luxatir.uz",
+  siteUrl: "https://parfumelux.uz",
   logoInitial: "L",        // Logo ichidagi harf
   // logoUrl: "/logo.png",  // Kelajakda rasm logo qo'shish mumkin
 
