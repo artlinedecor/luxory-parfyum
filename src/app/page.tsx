@@ -12,8 +12,11 @@ import { createClient } from "@/utils/supabase/client";
 import { Product } from "@/lib/types";
 import { trackMetaEvent } from "@/lib/meta-tracker";
 
+import { useShopSettings } from "@/lib/settings-context";
+
 export default function Home() {
   const { t } = useI18n();
+  const { shopName, logoUrl, shopAddress, telegramChannel, phone } = useShopSettings();
   const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
 
   useEffect(() => {
@@ -116,19 +119,23 @@ export default function Home() {
         <footer id="footer" className="py-10 px-4 sm:px-6 lg:px-8 border-t border-border bg-[#080808]">
           <div className="max-w-7xl mx-auto text-center space-y-4">
             <div className="flex items-center justify-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-gradient-gold flex items-center justify-center">
-                <span className="text-black font-bold text-[10px]">{siteConfig.logoInitial}</span>
+              <div className="w-6 h-6 rounded-md bg-gradient-gold flex items-center justify-center overflow-hidden">
+                {logoUrl ? (
+                  <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-black font-bold text-[10px]">{siteConfig.logoInitial}</span>
+                )}
               </div>
               <span className="font-heading text-lg font-semibold text-gradient-gold">
-                {siteConfig.siteName}
+                {shopName}
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
-              {siteConfig.siteDescription} — {siteConfig.location}
+              {siteConfig.siteDescription} — {shopAddress}
             </p>
             <div className="flex items-center justify-center gap-4 pt-2">
               <a
-                href={siteConfig.telegramChannel}
+                href={telegramChannel}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => {
@@ -140,7 +147,7 @@ export default function Home() {
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.96 6.504-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
               </a>
               <a
-                href={`tel:${siteConfig.phone.replace(/\s/g, '')}`}
+                href={`tel:${phone.replace(/\s/g, '')}`}
                 onClick={() => {
                   const leadEventId = `lead_phone_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
                   trackMetaEvent("Lead", leadEventId);
@@ -151,7 +158,7 @@ export default function Home() {
               </a>
             </div>
             <p className="text-[10px] text-muted-foreground/50">
-              © {new Date().getFullYear()} {siteConfig.siteName}. Barcha huquqlar himoyalangan.
+              © {new Date().getFullYear()} {shopName}. Barcha huquqlar himoyalangan.
             </p>
           </div>
         </footer>

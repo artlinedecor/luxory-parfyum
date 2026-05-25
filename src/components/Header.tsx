@@ -7,28 +7,13 @@ import { siteConfig } from "@/config/site";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
 
+import { useShopSettings } from "@/lib/settings-context";
+
 export default function Header() {
   const pathname = usePathname();
   const { totalItems } = useCart();
   const { t, lang, setLang } = useI18n();
-  const [shopName, setShopName] = useState<string>(siteConfig.siteName);
-  const [logoUrl, setLogoUrl] = useState<string>("");
-
-  useEffect(() => {
-    const loadSettings = () => {
-      const s = localStorage.getItem("shop_settings");
-      if (s) {
-        try {
-          const parsed = JSON.parse(s);
-          if (parsed.shopName) setShopName(parsed.shopName);
-          if (parsed.logoUrl) setLogoUrl(parsed.logoUrl);
-        } catch { /* ignore */ }
-      }
-    };
-    loadSettings();
-    window.addEventListener("shop_settings_updated", loadSettings);
-    return () => window.removeEventListener("shop_settings_updated", loadSettings);
-  }, []);
+  const { shopName, logoUrl } = useShopSettings();
 
   // Don't show on dashboard routes
   if (pathname.startsWith("/dashboard")) return null;

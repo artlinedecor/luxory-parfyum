@@ -14,7 +14,9 @@ export default function InventoryPage() {
 
   // Form states
   const [title, setTitle] = useState("");
+  const [titleRu, setTitleRu] = useState("");
   const [description, setDescription] = useState("");
+  const [descriptionRu, setDescriptionRu] = useState("");
   const [price, setPrice] = useState("");
   const [costPrice, setCostPrice] = useState("");
   const [type, setType] = useState<"lux_copy" | "original">("lux_copy");
@@ -47,7 +49,9 @@ export default function InventoryPage() {
     if (product) {
       setEditingProduct(product);
       setTitle(product.title);
+      setTitleRu(product.title_ru || "");
       setDescription(product.description || "");
+      setDescriptionRu(product.description_ru || "");
       setPrice(product.price_usd.toString());
       const rawCost = (product as unknown as Record<string, unknown>).cost_price_usd;
       setCostPrice(rawCost !== undefined && rawCost !== null ? rawCost.toString() : "0");
@@ -57,7 +61,9 @@ export default function InventoryPage() {
     } else {
       setEditingProduct(null);
       setTitle("");
+      setTitleRu("");
       setDescription("");
+      setDescriptionRu("");
       setPrice("");
       setCostPrice("");
       setType("lux_copy");
@@ -106,7 +112,9 @@ export default function InventoryPage() {
     
     const productDataWithCost: any = {
       title,
+      title_ru: titleRu || null,
       description: description || null,
+      description_ru: descriptionRu || null,
       price_usd: Number(price),
       cost_price_usd: Number(costPrice) || 0,
       product_type: type,
@@ -117,7 +125,9 @@ export default function InventoryPage() {
 
     const productDataWithoutCost: any = {
       title,
+      title_ru: titleRu || null,
       description: description || null,
+      description_ru: descriptionRu || null,
       price_usd: Number(price),
       product_type: type,
       image_url: imageUrl || null,
@@ -205,7 +215,7 @@ export default function InventoryPage() {
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving product in database:", error);
-      alert("Mahsulotni saqlashda xatolik yuz berdi!");
+      alert("Mahsulotni saqlashda xatolik yuz berdi! Eslatma: Supabase 'products' jadvalida 'title_ru' va 'description_ru' ustunlari qo'shilganligiga ishonch hosil qiling.");
     }
   };
 
@@ -342,13 +352,23 @@ export default function InventoryPage() {
               {editingProduct ? "Mahsulotni tahrirlash" : "Yangi mahsulot qo'shish"}
             </h2>
             <form onSubmit={handleSave} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-xs text-muted-foreground uppercase tracking-wider">Nomi</label>
-                <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground uppercase tracking-wider">Nomi (UZ)</label>
+                  <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground uppercase tracking-wider">Nomi (RU)</label>
+                  <input type="text" value={titleRu} onChange={(e) => setTitleRu(e.target.value)} placeholder="Ruscha nomi (ixtiyoriy)" className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
+                </div>
               </div>
               <div className="space-y-1">
-                <label className="text-xs text-muted-foreground uppercase tracking-wider">Tavsif</label>
+                <label className="text-xs text-muted-foreground uppercase tracking-wider">Tavsif (UZ)</label>
                 <textarea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground uppercase tracking-wider">Tavsif (RU)</label>
+                <textarea rows={2} value={descriptionRu} onChange={(e) => setDescriptionRu(e.target.value)} placeholder="Ruscha tarjimasi (ixtiyoriy)" className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">

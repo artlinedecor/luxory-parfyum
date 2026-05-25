@@ -33,6 +33,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { SettingsProvider } from "@/lib/settings-context";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -44,13 +46,15 @@ export default function RootLayout({
       className={`${inter.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <I18nProvider>
-          <CartProvider>
+        <SettingsProvider>
+          <I18nProvider>
+            <CartProvider>
             <MetaPixel />
             {children}
             <FloatingCart />
           </CartProvider>
-        </I18nProvider>
+          </I18nProvider>
+        </SettingsProvider>
       </body>
     </html>
   );
