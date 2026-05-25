@@ -27,6 +27,10 @@ export const metadata: Metadata = {
     description: siteConfig.seoDescription,
     type: "website",
   },
+  verification: {
+    google: "3CAgz1XkqiojYhPFeqPz52IlpY03fJUlMzchSDJ8XcY",
+    yandex: "a1ae49387e10bf4b",
+  },
 };
 
 export default function RootLayout({
