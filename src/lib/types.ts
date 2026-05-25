@@ -2,7 +2,9 @@ export interface Product {
   id: string;
   merchant_id: string;
   title: string;
+  title_ru?: string;
   description: string | null;
+  description_ru?: string | null;
   price_usd: number;
   product_type: "lux_copy" | "original";
   image_url: string | null;

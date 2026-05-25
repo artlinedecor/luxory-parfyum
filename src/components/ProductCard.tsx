@@ -21,7 +21,10 @@ export default function ProductCard({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isOriginal = product.product_type === "original";
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+
+  const displayTitle = language === 'ru' && product.title_ru ? product.title_ru : product.title;
+  const displayDesc = language === 'ru' && product.description_ru ? product.description_ru : product.description;
 
   useEffect(() => {
     setMounted(true);
@@ -39,7 +42,7 @@ export default function ProductCard({
         <div className="relative aspect-[3/4] overflow-hidden bg-secondary flex-shrink-0">
           <Image
             src={imageError ? "/products/default.png" : (product.image_url || "/products/default.png")}
-            alt={product.title}
+            alt={displayTitle}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-110"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -69,7 +72,7 @@ export default function ProductCard({
         {/* Content */}
         <div className="p-4 flex flex-col flex-grow">
           <h3 className="font-heading text-sm font-semibold text-foreground leading-tight line-clamp-2 group-hover:text-gold transition-colors duration-300">
-            {product.title}
+            {displayTitle}
           </h3>
 
           <div className="mt-auto pt-3 flex flex-col gap-2">
@@ -132,7 +135,7 @@ export default function ProductCard({
               <div className="relative aspect-[4/3] w-full bg-secondary">
                 <Image
                   src={imageError ? "/products/default.png" : (product.image_url || "/products/default.png")}
-                  alt={product.title}
+                  alt={displayTitle}
                   fill
                   className="object-cover"
                   sizes="(max-width: 640px) 100vw, 600px"
@@ -154,7 +157,7 @@ export default function ProductCard({
                     )}
                   </div>
                   <h2 className="font-heading text-xl sm:text-2xl font-bold text-foreground tracking-tight leading-snug text-left">
-                    {product.title}
+                    {displayTitle}
                   </h2>
                   <div className="flex items-baseline gap-1 mt-1">
                     <span className="text-2xl font-bold text-gradient-gold">
@@ -163,11 +166,13 @@ export default function ProductCard({
                   </div>
                 </div>
 
-                {product.description && (
+                {displayDesc && (
                   <div className="space-y-2 pt-4 border-t border-border/40 text-left">
-                    <h4 className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Tavsif (Opisaniya)</h4>
+                    <h4 className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+                      {language === 'ru' ? 'Описание' : 'Tavsif'}
+                    </h4>
                     <p className="text-sm text-foreground/90 leading-relaxed font-normal whitespace-pre-line text-left">
-                      {product.description}
+                      {displayDesc}
                     </p>
                   </div>
                 )}
