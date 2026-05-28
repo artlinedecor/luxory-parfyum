@@ -38,6 +38,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       if (s) {
         try {
           const parsed = JSON.parse(s);
+          
+          if (parsed.telegramAdminUsername && !parsed.telegramAdminUsername.startsWith("http")) {
+            parsed.telegramAdminUsername = `https://t.me/${parsed.telegramAdminUsername.replace("@", "")}`;
+          }
+
           setSettings((prev) => ({ ...prev, ...parsed }));
         } catch {
           // ignore

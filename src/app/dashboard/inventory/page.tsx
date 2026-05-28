@@ -346,7 +346,7 @@ export default function InventoryPage() {
       {/* Modal Overlay */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-card w-full max-w-md rounded-2xl border border-border shadow-2xl p-6 relative animate-scale-in">
+          <div className="bg-card w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-border shadow-2xl p-6 relative animate-scale-in">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"

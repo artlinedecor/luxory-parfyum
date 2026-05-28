@@ -110,6 +110,16 @@ export default function OrdersPage() {
     await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
   };
 
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!window.confirm("Bu buyurtmani o'chirishni xohlaysizmi? Bu amalni ortga qaytarib bo'lmaydi!")) return;
+    
+    // Optimistic update
+    setOrders(prev => prev.filter(o => o.id !== orderId));
+    
+    const supabase = createClient();
+    await supabase.from("orders").delete().eq("id", orderId);
+  };
+
   const handleManualSave = async () => {
     if (!manualName.trim() || !manualPhone.trim() || manualSelectedItems.length === 0) {
       alert("Mijoz ismi, telefon va kamida 1 ta mahsulot kiritilishi shart!");
@@ -118,16 +128,42 @@ export default function OrdersPage() {
     setManualSaving(true);
     const supabase = createClient();
 
-    const { error } = await supabase.from("orders").insert({
+    const { data: newOrderData, error } = await supabase.from("orders").insert({
       items: manualSelectedItems,
       client_name: manualName,
       client_phone: manualPhone,
       region: "Qo'lda kiritilgan",
       order_type: "full_payment",
       status: manualStatus,
-    });
+    }).select().single();
 
-    if (!error) {
+    if (!error && newOrderData) {
+      // If created as 'delivered', we must apply the same logic as handleStatusChange
+      if (manualStatus === "delivered") {
+        const order = newOrderData as Order;
+        
+        // Decrease stock
+        for (const item of manualSelectedItems) {
+          const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.product_id);
+          if (isUUID) {
+            const { data: prod } = await supabase.from("products").select("stock").eq("id", item.product_id).single();
+            if (prod) {
+              const currentStock = prod.stock !== undefined && prod.stock !== null ? prod.stock : 10;
+              const newStock = Math.max(0, currentStock - item.quantity);
+              await supabase.from("products").update({ stock: newStock }).eq("id", item.product_id);
+            }
+          }
+        }
+
+        // Add income transaction
+        const total = manualSelectedItems.reduce((sum, item) => sum + (item.price_at_purchase * item.quantity), 0);
+        await supabase.from("transactions").insert({
+          type: "income",
+          amount: total,
+          description: `Buyurtma #${order.id.slice(0, 8)} yetkazildi (Qo'lda) - Daromad`,
+        });
+      }
+
       setShowManualModal(false);
       setManualName(""); setManualPhone(""); setManualSelectedItems([]); setManualStatus("pending");
       fetchOrders();
@@ -241,16 +277,25 @@ export default function OrdersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <select
-                        value={order.status}
-                        onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                        className={`text-xs font-semibold px-3 py-1.5 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gold/50 transition-colors ${status.color}`}
-                      >
-                        <option value="pending">Kutilmoqda</option>
-                        <option value="accepted">Qabul qilindi</option>
-                        <option value="delivered">Yetkazildi</option>
-                        <option value="cancelled">Bekor qilindi</option>
-                      </select>
+                      <div className="flex items-center justify-end gap-2">
+                        <select
+                          value={order.status}
+                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                          className={`text-xs font-semibold px-3 py-1.5 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gold/50 transition-colors ${status.color}`}
+                        >
+                          <option value="pending">Kutilmoqda</option>
+                          <option value="accepted">Qabul qilindi</option>
+                          <option value="delivered">Yetkazildi</option>
+                          <option value="cancelled">Bekor qilindi</option>
+                        </select>
+                        <button
+                          onClick={() => handleDeleteOrder(order.id)}
+                          className="p-1.5 rounded-lg text-red-400 hover:bg-red-400/10 hover:text-red-300 transition-colors"
+                          title="O'chirish"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
