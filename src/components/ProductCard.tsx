@@ -74,6 +74,12 @@ export default function ProductCard({
           <h3 className="font-heading text-sm font-semibold text-foreground leading-tight line-clamp-2 group-hover:text-gold transition-colors duration-300">
             {displayTitle}
           </h3>
+          
+          {displayDesc && (
+            <p className="mt-1 text-[10px] text-muted-foreground line-clamp-2 leading-relaxed">
+              {displayDesc}
+            </p>
+          )}
 
           <div className="mt-auto pt-3 flex flex-col gap-2">
             <div className="flex items-baseline gap-1">

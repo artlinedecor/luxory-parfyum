@@ -90,7 +90,7 @@ export default function DashboardPage() {
 
     // ── UMUMIY MOLIYA VA BALANS ────────────────
     const historicalInventoryCost = totalCostInvested + totalSoldCOGS;
-    const realCashBalance = kassaIncome - kassaExpense - historicalInventoryCost;
+    const realCashBalance = kassaIncome - kassaExpense;
     const totalBusinessAssets = realCashBalance + totalCostInvested;
 
     // ── SO'NGGI BUYURTMALAR ───────────────────
@@ -216,7 +216,7 @@ export default function DashboardPage() {
               </div>
               <div className="pt-2">
                 <p className="text-[10px] text-muted-foreground leading-relaxed">
-                  * Umumiy Aktivlar qatorida faqat ombordagi tovarlar qiymati (Tikilgan pul) ko&apos;rsatiladi. Kassa qoldig&apos;i hisobga olinmagan.
+                  * Kassa qoldig&apos;i Kassa jurnalidagi jami kirim va chiqimlar asosida hisoblanadi.
                 </p>
               </div>
             </div>
