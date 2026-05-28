@@ -128,14 +128,11 @@ export default function AccountingPage() {
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-blue-400"><path strokeLinecap="round" strokeLinejoin="round" d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="M3.3 7l8.7 5 8.7-5M12 22V12" /></svg>
               Ombor Holati
             </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-blue-500">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Jami Qoldiq</p>
                 <p className="text-2xl font-bold text-foreground">{stats.totalStock.toLocaleString()} <span className="text-sm text-muted-foreground font-normal">ta</span></p>
-              </div>
-              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-red-500">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Tikilgan Pul (Tan narx)</p>
-                <p className="text-2xl font-bold text-red-400">${fmt(stats.totalCostInvested)}</p>
+                <p className="text-[10px] text-red-400 mt-1 font-medium">Tikilgan pul: ${fmt(stats.totalCostInvested)}</p>
               </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-green-500">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Sotilgandagi Summa</p>
@@ -220,7 +217,6 @@ export default function AccountingPage() {
                     <tr className="border-b border-border bg-secondary/20">
                       <th className="px-4 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">№</th>
                       <th className="px-4 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Nomi</th>
-                      <th className="px-4 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right">Tan Narxi ($)</th>
                       <th className="px-4 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right">Sotish Narxi ($)</th>
                       <th className="px-4 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right">Qoldiq</th>
                       <th className="px-4 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right">Tikilgan Pul ($)</th>
@@ -231,7 +227,7 @@ export default function AccountingPage() {
                   <tbody>
                     {products.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground text-sm">
+                        <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground text-sm">
                           Omborda tovar yo&apos;q
                         </td>
                       </tr>
@@ -250,14 +246,16 @@ export default function AccountingPage() {
                               <td className="px-4 py-3 text-sm font-medium text-foreground max-w-[200px] truncate" title={product.title}>
                                 {product.title}
                               </td>
-                              <td className="px-4 py-3 text-sm text-red-400 text-right font-medium">${fmt(costPrice)}</td>
                               <td className="px-4 py-3 text-sm text-foreground text-right">${fmt(price)}</td>
                               <td className="px-4 py-3 text-sm text-right">
                                 <span className={`font-semibold px-2.5 py-1 rounded-full text-xs ${stock > 0 ? 'bg-blue-500/10 text-blue-400' : 'bg-red-500/10 text-red-400'}`}>
                                   {stock} ta
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-sm text-red-400 text-right font-semibold">${fmt(invested)}</td>
+                              <td className="px-4 py-3 text-right">
+                                <span className="text-sm text-red-400 font-semibold">${fmt(invested)}</span>
+                                <span className="block text-[10px] text-muted-foreground">({fmt(costPrice)} × {stock})</span>
+                              </td>
                               <td className="px-4 py-3 text-sm text-green-400 text-right font-semibold">${fmt(revenue)}</td>
                               <td className={`px-4 py-3 text-sm font-bold text-right ${profit >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>
                                 ${fmt(profit)}
@@ -268,9 +266,6 @@ export default function AccountingPage() {
                         {/* JAMI (FOOTER ROW) */}
                         <tr className="bg-secondary/40 border-t-2 border-gold/30">
                           <td className="px-4 py-4 text-sm font-bold text-foreground" colSpan={2}>JAMI</td>
-                          <td className="px-4 py-4 text-sm text-red-400 text-right font-bold">
-                            ${fmt(products.reduce((s, p) => s + ((p as any).cost_price_usd || 0), 0))}
-                          </td>
                           <td className="px-4 py-4 text-sm text-foreground text-right font-bold">—</td>
                           <td className="px-4 py-4 text-sm text-blue-400 text-right font-bold">{stats.totalStock} ta</td>
                           <td className="px-4 py-4 text-sm text-red-400 text-right font-bold">${fmt(stats.totalCostInvested)}</td>
