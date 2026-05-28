@@ -201,8 +201,8 @@ export default function DashboardPage() {
             {/* Aktivlar */}
             <div className="glass-card rounded-2xl p-6 space-y-4 bg-secondary/5 border border-secondary">
               <div className="flex items-center justify-between border-b border-border/50 pb-3">
-                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Umumiy Aktivlar (Balans)</h3>
-                <span className="text-xl font-bold text-gradient-gold">${fmt(stats.totalBusinessAssets)}</span>
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Umumiy Aktivlar (Mol)</h3>
+                <span className="text-xl font-bold text-gradient-gold">${fmt(stats.totalCostInvested)}</span>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
@@ -216,7 +216,7 @@ export default function DashboardPage() {
               </div>
               <div className="pt-2">
                 <p className="text-[10px] text-muted-foreground leading-relaxed">
-                  * Kassa qoldig&apos;i avtomatik hisoblanadi: Kassa Kirim - Xarajatlar - Jami Atirlar xaridi. Atir xaridi uchun xarajat kiritmang!
+                  * Umumiy Aktivlar qatorida faqat ombordagi tovarlar qiymati (Tikilgan pul) ko&apos;rsatiladi. Kassa qoldig&apos;i hisobga olinmagan.
                 </p>
               </div>
             </div>
