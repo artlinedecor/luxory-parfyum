@@ -21,10 +21,10 @@ export default function ProductCard({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isOriginal = product.product_type === "original";
-  const { t, language } = useI18n();
+  const { t, lang } = useI18n();
 
-  const displayTitle = language === 'ru' && product.title_ru ? product.title_ru : product.title;
-  const displayDesc = language === 'ru' && product.description_ru ? product.description_ru : product.description;
+  const displayTitle = lang === 'ru' && product.title_ru ? product.title_ru : product.title;
+  const displayDesc = lang === 'ru' && product.description_ru ? product.description_ru : product.description;
 
   useEffect(() => {
     setMounted(true);
@@ -169,7 +169,7 @@ export default function ProductCard({
                 {displayDesc && (
                   <div className="space-y-2 pt-4 border-t border-border/40 text-left">
                     <h4 className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
-                      {language === 'ru' ? 'Описание' : 'Tavsif'}
+                      {lang === 'ru' ? 'Описание' : 'Tavsif'}
                     </h4>
                     <p className="text-sm text-foreground/90 leading-relaxed font-normal whitespace-pre-line text-left">
                       {displayDesc}
