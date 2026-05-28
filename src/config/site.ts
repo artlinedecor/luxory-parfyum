@@ -18,7 +18,7 @@ export const siteConfig = {
 
   // ── Telegram ─────────────────────────────────────
   telegramAdmin: "https://t.me/Jelyor",        // Admin lichka (Checkout xabar shu yerga boradi)
-  telegramAdminUsername: "Jelyor",              // @ belgisisiz
+  telegramAdminUsername: "https://t.me/Jelyor",  // Admin lichka link
   telegramChannel: "https://t.me/eloreparfum", // Kanal
 
   // ── To'lov ───────────────────────────────────────

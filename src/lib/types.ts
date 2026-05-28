@@ -10,6 +10,7 @@ export interface Product {
   image_url: string | null;
   is_available: boolean;
   stock?: number;
+  gender?: "male" | "female" | "unisex";
   created_at: string;
 }
 

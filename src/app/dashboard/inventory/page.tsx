@@ -22,6 +22,7 @@ export default function InventoryPage() {
   const [type, setType] = useState<"lux_copy" | "original">("lux_copy");
   const [imageUrl, setImageUrl] = useState("");
   const [stock, setStock] = useState("10");
+  const [gender, setGender] = useState<"male" | "female" | "unisex">("unisex");
   const [uploading, setUploading] = useState(false);
 
   const fetchProducts = async () => {
@@ -58,6 +59,7 @@ export default function InventoryPage() {
       setType(product.product_type);
       setImageUrl(product.image_url || "");
       setStock(product.stock !== undefined ? product.stock.toString() : "10");
+      setGender(product.gender || "unisex");
     } else {
       setEditingProduct(null);
       setTitle("");
@@ -69,6 +71,7 @@ export default function InventoryPage() {
       setType("lux_copy");
       setImageUrl("");
       setStock("10");
+      setGender("unisex");
     }
     setIsModalOpen(true);
   };
@@ -120,6 +123,7 @@ export default function InventoryPage() {
       product_type: type,
       image_url: imageUrl || null,
       stock: Number(stock),
+      gender,
       is_available: true,
     };
 
@@ -132,6 +136,7 @@ export default function InventoryPage() {
       product_type: type,
       image_url: imageUrl || null,
       stock: Number(stock),
+      gender,
       is_available: true,
     };
 
@@ -392,6 +397,14 @@ export default function InventoryPage() {
                   <label className="text-xs text-muted-foreground uppercase tracking-wider">Soni (Ombordagi qoldiq)</label>
                   <input required type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
                 </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground uppercase tracking-wider">Jinsi (Gender)</label>
+                <select value={gender} onChange={(e) => setGender(e.target.value as any)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50 appearance-none">
+                  <option value="male">Erkaklar uchun</option>
+                  <option value="female">Ayollar uchun</option>
+                  <option value="unisex">Unisex</option>
+                </select>
               </div>
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground uppercase tracking-wider">Rasm Yuklash</label>

@@ -12,16 +12,19 @@ interface ProductGridProps {
 
 export default function ProductGrid({ products }: ProductGridProps) {
   const [activeTab, setActiveTab] = useState<"all" | "lux" | "original">("all");
+  const [genderFilter, setGenderFilter] = useState<"all" | "male" | "female" | "unisex">("all");
   const [addedId, setAddedId] = useState<string | null>(null);
   const { addItem } = useCart();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
-  const filteredProducts =
-    activeTab === "all"
-      ? products
-      : products.filter(
-          (p) => p.product_type === (activeTab === "lux" ? "lux_copy" : "original")
-        );
+  const filteredProducts = products.filter((p) => {
+    const typeMatch =
+      activeTab === "all" ||
+      p.product_type === (activeTab === "lux" ? "lux_copy" : "original");
+    const genderMatch =
+      genderFilter === "all" || (p.gender || "unisex") === genderFilter;
+    return typeMatch && genderMatch;
+  });
 
   const handleAddToCart = (product: Product) => {
     addItem(product);
@@ -35,9 +38,16 @@ export default function ProductGrid({ products }: ProductGridProps) {
     setTimeout(() => setAddedId(null), 1200);
   };
 
+  const genderLabels: Record<string, { uz: string; ru: string }> = {
+    all: { uz: "Barchasi", ru: "Все" },
+    male: { uz: "Erkaklar", ru: "Мужские" },
+    female: { uz: "Ayollar", ru: "Женские" },
+    unisex: { uz: "Unisex", ru: "Унисекс" },
+  };
+
   return (
-    <div className="space-y-8 sm:space-y-10">
-      {/* Tabs */}
+    <div className="space-y-6 sm:space-y-8">
+      {/* Type Tabs */}
       <div
         id="product-tabs"
         className="flex gap-1 p-1 rounded-2xl bg-secondary/50 backdrop-blur-sm w-fit mx-auto"
@@ -72,6 +82,26 @@ export default function ProductGrid({ products }: ProductGridProps) {
         >
           {t("tab_original")}
         </button>
+      </div>
+
+      {/* Gender Filter */}
+      <div className="flex gap-2 justify-center flex-wrap">
+        {(["all", "male", "female", "unisex"] as const).map((g) => (
+          <button
+            key={g}
+            onClick={() => setGenderFilter(g)}
+            className={`px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300 border ${
+              genderFilter === g
+                ? "border-gold bg-gold/15 text-gold shadow-md shadow-gold/10"
+                : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
+            }`}
+          >
+            {g === "male" && "👨 "}
+            {g === "female" && "👩 "}
+            {g === "unisex" && "⚡ "}
+            {lang === "ru" ? genderLabels[g].ru : genderLabels[g].uz}
+          </button>
+        ))}
       </div>
 
       {/* Grid */}
