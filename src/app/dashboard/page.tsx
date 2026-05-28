@@ -88,8 +88,10 @@ export default function DashboardPage() {
     const kassaExpense = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
     const kassaBalance = kassaIncome - kassaExpense;
 
-    // ── UMUMIY ────────────────────────────────
-    const totalAssets = totalCostInvested + kassaBalance;
+    // ── UMUMIY MOLIYA VA BALANS ────────────────
+    const historicalInventoryCost = totalCostInvested + totalSoldCOGS;
+    const realCashBalance = kassaIncome - kassaExpense - historicalInventoryCost;
+    const totalBusinessAssets = realCashBalance + totalCostInvested;
 
     // ── SO'NGGI BUYURTMALAR ───────────────────
     const recentOrders = orders.slice(0, 5).map(o => {
@@ -122,7 +124,9 @@ export default function DashboardPage() {
       kassaIncome,
       kassaExpense,
       kassaBalance,
-      totalAssets,
+      realCashBalance,
+      totalBusinessAssets,
+      historicalInventoryCost,
       recentOrders,
     };
   }, [products, orders, transactions]);
@@ -182,11 +186,56 @@ export default function DashboardPage() {
               <p className="text-[10px] text-muted-foreground">sotilganlardan</p>
             </div>
 
-            {/* Umumiy Tovar Qiymati */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1 bg-gold/5 border border-gold/20 col-span-2 sm:col-span-1">
-              <p className="text-2xl font-bold text-gradient-gold">${fmt(stats.totalCostInvested)}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Jami Tikilgan Pul</p>
-              <p className="text-[10px] text-muted-foreground">Faqat tovar qiymati</p>
+            {/* Kutilayotgan Sof Foyda */}
+            <div className="glass-card rounded-xl p-4 text-center space-y-1">
+              <p className={`text-2xl font-bold ${stats.expectedProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.expectedProfit)}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Kutilayotgan Foyda</p>
+              <p className="text-[10px] text-muted-foreground">agar hammasi sotilsa</p>
+            </div>
+          </div>
+
+          {/* ═══════════════════════════════════════════════════════ */}
+          {/* ROW 3: BIZNES BALANSI (ASSETS & LIABILITIES)          */}
+          {/* ═══════════════════════════════════════════════════════ */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Aktivlar */}
+            <div className="glass-card rounded-2xl p-6 space-y-4 bg-secondary/5 border border-secondary">
+              <div className="flex items-center justify-between border-b border-border/50 pb-3">
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Umumiy Aktivlar (Balans)</h3>
+                <span className="text-xl font-bold text-gradient-gold">${fmt(stats.totalBusinessAssets)}</span>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Kassa (Naqd pul qoldig&apos;i)</span>
+                  <span className={`font-semibold ${stats.realCashBalance >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.realCashBalance)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Ombordagi Tovar (Tikilgan Pul)</span>
+                  <span className="text-blue-400 font-semibold">${fmt(stats.totalCostInvested)}</span>
+                </div>
+              </div>
+              <div className="pt-2">
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  * Kassa qoldig&apos;i avtomatik hisoblanadi: Kassa Kirim - Xarajatlar - Jami Atirlar xaridi. Atir xaridi uchun xarajat kiritmang!
+                </p>
+              </div>
+            </div>
+
+            {/* Operatsion Pul Oqimi */}
+            <div className="glass-card rounded-2xl p-6 space-y-4 bg-secondary/5 border border-secondary">
+              <div className="flex items-center justify-between border-b border-border/50 pb-3">
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Moliya (Kassa)</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Jami Kirim (Sarmoya + Savdo)</span>
+                  <span className="text-green-400 font-semibold">${fmt(stats.kassaIncome)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Boshqa Xarajatlar (Chiqim)</span>
+                  <span className="text-red-400 font-semibold">${fmt(stats.kassaExpense)}</span>
+                </div>
+              </div>
             </div>
           </div>
 
