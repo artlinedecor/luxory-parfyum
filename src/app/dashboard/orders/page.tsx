@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { Order } from "@/lib/types";
+import { Order, Product } from "@/lib/types";
 import { createClient } from "@/utils/supabase/client";
 
 const statusLabels: Record<string, { text: string; color: string }> = {
@@ -14,6 +14,7 @@ const statusLabels: Record<string, { text: string; color: string }> = {
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showManualModal, setShowManualModal] = useState(false);
@@ -22,20 +23,24 @@ export default function OrdersPage() {
   // Manual order form states
   const [manualName, setManualName] = useState("");
   const [manualPhone, setManualPhone] = useState("");
-  const [manualItems, setManualItems] = useState("");
-  const [manualTotal, setManualTotal] = useState("");
+  const [manualSelectedItems, setManualSelectedItems] = useState<{ product_id: string; title: string; quantity: number; price_at_purchase: number; product_type: string }[]>([]);
   const [manualStatus, setManualStatus] = useState("pending");
   const [manualSaving, setManualSaving] = useState(false);
 
+  const manualTotal = manualSelectedItems.reduce((acc, item) => acc + item.price_at_purchase * item.quantity, 0);
+
   const fetchOrders = useCallback(async () => {
     const supabase = createClient();
-    const { data, error } = await supabase
-      .from("orders")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const [ordersRes, productsRes] = await Promise.all([
+      supabase.from("orders").select("*").order("created_at", { ascending: false }),
+      supabase.from("products").select("*").order("title", { ascending: true })
+    ]);
 
-    if (!error && data) {
-      setOrders(data as Order[]);
+    if (!ordersRes.error && ordersRes.data) {
+      setOrders(ordersRes.data as Order[]);
+    }
+    if (!productsRes.error && productsRes.data) {
+      setProducts(productsRes.data as Product[]);
     }
     setIsLoading(false);
   }, []);
@@ -106,20 +111,15 @@ export default function OrdersPage() {
   };
 
   const handleManualSave = async () => {
-    if (!manualName.trim() || !manualPhone.trim()) return;
+    if (!manualName.trim() || !manualPhone.trim() || manualSelectedItems.length === 0) {
+      alert("Mijoz ismi, telefon va kamida 1 ta mahsulot kiritilishi shart!");
+      return;
+    }
     setManualSaving(true);
     const supabase = createClient();
 
-    const parsedItems = manualItems.split(",").map(s => s.trim()).filter(Boolean).map(name => ({
-      product_id: "manual",
-      title: name,
-      quantity: 1,
-      price_at_purchase: 0,
-      product_type: "lux_copy" as const,
-    }));
-
     const { error } = await supabase.from("orders").insert({
-      items: parsedItems.length > 0 ? parsedItems : [{ product_id: "manual", title: "Telefon buyurtma", quantity: 1, price_at_purchase: Number(manualTotal) || 0, product_type: "lux_copy" }],
+      items: manualSelectedItems,
       client_name: manualName,
       client_phone: manualPhone,
       region: "Qo'lda kiritilgan",
@@ -129,10 +129,30 @@ export default function OrdersPage() {
 
     if (!error) {
       setShowManualModal(false);
-      setManualName(""); setManualPhone(""); setManualItems(""); setManualTotal(""); setManualStatus("pending");
+      setManualName(""); setManualPhone(""); setManualSelectedItems([]); setManualStatus("pending");
       fetchOrders();
     }
     setManualSaving(false);
+  };
+
+  const addManualProduct = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const pId = e.target.value;
+    if (!pId) return;
+    const p = products.find(prod => prod.id === pId);
+    if (!p) return;
+    
+    // Check if already added
+    if (manualSelectedItems.some(item => item.product_id === pId)) return;
+
+    setManualSelectedItems(prev => [
+      ...prev,
+      { product_id: p.id, title: p.title, quantity: 1, price_at_purchase: p.price_usd || 0, product_type: "lux_copy" }
+    ]);
+    e.target.value = ""; // reset dropdown
+  };
+
+  const removeManualProduct = (id: string) => {
+    setManualSelectedItems(prev => prev.filter(i => i.product_id !== id));
   };
 
   return (
@@ -268,20 +288,51 @@ export default function OrdersPage() {
                 <input type="tel" value={manualPhone} onChange={e => setManualPhone(e.target.value)} placeholder="+998..." className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
               </div>
               <div className="space-y-1">
-                <label className="text-xs text-muted-foreground uppercase tracking-wider">Mahsulotlar (vergul bilan)</label>
-                <input type="text" value={manualItems} onChange={e => setManualItems(e.target.value)} placeholder="Baccarat Rouge, Creed Aventus" className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
+                <label className="text-xs text-muted-foreground uppercase tracking-wider">Mahsulot Qo&apos;shish</label>
+                <select onChange={addManualProduct} defaultValue="" className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50 appearance-none">
+                  <option value="" disabled>-- Mahsulot tanlang --</option>
+                  {products.map(p => (
+                    <option key={p.id} value={p.id}>{p.title} (${p.price_usd}) - Qoldiq: {p.stock}</option>
+                  ))}
+                </select>
               </div>
+              
+              {manualSelectedItems.length > 0 && (
+                <div className="space-y-2 border border-border/50 rounded-lg p-3 bg-secondary/20 max-h-40 overflow-y-auto">
+                  {manualSelectedItems.map((item, idx) => (
+                    <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-2 bg-background p-2 rounded border border-border">
+                      <span className="flex-1 text-sm font-semibold truncate" title={item.title}>{item.title}</span>
+                      <div className="flex items-center gap-2">
+                        <input type="number" min="1" value={item.quantity} onChange={(e) => {
+                          const newQ = Number(e.target.value);
+                          setManualSelectedItems(prev => prev.map(i => i.product_id === item.product_id ? { ...i, quantity: newQ } : i));
+                        }} className="w-16 px-2 py-1 bg-secondary border border-border rounded text-xs focus:border-gold/50" title="Soni" />
+                        <span className="text-xs text-muted-foreground">ta</span>
+                        <input type="number" min="0" value={item.price_at_purchase} onChange={(e) => {
+                          const newP = Number(e.target.value);
+                          setManualSelectedItems(prev => prev.map(i => i.product_id === item.product_id ? { ...i, price_at_purchase: newP } : i));
+                        }} className="w-20 px-2 py-1 bg-secondary border border-border rounded text-xs focus:border-gold/50" title="Sotish narxi" />
+                        <span className="text-xs text-muted-foreground">$</span>
+                        <button type="button" onClick={() => removeManualProduct(item.product_id)} className="text-red-400 hover:text-red-300 ml-1">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground uppercase tracking-wider">Jami ($)</label>
-                  <input type="number" value={manualTotal} onChange={e => setManualTotal(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
+                  <input type="number" readOnly value={manualTotal} className="w-full px-3 py-2 bg-secondary/50 border border-border rounded-lg text-sm font-bold text-gold focus:outline-none" />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground uppercase tracking-wider">Status</label>
                   <select value={manualStatus} onChange={e => setManualStatus(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50 appearance-none">
                     <option value="pending">Kutilmoqda</option>
                     <option value="accepted">Qabul qilindi</option>
-                    <option value="delivered">Yetkazildi</option>
+                    <option value="delivered">Yetkazildi (Savdo qiling)</option>
                   </select>
                 </div>
               </div>
