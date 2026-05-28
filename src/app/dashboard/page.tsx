@@ -139,7 +139,7 @@ export default function DashboardPage() {
           <span className="text-gradient-gold">Analitika</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Biznesingizning umumiy ko&apos;rsatkichlari — ombor, sotuvlar, kassa (Real vaqt rejimida)
+          Biznesingizning umumiy ko&apos;rsatkichlari — ombor va sotuvlar
         </p>
       </div>
 
@@ -152,54 +152,7 @@ export default function DashboardPage() {
       ) : (
         <>
           {/* ═══════════════════════════════════════════════════════ */}
-          {/* ROW 1: ASOSIY MOLIYAVIY KO'RSATKICHLAR                */}
-          {/* ═══════════════════════════════════════════════════════ */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Umumiy Kirim (Kassa) */}
-            <div className="glass-card rounded-2xl p-6 space-y-3 animate-fade-in">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Kassa Kirim</span>
-                <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5 text-green-400">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-                  </svg>
-                </div>
-              </div>
-              <p className="text-3xl font-bold text-green-400">${fmt(stats.kassaIncome)}</p>
-              <p className="text-[10px] text-muted-foreground">Sotuvlar + qo&apos;lda kiritilgan daromad</p>
-            </div>
-
-            {/* Umumiy Chiqim */}
-            <div className="glass-card rounded-2xl p-6 space-y-3 animate-fade-in" style={{ animationDelay: "100ms" }}>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Kassa Chiqim</span>
-                <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5 text-red-400">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l3.182-5.511m-3.182 5.51l-5.511-3.181" />
-                  </svg>
-                </div>
-              </div>
-              <p className="text-3xl font-bold text-red-400">${fmt(stats.kassaExpense)}</p>
-              <p className="text-[10px] text-muted-foreground">Kargo, xarajatlar va boshqalar</p>
-            </div>
-
-            {/* Kassa Qoldiq */}
-            <div className="glass-card rounded-2xl p-6 space-y-3 animate-fade-in" style={{ animationDelay: "200ms" }}>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Kassa Qoldig&apos;i</span>
-                <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5 text-gold">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-              </div>
-              <p className={`text-3xl font-bold ${stats.kassaBalance >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>${fmt(stats.kassaBalance)}</p>
-              <p className="text-[10px] text-muted-foreground">Kirim - Chiqim</p>
-            </div>
-          </div>
-
-          {/* ═══════════════════════════════════════════════════════ */}
-          {/* ROW 2: OMBOR + SOTUVLAR + UMUMIY                      */}
+          {/* ROW 1: OMBOR + SOTUVLAR + UMUMIY                      */}
           {/* ═══════════════════════════════════════════════════════ */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {/* Ombordagi Mol */}
@@ -229,47 +182,20 @@ export default function DashboardPage() {
               <p className="text-[10px] text-muted-foreground">sotilganlardan</p>
             </div>
 
-            {/* Umumiy Aktivlar */}
+            {/* Umumiy Tovar Qiymati */}
             <div className="glass-card rounded-xl p-4 text-center space-y-1 bg-gold/5 border border-gold/20 col-span-2 sm:col-span-1">
-              <p className="text-2xl font-bold text-gradient-gold">${fmt(stats.totalAssets)}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Umumiy Aktivlar</p>
-              <p className="text-[10px] text-muted-foreground">Mol + Kassa</p>
+              <p className="text-2xl font-bold text-gradient-gold">${fmt(stats.totalCostInvested)}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Jami Tikilgan Pul</p>
+              <p className="text-[10px] text-muted-foreground">Faqat tovar qiymati</p>
             </div>
           </div>
 
           {/* ═══════════════════════════════════════════════════════ */}
-          {/* ROW 3: MOLIYAVIY OQIM GRAFIK (Visual Bar)             */}
+          {/* ROW 2: MOLIYAVIY OQIM GRAFIK (Visual Bar)             */}
           {/* ═══════════════════════════════════════════════════════ */}
           <div className="glass-card rounded-2xl p-6 space-y-4">
-            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Moliyaviy Oqim</h3>
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Sotuvlar Oqimi</h3>
             <div className="space-y-3">
-              {/* Kassa Kirim */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Kassa Kirim</span>
-                  <span className="text-green-400 font-semibold">${fmt(stats.kassaIncome)}</span>
-                </div>
-                <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-1000"
-                    style={{ width: `${stats.kassaIncome > 0 ? Math.min(100, (stats.kassaIncome / Math.max(stats.kassaIncome, stats.expectedRevenue, stats.totalCostInvested, 1)) * 100) : 0}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Kassa Chiqim */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Kassa Chiqim</span>
-                  <span className="text-red-400 font-semibold">${fmt(stats.kassaExpense)}</span>
-                </div>
-                <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all duration-1000"
-                    style={{ width: `${stats.kassaExpense > 0 ? Math.min(100, (stats.kassaExpense / Math.max(stats.kassaIncome, stats.expectedRevenue, stats.totalCostInvested, 1)) * 100) : 0}%` }}
-                  />
-                </div>
-              </div>
 
               {/* Ombordagi Mol (Tikilgan Pul) */}
               <div className="space-y-1">
@@ -280,7 +206,7 @@ export default function DashboardPage() {
                 <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-1000"
-                    style={{ width: `${stats.totalCostInvested > 0 ? Math.min(100, (stats.totalCostInvested / Math.max(stats.kassaIncome, stats.expectedRevenue, stats.totalCostInvested, 1)) * 100) : 0}%` }}
+                    style={{ width: `${stats.totalCostInvested > 0 ? Math.min(100, (stats.totalCostInvested / Math.max(stats.expectedRevenue, stats.totalCostInvested, 1)) * 100) : 0}%` }}
                   />
                 </div>
               </div>
@@ -294,7 +220,7 @@ export default function DashboardPage() {
                 <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-1000"
-                    style={{ width: `${stats.expectedRevenue > 0 ? Math.min(100, (stats.expectedRevenue / Math.max(stats.kassaIncome, stats.expectedRevenue, stats.totalCostInvested, 1)) * 100) : 0}%` }}
+                    style={{ width: `${stats.expectedRevenue > 0 ? Math.min(100, (stats.expectedRevenue / Math.max(stats.expectedRevenue, stats.totalCostInvested, 1)) * 100) : 0}%` }}
                   />
                 </div>
               </div>
@@ -308,7 +234,7 @@ export default function DashboardPage() {
                 <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-1000 ${stats.realizedProfit >= 0 ? 'bg-gradient-to-r from-green-600 to-emerald-400' : 'bg-gradient-to-r from-red-600 to-red-400'}`}
-                    style={{ width: `${Math.abs(stats.realizedProfit) > 0 ? Math.min(100, (Math.abs(stats.realizedProfit) / Math.max(stats.kassaIncome, stats.expectedRevenue, stats.totalCostInvested, 1)) * 100) : 0}%` }}
+                    style={{ width: `${Math.abs(stats.realizedProfit) > 0 ? Math.min(100, (Math.abs(stats.realizedProfit) / Math.max(stats.expectedRevenue, stats.totalCostInvested, 1)) * 100) : 0}%` }}
                   />
                 </div>
               </div>
@@ -316,7 +242,7 @@ export default function DashboardPage() {
           </div>
 
           {/* ═══════════════════════════════════════════════════════ */}
-          {/* ROW 4: SO'NGGI BUYURTMALAR                            */}
+          {/* ROW 3: SO'NGGI BUYURTMALAR                            */}
           {/* ═══════════════════════════════════════════════════════ */}
           <div className="glass-card rounded-2xl overflow-hidden">
             <div className="px-6 py-4 border-b border-border bg-secondary/10">
