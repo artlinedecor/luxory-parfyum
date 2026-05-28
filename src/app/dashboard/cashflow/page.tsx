@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Transaction } from "@/lib/types";
 import { createClient } from "@/utils/supabase/client";
 
@@ -12,6 +12,17 @@ export default function CashflowPage() {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+
+  const txWithBalance = React.useMemo(() => {
+    let runningBalance = 0;
+    const reversed = [...transactions].reverse();
+    const result = reversed.map(tx => {
+      if (tx.type === "income") runningBalance += Number(tx.amount);
+      else runningBalance -= Number(tx.amount);
+      return { ...tx, balance: runningBalance };
+    });
+    return result.reverse();
+  }, [transactions]);
 
   const fetchTransactions = async () => {
     try {
@@ -123,11 +134,12 @@ export default function CashflowPage() {
                 <th className="px-6 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Turi</th>
                 <th className="px-6 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Tavsif (Sabab)</th>
                 <th className="px-6 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Summa</th>
+                <th className="px-6 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Balans</th>
                 <th className="px-6 py-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right">Sana</th>
               </tr>
             </thead>
             <tbody>
-              {transactions.map((tx) => (
+              {txWithBalance.map((tx) => (
                 <tr key={tx.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                   <td className="px-6 py-3">
                     <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase ${
@@ -145,6 +157,9 @@ export default function CashflowPage() {
                   <td className={`px-6 py-3 text-sm font-bold ${tx.type === "income" ? "text-green-400" : "text-red-400"}`}>
                     {tx.type === "income" ? "+" : "-"}${tx.amount}
                   </td>
+                  <td className={`px-6 py-3 text-sm font-bold ${tx.balance >= 0 ? "text-gradient-gold" : "text-red-400"}`}>
+                    ${tx.balance}
+                  </td>
                   <td className="px-6 py-3 text-right text-xs text-muted-foreground whitespace-nowrap">
                     {isMounted ? new Date(tx.created_at).toLocaleString("uz-UZ", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "..."}
                   </td>
@@ -152,7 +167,7 @@ export default function CashflowPage() {
               ))}
               {transactions.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground text-sm">
+                  <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground text-sm">
                     Tranzaksiyalar topilmadi
                   </td>
                 </tr>
