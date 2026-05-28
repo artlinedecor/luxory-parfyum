@@ -173,34 +173,6 @@ export default function AccountingPage() {
             </div>
           </div>
 
-          {/* ═══════════════════════════════════════════════════════ */}
-          {/* SECTION 3: KASSA INTEGRATSIYASI                       */}
-          {/* ═══════════════════════════════════════════════════════ */}
-          <div>
-            <h2 className="text-xs text-muted-foreground uppercase tracking-widest font-semibold mb-3 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-gold"><circle cx="12" cy="12" r="10" /><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8M12 18V6" /></svg>
-              Kassa Integratsiyasi
-            </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-green-500">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Kassa Kirim</p>
-                <p className="text-2xl font-bold text-green-400">${fmt(stats.kassaIncome)}</p>
-              </div>
-              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-red-500">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Kassa Chiqim</p>
-                <p className="text-2xl font-bold text-red-400">${fmt(stats.kassaExpense)}</p>
-              </div>
-              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-blue-500">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Kassa Qoldig&apos;i</p>
-                <p className={`text-2xl font-bold ${stats.kassaBalance >= 0 ? 'text-blue-400' : 'text-red-400'}`}>${fmt(stats.kassaBalance)}</p>
-              </div>
-              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-gold/60 bg-gold/5">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Umumiy Aktivlar</p>
-                <p className="text-2xl font-bold text-gradient-gold">${fmt(stats.totalAssets)}</p>
-                <p className="text-[10px] text-muted-foreground mt-1">Mol + Kassa</p>
-              </div>
-            </div>
-          </div>
 
           {/* ═══════════════════════════════════════════════════════ */}
           {/* SECTION 4: TOVARLAR JADVALI                           */}
