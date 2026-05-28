@@ -16,7 +16,7 @@ import { useShopSettings } from "@/lib/settings-context";
 
 export default function Home() {
   const { t } = useI18n();
-  const { shopName, logoUrl, shopAddress, telegramChannel, shopPhone } = useShopSettings();
+  const { shopName, logoUrl, shopAddress, telegramAdminUsername, telegramChannel, shopPhone } = useShopSettings();
   const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
 
   useEffect(() => {
