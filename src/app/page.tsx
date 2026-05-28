@@ -58,21 +58,7 @@ export default function Home() {
               {t("collection_desc")}
             </p>
 
-            {/* Social Links / Contacts */}
-            <div className="flex justify-center items-center gap-4 pt-2 pb-4">
-              <a href="https://www.instagram.com/elore_parfumes?igsh=a2xrMmp1ZmpleGpm" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-secondary/80 flex items-center justify-center text-muted-foreground hover:text-pink-500 hover:bg-pink-500/10 transition-all shadow-lg hover:scale-110" title="Instagram">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-              </a>
-              <a href={`tel:${shopPhone.replace(/\s/g, '')}`} className="w-10 h-10 rounded-full bg-secondary/80 flex items-center justify-center text-muted-foreground hover:text-green-500 hover:bg-green-500/10 transition-all shadow-lg hover:scale-110" title="Telefon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-              </a>
-              <a href={telegramAdminUsername} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-secondary/80 flex items-center justify-center text-muted-foreground hover:text-[#0088cc] hover:bg-[#0088cc]/10 transition-all shadow-lg hover:scale-110" title="Telegram Lichka">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M21.198 2.433a2.242 2.242 0 0 0-1.022.215l-18 8a2.25 2.25 0 0 0 .122 4.108l4.49 1.49 2.112 6.538a1.5 1.5 0 0 0 2.813.111l2.584-4.838 5.766 4.316a2.25 2.25 0 0 0 3.593-1.63L23.454 3.73a2.25 2.25 0 0 0-2.256-1.297zM8.835 15.6l-1.39-4.254 11.233-7.534-8.835 11.161v.627zm-3.056-2.582l-2.92-.973L19.467 4.6l-13.688 8.418zm13.18 7.078l-5.328-3.988L16.4 12.22l-1.898-2.4 4.457 6.276z"/></svg>
-              </a>
-              <a href={telegramChannel} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-secondary/80 flex items-center justify-center text-muted-foreground hover:text-[#0088cc] hover:bg-[#0088cc]/10 transition-all shadow-lg hover:scale-110" title="Telegram Kanal">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-              </a>
-            </div>
+
 
             {/* Gold accent line */}
             <div className="flex items-center justify-center gap-2">
