@@ -21,8 +21,11 @@ export default function ProductGrid({ products }: ProductGridProps) {
     const typeMatch =
       activeTab === "all" ||
       p.product_type === (activeTab === "lux" ? "lux_copy" : "original");
+    const productGender = p.gender || "unisex";
     const genderMatch =
-      genderFilter === "all" || (p.gender || "unisex") === genderFilter;
+      genderFilter === "all" || 
+      productGender === genderFilter || 
+      (genderFilter !== "unisex" && productGender === "unisex");
     return typeMatch && genderMatch;
   });
 
