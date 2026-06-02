@@ -5,6 +5,7 @@ import { CartProvider } from "@/lib/cart-context";
 import { I18nProvider } from "@/lib/i18n-context";
 import FloatingCart from "@/components/FloatingCart";
 import MetaPixel from "@/components/MetaPixel";
+import YandexMetrica from "@/components/YandexMetrica";
 import "./globals.css";
 
 const inter = Inter({
@@ -50,6 +51,7 @@ export default function RootLayout({
           <I18nProvider>
             <CartProvider>
             <MetaPixel />
+            <YandexMetrica />
             {children}
             <FloatingCart />
           </CartProvider>
