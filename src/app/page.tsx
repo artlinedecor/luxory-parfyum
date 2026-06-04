@@ -54,9 +54,11 @@ export default function Home() {
               <span className="text-foreground">{t("collection_title_1")}</span>
               <span className="text-gradient-gold">{t("collection_title_2")}</span>
             </h2>
-            <p className="text-muted-foreground text-sm max-w-md mx-auto">
-              {t("collection_desc")}
-            </p>
+            <div className="relative py-5 px-6 max-w-2xl mx-auto my-6 rounded-2xl bg-gradient-to-r from-gold/5 via-gold/10 to-gold/5 border border-gold/25 shadow-xl shadow-gold/5 backdrop-blur-sm overflow-hidden shimmer">
+              <p className="relative font-sans text-sm sm:text-base font-semibold tracking-wide text-gradient-gold animate-glow-shimmer leading-relaxed">
+                ✨ {t("collection_desc")} ✨
+              </p>
+            </div>
 
 
 

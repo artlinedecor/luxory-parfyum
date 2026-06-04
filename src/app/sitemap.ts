@@ -21,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: products } = await supabase.from('products').select('id');
     
     if (products) {

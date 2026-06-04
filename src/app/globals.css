@@ -187,6 +187,21 @@
     to { opacity: 1; transform: scale(1); }
   }
 
+  .animate-glow-shimmer {
+    animation: goldGlow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes goldGlow {
+    0% {
+      text-shadow: 0 0 4px rgba(201, 168, 76, 0.15), 0 0 8px rgba(201, 168, 76, 0.05);
+      opacity: 0.9;
+    }
+    100% {
+      text-shadow: 0 0 16px rgba(224, 201, 127, 0.6), 0 0 28px rgba(201, 168, 76, 0.35);
+      opacity: 1;
+    }
+  }
+
   /* Hide scrollbar but allow scrolling */
   .scrollbar-hide {
     -ms-overflow-style: none;

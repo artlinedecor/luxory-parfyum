@@ -156,7 +156,7 @@ export default function CartPage() {
       // 4. Generate beautiful prefilled template message for shaxsiy telegram
       const productLines = items
         .map((item) => {
-          const type = item.product.product_type === "original" ? "Original" : "Lux";
+          const type = item.product.product_type === "original" ? "Original" : "Super Klon";
           const price = item.product.product_type === "original"
               ? `$${siteConfig.depositAmount} zaklad`
               : `$${item.product.price_usd}`;
@@ -350,7 +350,7 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
                   <h3 className="text-sm font-semibold text-foreground truncate">{item.product.title}</h3>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-gold/10 text-gold font-semibold uppercase">
-                      {item.product.product_type === "original" ? "Original" : "Lux"}
+                      {item.product.product_type === "original" ? "Original" : "Super Klon"}
                     </span>
                     {item.product.product_type === "original" && (
                       <span className="text-[10px] text-gold font-medium">${siteConfig.depositAmount} zaklad</span>

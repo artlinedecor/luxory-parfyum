@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
     const productLines = (items || [])
       .map((item: { title: string; product_type: string; quantity: number; price_at_purchase: number }) =>
-        `- ${item.title} (${item.product_type === 'original' ? 'Original' : 'Lux'}) x${item.quantity} — $${item.price_at_purchase}`
+        `- ${item.title} (${item.product_type === 'original' ? 'Original' : 'Super Klon'}) x${item.quantity} — $${item.price_at_purchase}`
       )
       .join('\n');
 

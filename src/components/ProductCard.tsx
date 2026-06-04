@@ -63,7 +63,7 @@ export default function ProductCard({
               </span>
             ) : (
               <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md text-white text-[10px] font-semibold uppercase tracking-wider">
-                Lux Copy
+                {lang === 'ru' ? 'Супер Клон' : 'Super Klon'}
               </span>
             )}
           </div>
@@ -158,7 +158,7 @@ export default function ProductCard({
                       </span>
                     ) : (
                       <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/10 text-white text-[10px] font-semibold uppercase tracking-wider border border-white/10">
-                        Lux Copy
+                        {lang === 'ru' ? 'Супер Клон' : 'Super Klon'}
                       </span>
                     )}
                   </div>

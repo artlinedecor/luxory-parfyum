@@ -302,7 +302,7 @@ export default function InventoryPage() {
                   <td className="px-6 py-3 text-sm text-foreground max-w-[200px] truncate">{product.title}</td>
                   <td className="px-6 py-3">
                     <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-gold/10 text-gold uppercase">
-                      {product.product_type === "original" ? "Original" : "Lux Copy"}
+                      {product.product_type === "original" ? "Original" : "Super Klon"}
                     </span>
                   </td>
                   <td className="px-6 py-3 text-sm font-semibold text-gradient-gold">${product.price_usd}</td>
@@ -389,7 +389,7 @@ export default function InventoryPage() {
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground uppercase tracking-wider">Turi</label>
                   <select value={type} onChange={(e) => setType(e.target.value as any)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50 appearance-none">
-                    <option value="lux_copy">Lux Copy</option>
+                    <option value="lux_copy">Super Klon</option>
                     <option value="original">Original</option>
                   </select>
                 </div>

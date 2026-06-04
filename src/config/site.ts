@@ -7,7 +7,7 @@
 export const siteConfig = {
   // ── Brend ────────────────────────────────────────
   siteName: "Lux Atir",
-  siteDescription: "Premium parfyumeriya — Original va Lux kopiya atirlar",
+  siteDescription: "Premium parfyumeriya — Original va Super Klon atirlar",
   siteUrl: "https://parfumelux.uz",
   logoInitial: "L",        // Logo ichidagi harf
   // logoUrl: "/logo.png",  // Kelajakda rasm logo qo'shish mumkin
@@ -29,13 +29,14 @@ export const siteConfig = {
   // ── SEO ──────────────────────────────────────────
   seoTitle: "Lux Atir — Premium Parfyumeriya",
   seoDescription:
-    "Original va Lux kopiya atirlar. Toshkentda eng sifatli parfyumeriya do'koni. Yetkazib berish bor.",
+    "Original va Super Klon atirlar. Toshkentda eng sifatli parfyumeriya do'koni. Yetkazib berish bor.",
   seoKeywords: [
     "atir",
     "parfyumeriya",
     "Toshkent",
     "original atir",
-    "lux kopiya",
+    "super klon",
+    "super clone",
     "parfum",
   ],
 } as const;
