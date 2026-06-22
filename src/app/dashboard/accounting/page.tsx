@@ -122,12 +122,12 @@ export default function AccountingPage() {
       }
     });
 
-    const realizedProfit = totalSoldRevenue - totalSoldCOGS;
-
     // ── KASSA (Transactions) ─────────────────────
     const kassaIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
     const kassaExpense = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
     const kassaBalance = kassaIncome - kassaExpense;
+
+    const realizedProfit = totalSoldRevenue - totalSoldCOGS - kassaExpense;
 
     // ── UMUMIY BALANS ────────────────────────────
     // Ombordagi mol qiymati + Kassa qoldig'i
