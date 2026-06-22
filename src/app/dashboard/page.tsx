@@ -68,7 +68,7 @@ export default function DashboardPage() {
     const pendingOrdersCount = orders.filter(o => o.status === "pending" || o.status === "accepted").length;
     const deliveredOrders = orders.filter(o => o.status === "delivered");
 
-    // ── SOTUVLAR ──────────────────────────────
+    // ── SOTUVLAR (faqat yetkazilgan buyurtmalar) ──
     let totalSoldRevenue = 0;
     let totalSoldCOGS = 0;
 
@@ -81,17 +81,18 @@ export default function DashboardPage() {
       }
     });
 
-    const realizedProfit = totalSoldRevenue - totalSoldCOGS;
+    // ── RASXODLAR (kassadan chiqimlar: target, yetkazish, arenda...) ──
+    const totalExpenses = transactions
+      .filter(t => t.type === "expense")
+      .reduce((s, t) => s + Number(t.amount), 0);
+
+    // ── SOF FOYDA = Savdo - Tan narx - Barcha rasxodlar ──
+    const netProfit = totalSoldRevenue - totalSoldCOGS - totalExpenses;
 
     // ── KASSA ─────────────────────────────────
     const kassaIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
-    const kassaExpense = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
+    const kassaExpense = totalExpenses;
     const kassaBalance = kassaIncome - kassaExpense;
-
-    // ── UMUMIY MOLIYA VA BALANS ────────────────
-    const historicalInventoryCost = totalCostInvested + totalSoldCOGS;
-    const realCashBalance = kassaIncome - kassaExpense;
-    const totalBusinessAssets = realCashBalance + totalCostInvested;
 
     // ── SO'NGGI BUYURTMALAR ───────────────────
     const recentOrders = orders.slice(0, 5).map(o => {
@@ -120,13 +121,11 @@ export default function DashboardPage() {
       productsCount: products.length,
       totalSoldRevenue,
       totalSoldCOGS,
-      realizedProfit,
+      totalExpenses,
+      netProfit,
       kassaIncome,
       kassaExpense,
       kassaBalance,
-      realCashBalance,
-      totalBusinessAssets,
-      historicalInventoryCost,
       recentOrders,
     };
   }, [products, orders, transactions]);
@@ -143,7 +142,7 @@ export default function DashboardPage() {
           <span className="text-gradient-gold">Analitika</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Biznesingizning umumiy ko&apos;rsatkichlari — ombor va sotuvlar
+          Biznesingizning umumiy ko&apos;rsatkichlari — ombor, sotuvlar va moliya
         </p>
       </div>
 
@@ -156,120 +155,150 @@ export default function DashboardPage() {
       ) : (
         <>
           {/* ═══════════════════════════════════════════════════════ */}
-          {/* ROW 1: OMBOR + SOTUVLAR + UMUMIY                      */}
+          {/* ROW 1: ASOSIY KO'RSATKICHLAR                          */}
           {/* ═══════════════════════════════════════════════════════ */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {/* Jami Savdo */}
+            <div className="glass-card rounded-xl p-4 text-center space-y-1">
+              <p className="text-2xl font-bold text-blue-400">${fmt(stats.totalSoldRevenue)}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Jami Savdo</p>
+              <p className="text-[10px] text-muted-foreground">yetkazilganlardan</p>
+            </div>
+
+            {/* Jami Rasxod */}
+            <div className="glass-card rounded-xl p-4 text-center space-y-1">
+              <p className="text-2xl font-bold text-red-400">${fmt(stats.totalExpenses)}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Jami Rasxod</p>
+              <p className="text-[10px] text-muted-foreground">kassadan chiqimlar</p>
+            </div>
+
+            {/* Sof Foyda */}
+            <div className="glass-card rounded-xl p-4 text-center space-y-1 border border-gold/20">
+              <p className={`text-2xl font-bold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.netProfit)}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Sof Foyda</p>
+              <p className="text-[10px] text-muted-foreground">tan narx + rasxod ayirilgan</p>
+            </div>
+
             {/* Ombordagi Mol */}
             <div className="glass-card rounded-xl p-4 text-center space-y-1">
               <p className="text-2xl font-bold text-foreground">{stats.totalStock}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Qoldiq (ta)</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Qoldiq (ta)</p>
               <p className="text-[10px] text-red-400 font-medium">${fmt(stats.totalCostInvested)} tikilgan</p>
-            </div>
-
-            {/* Mahsulotlar */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1">
-              <p className="text-2xl font-bold text-foreground">{stats.productsCount}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Mahsulotlar</p>
             </div>
 
             {/* Buyurtmalar */}
             <div className="glass-card rounded-xl p-4 text-center space-y-1">
               <p className="text-2xl font-bold text-foreground">{stats.totalOrdersCount}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Buyurtmalar</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Buyurtmalar</p>
               <p className="text-[10px] text-yellow-400 font-medium">{stats.pendingOrdersCount} kutilmoqda</p>
             </div>
-
-            {/* Sof Foyda (sotilganlardan) */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1">
-              <p className={`text-2xl font-bold ${stats.realizedProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.realizedProfit)}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sof Foyda</p>
-              <p className="text-[10px] text-muted-foreground">sotilganlardan</p>
-            </div>
-
-            {/* Kutilayotgan Sof Foyda */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1">
-              <p className={`text-2xl font-bold ${stats.expectedProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.expectedProfit)}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Kutilayotgan Foyda</p>
-              <p className="text-[10px] text-muted-foreground">agar hammasi sotilsa</p>
-            </div>
           </div>
 
           {/* ═══════════════════════════════════════════════════════ */}
-          {/* ROW 3: BIZNES BALANSI (ASSETS & LIABILITIES)          */}
+          {/* ROW 2: SOF FOYDA TARKIBI (Breakdown)                  */}
           {/* ═══════════════════════════════════════════════════════ */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Aktivlar */}
+            {/* Foyda Tarkibi */}
             <div className="glass-card rounded-2xl p-6 space-y-4 bg-secondary/5 border border-secondary">
               <div className="flex items-center justify-between border-b border-border/50 pb-3">
-                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Umumiy Aktivlar (Mol)</h3>
-                <span className="text-xl font-bold text-gradient-gold">${fmt(stats.totalCostInvested)}</span>
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">💰 Sof Foyda Tarkibi</h3>
+                <span className={`text-xl font-bold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.netProfit)}</span>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Kassa (Naqd pul qoldig&apos;i)</span>
-                  <span className={`font-semibold ${stats.realCashBalance >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.realCashBalance)}</span>
+                  <span className="text-muted-foreground">Jami Savdo (Tushum)</span>
+                  <span className="text-blue-400 font-semibold">+${fmt(stats.totalSoldRevenue)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Ombordagi Tovar (Tikilgan Pul)</span>
-                  <span className="text-blue-400 font-semibold">${fmt(stats.totalCostInvested)}</span>
+                  <span className="text-muted-foreground">Tan Narx (COGS)</span>
+                  <span className="text-orange-400 font-semibold">-${fmt(stats.totalSoldCOGS)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Rasxodlar (Target, yetkazish...)</span>
+                  <span className="text-red-400 font-semibold">-${fmt(stats.totalExpenses)}</span>
+                </div>
+                <div className="border-t border-border/50 pt-2 flex items-center justify-between text-sm font-bold">
+                  <span className="text-foreground">= Sof Foyda</span>
+                  <span className={stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}>${fmt(stats.netProfit)}</span>
                 </div>
               </div>
-              <div className="pt-2">
-                <p className="text-[10px] text-muted-foreground leading-relaxed">
-                  * Kassa qoldig&apos;i Kassa jurnalidagi jami kirim va chiqimlar asosida hisoblanadi.
-                </p>
-              </div>
+              <p className="text-[10px] text-muted-foreground leading-relaxed pt-1">
+                * Sof Foyda = Savdo summasi − Tovarlarning tan narxi − Barcha rasxodlar (target, yetkazish, arenda va h.k.)
+              </p>
             </div>
 
-            {/* Operatsion Pul Oqimi */}
+            {/* Kassa Holati */}
             <div className="glass-card rounded-2xl p-6 space-y-4 bg-secondary/5 border border-secondary">
               <div className="flex items-center justify-between border-b border-border/50 pb-3">
-                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Moliya (Kassa)</h3>
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">🏦 Kassa Qoldig&apos;i</h3>
+                <span className={`text-xl font-bold ${stats.kassaBalance >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>${fmt(stats.kassaBalance)}</span>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Jami Kirim (Sarmoya + Savdo)</span>
-                  <span className="text-green-400 font-semibold">${fmt(stats.kassaIncome)}</span>
+                  <span className="text-muted-foreground">Jami Kirim (Savdo tushumi)</span>
+                  <span className="text-green-400 font-semibold">+${fmt(stats.kassaIncome)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Boshqa Xarajatlar (Chiqim)</span>
-                  <span className="text-red-400 font-semibold">${fmt(stats.kassaExpense)}</span>
+                  <span className="text-muted-foreground">Jami Chiqim (Rasxodlar)</span>
+                  <span className="text-red-400 font-semibold">-${fmt(stats.kassaExpense)}</span>
                 </div>
+                <div className="border-t border-border/50 pt-2 flex items-center justify-between text-sm font-bold">
+                  <span className="text-foreground">= Kassa Qoldig&apos;i</span>
+                  <span className={stats.kassaBalance >= 0 ? 'text-green-400' : 'text-red-400'}>${fmt(stats.kassaBalance)}</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-sm pt-1">
+                <span className="text-muted-foreground">Ombordagi Tovar (Tikilgan)</span>
+                <span className="text-blue-400 font-semibold">${fmt(stats.totalCostInvested)}</span>
               </div>
             </div>
           </div>
 
           {/* ═══════════════════════════════════════════════════════ */}
-          {/* ROW 2: MOLIYAVIY OQIM GRAFIK (Visual Bar)             */}
+          {/* ROW 3: MOLIYAVIY OQIM GRAFIK (Visual Bar)             */}
           {/* ═══════════════════════════════════════════════════════ */}
           <div className="glass-card rounded-2xl p-6 space-y-4">
             <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Sotuvlar Oqimi</h3>
             <div className="space-y-3">
 
-              {/* Ombordagi Mol (Tikilgan Pul) */}
+              {/* Jami Savdo */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Ombordagi Mol (Tikilgan Pul)</span>
-                  <span className="text-blue-400 font-semibold">${fmt(stats.totalCostInvested)}</span>
+                  <span className="text-muted-foreground">Jami Savdo (Tushum)</span>
+                  <span className="text-blue-400 font-semibold">${fmt(stats.totalSoldRevenue)}</span>
                 </div>
                 <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-1000"
-                    style={{ width: `${stats.totalCostInvested > 0 ? Math.min(100, (stats.totalCostInvested / Math.max(stats.expectedRevenue, stats.totalCostInvested, 1)) * 100) : 0}%` }}
+                    style={{ width: `${stats.totalSoldRevenue > 0 ? Math.min(100, (stats.totalSoldRevenue / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
                   />
                 </div>
               </div>
 
-              {/* Kutilayotgan Daromad */}
+              {/* Tan Narx */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Kutilayotgan Daromad (Agar hammasi sotilsa)</span>
-                  <span className="text-gold font-semibold">${fmt(stats.expectedRevenue)}</span>
+                  <span className="text-muted-foreground">Tan Narx (Tovar xaridi)</span>
+                  <span className="text-orange-400 font-semibold">${fmt(stats.totalSoldCOGS)}</span>
                 </div>
                 <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-1000"
-                    style={{ width: `${stats.expectedRevenue > 0 ? Math.min(100, (stats.expectedRevenue / Math.max(stats.expectedRevenue, stats.totalCostInvested, 1)) * 100) : 0}%` }}
+                    className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-1000"
+                    style={{ width: `${stats.totalSoldCOGS > 0 ? Math.min(100, (stats.totalSoldCOGS / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Rasxodlar */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Rasxodlar (Target, yetkazish...)</span>
+                  <span className="text-red-400 font-semibold">${fmt(stats.totalExpenses)}</span>
+                </div>
+                <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full transition-all duration-1000"
+                    style={{ width: `${stats.totalExpenses > 0 ? Math.min(100, (stats.totalExpenses / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
                   />
                 </div>
               </div>
@@ -277,13 +306,13 @@ export default function DashboardPage() {
               {/* Sof Foyda */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Sof Foyda (Sotilganlardan)</span>
-                  <span className={`font-semibold ${stats.realizedProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.realizedProfit)}</span>
+                  <span className="text-muted-foreground font-semibold">Sof Foyda</span>
+                  <span className={`font-semibold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.netProfit)}</span>
                 </div>
                 <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-1000 ${stats.realizedProfit >= 0 ? 'bg-gradient-to-r from-green-600 to-emerald-400' : 'bg-gradient-to-r from-red-600 to-red-400'}`}
-                    style={{ width: `${Math.abs(stats.realizedProfit) > 0 ? Math.min(100, (Math.abs(stats.realizedProfit) / Math.max(stats.expectedRevenue, stats.totalCostInvested, 1)) * 100) : 0}%` }}
+                    className={`h-full rounded-full transition-all duration-1000 ${stats.netProfit >= 0 ? 'bg-gradient-to-r from-green-600 to-emerald-400' : 'bg-gradient-to-r from-red-600 to-red-400'}`}
+                    style={{ width: `${Math.abs(stats.netProfit) > 0 ? Math.min(100, (Math.abs(stats.netProfit) / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
                   />
                 </div>
               </div>
@@ -291,7 +320,28 @@ export default function DashboardPage() {
           </div>
 
           {/* ═══════════════════════════════════════════════════════ */}
-          {/* ROW 3: SO'NGGI BUYURTMALAR                            */}
+          {/* ROW 4: KUTILAYOTGAN FOYDA (Agar hammasi sotilsa)      */}
+          {/* ═══════════════════════════════════════════════════════ */}
+          <div className="glass-card rounded-2xl p-6 space-y-3 bg-secondary/5 border border-secondary">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">📊 Kutilayotgan Ko&apos;rsatkichlar (Agar ombordagi barcha mol sotilsa)</h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <p className="text-lg font-bold text-gold">${fmt(stats.expectedRevenue)}</p>
+                <p className="text-[10px] text-muted-foreground uppercase">Kutilayotgan Daromad</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg font-bold text-orange-400">${fmt(stats.totalCostInvested)}</p>
+                <p className="text-[10px] text-muted-foreground uppercase">Ombor Tan Narxi</p>
+              </div>
+              <div className="text-center">
+                <p className={`text-lg font-bold ${stats.expectedProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.expectedProfit)}</p>
+                <p className="text-[10px] text-muted-foreground uppercase">Kutilayotgan Foyda</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ═══════════════════════════════════════════════════════ */}
+          {/* ROW 5: SO'NGGI BUYURTMALAR                            */}
           {/* ═══════════════════════════════════════════════════════ */}
           <div className="glass-card rounded-2xl overflow-hidden">
             <div className="px-6 py-4 border-b border-border bg-secondary/10">
