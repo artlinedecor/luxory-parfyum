@@ -11,7 +11,7 @@ interface ProductGridProps {
 }
 
 export default function ProductGrid({ products }: ProductGridProps) {
-  const [activeTab, setActiveTab] = useState<"all" | "lux" | "original">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "lux" | "original">("lux");
   const [genderFilter, setGenderFilter] = useState<"all" | "male" | "female" | "unisex">("all");
   const [addedId, setAddedId] = useState<string | null>(null);
   const { addItem } = useCart();
@@ -113,7 +113,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
           <div
             key={product.id}
             className="animate-fade-in relative flex"
-            style={{ animationDelay: `${index * 60}ms` }}
           >
             <ProductCard
               product={product}

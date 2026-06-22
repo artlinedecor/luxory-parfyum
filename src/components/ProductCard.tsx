@@ -18,6 +18,7 @@ export default function ProductCard({
   onOrder,
 }: ProductCardProps) {
   const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isOriginal = product.product_type === "original";
@@ -40,13 +41,19 @@ export default function ProductCard({
       >
         {/* Product Image */}
         <div className="relative aspect-[3/4] overflow-hidden bg-secondary flex-shrink-0">
+          {/* Shimmer skeleton while image loads */}
+          {!imageLoaded && (
+            <div className="absolute inset-0 z-[1] shimmer bg-secondary" />
+          )}
           <Image
             src={imageError ? "/products/default.png" : (product.image_url || "/products/default.png")}
             alt={displayTitle}
             fill
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            loading="eager"
+            className={`object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             onError={() => setImageError(true)}
+            onLoad={() => setImageLoaded(true)}
           />
 
           {/* Overlay gradient */}

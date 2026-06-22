@@ -177,13 +177,18 @@ export default function OrdersPage() {
     const p = products.find(prod => prod.id === pId);
     if (!p) return;
     
-    // Check if already added
-    if (manualSelectedItems.some(item => item.product_id === pId)) return;
-
-    setManualSelectedItems(prev => [
-      ...prev,
-      { product_id: p.id, title: p.title, quantity: 1, price_at_purchase: p.price_usd || 0, product_type: "lux_copy" }
-    ]);
+    // If already added, increment quantity instead of ignoring
+    const existing = manualSelectedItems.find(item => item.product_id === pId);
+    if (existing) {
+      setManualSelectedItems(prev => prev.map(i => 
+        i.product_id === pId ? { ...i, quantity: i.quantity + 1 } : i
+      ));
+    } else {
+      setManualSelectedItems(prev => [
+        ...prev,
+        { product_id: p.id, title: p.title, quantity: 1, price_at_purchase: p.price_usd || 0, product_type: p.product_type || "lux_copy" }
+      ]);
+    }
     e.target.value = ""; // reset dropdown
   };
 
