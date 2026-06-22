@@ -26,6 +26,7 @@ export default function AccountingPage() {
     revenue: "Доход",
     cogs: "Себестоимость",
     netProfit: "Чистая Прибыль",
+    savdoQoldiq: "Остаток Продаж",
     tableSection: "Таблица Товаров (Подробно)",
     name: "Название",
     sellPrice: "Цена ($)",
@@ -49,6 +50,7 @@ export default function AccountingPage() {
     revenue: "Tushgan Pul (Daromad)",
     cogs: "Tan Narxi (Xarajat)",
     netProfit: "Sof Foyda",
+    savdoQoldiq: "Savdo Qoldig'i",
     tableSection: "Tovarlar Jadvali (Batafsil)",
     name: "Nomi",
     sellPrice: "Sotish Narxi ($)",
@@ -127,7 +129,13 @@ export default function AccountingPage() {
     const kassaExpense = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
     const kassaBalance = kassaIncome - kassaExpense;
 
-    const realizedProfit = totalSoldRevenue - totalSoldCOGS - kassaExpense;
+    const capitalExpense = transactions
+      .filter(t => t.type === "expense" && t.description && /tavar|tovar|mahsulot|xarid|oldik|yulkira|cargo|turkiya|prixod/i.test(t.description))
+      .reduce((s, t) => s + Number(t.amount), 0);
+    const operatingExpense = kassaExpense - capitalExpense;
+
+    const realizedProfit = totalSoldRevenue - totalSoldCOGS - operatingExpense;
+    const savdoQoldiq = totalSoldRevenue - kassaExpense;
 
     // ── UMUMIY BALANS ────────────────────────────
     // Ombordagi mol qiymati + Kassa qoldig'i
@@ -142,6 +150,7 @@ export default function AccountingPage() {
       totalSoldRevenue,
       totalSoldCOGS,
       realizedProfit,
+      savdoQoldiq,
       kassaIncome,
       kassaExpense,
       kassaBalance,
@@ -203,7 +212,7 @@ export default function AccountingPage() {
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-green-400"><path strokeLinecap="round" strokeLinejoin="round" d="M16 3h5v5M8 3H3v5M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3m12 6 6-6" /></svg>
               {L.salesSection}
             </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-purple-500">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.soldItems}</p>
                 <p className="text-2xl font-bold text-foreground">{stats.totalSold.toLocaleString()} <span className="text-sm text-muted-foreground font-normal">{L.ta}</span></p>
@@ -215,6 +224,10 @@ export default function AccountingPage() {
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-red-500">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.cogs}</p>
                 <p className="text-2xl font-bold text-red-400">${fmt(stats.totalSoldCOGS)}</p>
+              </div>
+              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-blue-500">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.savdoQoldiq}</p>
+                <p className={`text-2xl font-bold ${stats.savdoQoldiq >= 0 ? 'text-blue-400' : 'text-red-400'}`}>${fmt(stats.savdoQoldiq)}</p>
               </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-gold/60">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.netProfit}</p>
