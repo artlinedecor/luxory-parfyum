@@ -97,13 +97,13 @@ export default function DashboardPage() {
     // Bu yerda wholesale tovar xaridlari (Tavar oldik) ayirilmaydi, chunki ular allaqachon Tan Narx (COGS) sifatida ayirilmoqda!
     const netProfit = totalSoldRevenue - totalSoldCOGS - operatingExpenses;
 
-    // Savdoning qoldiq puli = Jami Savdo - Barcha Chiqimlar (kassadagi tovar xaridi ham kiradi)
-    const savdoQoldiq = totalSoldRevenue - totalExpenses;
-
     // ── KASSA ─────────────────────────────────
     const kassaIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
     const kassaExpense = totalExpenses;
     const kassaBalance = kassaIncome - kassaExpense;
+
+    // Savdoning qoldiq puli = Barcha Kirim - Barcha Chiqim
+    const savdoQoldiq = kassaIncome - totalExpenses;
 
     // ── SO'NGGI BUYURTMALAR ───────────────────
     const recentOrders = orders.slice(0, 5).map(o => {
@@ -190,7 +190,7 @@ export default function DashboardPage() {
             <div className="glass-card rounded-xl p-4 text-center space-y-1">
               <p className={`text-2xl font-bold ${stats.savdoQoldiq >= 0 ? 'text-blue-400' : 'text-red-400'}`}>${fmt(stats.savdoQoldiq)}</p>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Savdo Qoldig&apos;i</p>
-              <p className="text-[10px] text-muted-foreground">savdo − barcha chiqim</p>
+              <p className="text-[10px] text-muted-foreground">barcha kirim − chiqim</p>
             </div>
 
             {/* Sof Foyda */}
@@ -268,7 +268,7 @@ export default function DashboardPage() {
                   <span className={stats.kassaBalance >= 0 ? 'text-green-400' : 'text-red-400'}>${fmt(stats.kassaBalance)}</span>
                 </div>
                 <div className="border-t border-border/20 pt-2 flex items-center justify-between text-sm font-bold text-muted-foreground">
-                  <span>Savdo Qoldiq Puli (Savdo - Barcha Chiqim)</span>
+                  <span>Savdo Qoldiq Puli (Kirim - Chiqim)</span>
                   <span className={stats.savdoQoldiq >= 0 ? 'text-blue-400' : 'text-red-400'}>${fmt(stats.savdoQoldiq)}</span>
                 </div>
               </div>

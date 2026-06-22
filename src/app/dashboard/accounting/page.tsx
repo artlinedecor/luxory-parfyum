@@ -135,7 +135,7 @@ export default function AccountingPage() {
     const operatingExpense = kassaExpense - capitalExpense;
 
     const realizedProfit = totalSoldRevenue - totalSoldCOGS - operatingExpense;
-    const savdoQoldiq = totalSoldRevenue - kassaExpense;
+    const savdoQoldiq = kassaIncome - kassaExpense;
 
     // ── UMUMIY BALANS ────────────────────────────
     // Ombordagi mol qiymati + Kassa qoldig'i
