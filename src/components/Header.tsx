@@ -29,7 +29,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-8 h-8 rounded-lg overflow-hidden bg-gradient-gold flex items-center justify-center shadow-lg shadow-gold/20 group-hover:shadow-gold/40 transition-shadow duration-300 relative">
               {logoUrl ? (
-                <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                <img src={logoUrl} alt={`${shopName} — Toshkentda original atirlar do'koni`} className="w-full h-full object-cover" />
               ) : (
                 <span className="text-black font-bold text-sm">{siteConfig.logoInitial}</span>
               )}

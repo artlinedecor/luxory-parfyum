@@ -27,17 +27,26 @@ export const siteConfig = {
   depositAmount: 50, // Original atirlar uchun zaklad summasi ($)
 
   // ── SEO ──────────────────────────────────────────
-  seoTitle: "Lux Atir — Premium Parfyumeriya",
+  seoTitle: "Lux Atir — Toshkentda Original Atirlar va Super Klon Parfyumeriya Do'koni",
   seoDescription:
-    "Original va Super Klon atirlar. Toshkentda eng sifatli parfyumeriya do'koni. Yetkazib berish bor.",
+    "Premium original va eng sifatli super klon atirlarni hamyonbop narxlarda sotib oling. Toshkent va O'zbekiston bo'ylab tez yetkazib berish. Dior, Chanel, Tom Ford va boshqa brendlar.",
   seoKeywords: [
     "atir",
+    "atirlar",
     "parfyumeriya",
+    "parfyum",
     "Toshkent",
     "original atir",
+    "original atirlar",
     "super klon",
     "super clone",
-    "parfum",
+    "atir do'koni",
+    "duxi toshkent",
+    "духи ташкент",
+    "купить духи",
+    "парфюмерия ташкент",
+    "оригинальные духи",
+    "atir narxlari",
   ],
 } as const;
 

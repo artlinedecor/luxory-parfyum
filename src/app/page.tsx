@@ -39,8 +39,43 @@ export default function Home() {
     fetchProducts();
   }, []);
 
+  const localBusinessJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Lux Atir",
+    "image": "https://parfumelux.uz/hero.png",
+    "@id": "https://parfumelux.uz/#store",
+    "url": "https://parfumelux.uz",
+    "telephone": "+998 99 262 01 01",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Toshkent, O'zbekiston",
+      "addressLocality": "Toshkent",
+      "addressCountry": "UZ"
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "opens": "00:00",
+      "closes": "23:59"
+    }
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+      />
       <Header />
       <main className="flex-1">
         {/* Hero Section */}
