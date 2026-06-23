@@ -18,7 +18,7 @@ export default function HeroSection() {
       <div className="absolute inset-0">
         <Image
           src="/hero.png"
-          alt="Luxury perfume"
+          alt="Lux Atir — Toshkentda original atirlar va super klon parfyumeriya do'koni"
           fill
           className="object-cover"
           priority

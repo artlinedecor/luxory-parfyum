@@ -39,7 +39,7 @@ export default function ProductCard({
         )}
         <Image
           src={imageError ? "/products/default.png" : (product.image_url || "/products/default.png")}
-          alt={displayTitle}
+          alt={`${displayTitle} — Original va Super Klon atir do'koni`}
           fill
           loading="eager"
           className={`object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
