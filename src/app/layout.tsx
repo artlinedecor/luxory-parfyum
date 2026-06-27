@@ -32,6 +32,11 @@ export const metadata: Metadata = {
     google: "3CAgz1XkqiojYhPFeqPz52IlpY03fJUlMzchSDJ8XcY",
     yandex: "a1ae49387e10bf4b",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Lux Atir",
+  },
 };
 
 import { SettingsProvider } from "@/lib/settings-context";
