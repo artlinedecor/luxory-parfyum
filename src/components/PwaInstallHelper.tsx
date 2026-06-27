@@ -6,7 +6,6 @@ export default function PwaInstallHelper() {
   const [showHelper, setShowHelper] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<"android" | "ios">("android");
-  const [showIosGuide, setShowIosGuide] = useState(false);
 
   useEffect(() => {
     // Detect Standalone Mode (PWA is already installed)
@@ -48,11 +47,6 @@ export default function PwaInstallHelper() {
   }, []);
 
   const handleInstallClick = async () => {
-    if (activeTab === "ios") {
-      setShowIosGuide(true);
-      return;
-    }
-
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
@@ -61,7 +55,7 @@ export default function PwaInstallHelper() {
         setShowHelper(false);
       }
     } else {
-      alert("Ilovani o'rnatish uchun Chrome brauzer menyusidan (o'ng tepada 3 ta nuqta) 'Ilovani o'rnatish' (Добавить на гл. экран) bandini tanlang.");
+      alert("Ilovani o'rnatish uchun brauzeringiz menyusidan (3 ta nuqta) 'Ilovani o'rnatish' (Добавить на гл. экран) tanlang.");
     }
   };
 
@@ -110,69 +104,40 @@ export default function PwaInstallHelper() {
         </button>
       </div>
 
-      {/* Text description from image */}
-      <p className="text-xs text-muted-foreground leading-relaxed mb-6 px-1">
-        Lux Atir boshqaruv panelini telefoningizga yuklab oling va brauzersiz ishlating.
-      </p>
-
-      {/* Centered big button from image */}
-      <button
-        onClick={handleInstallClick}
-        className="w-full py-3 rounded-2xl bg-gradient-gold text-black font-bold uppercase tracking-wider text-xs hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-gold/25"
-      >
-        📲 O&apos;RNATISH (INSTAL)
-      </button>
-
-      {/* iOS Bouncing Arrow share guide overlay */}
-      {showIosGuide && (
-        <div 
-          className="fixed inset-0 z-[999] bg-black/85 backdrop-blur-sm flex flex-col justify-end items-center"
-          onClick={() => setShowIosGuide(false)}
-        >
-          <div 
-            className="w-full max-w-sm bg-[#0a0a0a] border-t border-gold/30 rounded-t-3xl p-6 space-y-4 animate-slide-up relative pb-8 text-left"
-            onClick={e => e.stopPropagation()}
+      {activeTab === "android" ? (
+        <div className="space-y-4">
+          <p className="text-xs text-muted-foreground leading-relaxed px-1">
+            Lux Atir boshqaruv panelini telefoningizga yuklab oling va brauzersiz tezkor ishlating.
+          </p>
+          <button
+            onClick={handleInstallClick}
+            className="w-full py-3 rounded-2xl bg-gradient-gold text-black font-bold uppercase tracking-wider text-xs hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-gold/25"
           >
-            <button 
-              onClick={() => setShowIosGuide(false)} 
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground p-1 transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
+            📲 O&apos;RNATISH (INSTAL)
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-4 text-left">
+          <div className="bg-[#141414] p-4 rounded-2xl border border-border/20 space-y-3">
+            <h4 className="text-xs font-bold text-gold uppercase tracking-wider">iPhone-ga O&apos;rnatish:</h4>
             
-            <div className="text-center space-y-2">
-              <span className="text-3xl">🍎</span>
-              <h4 className="text-sm font-bold text-gradient-gold uppercase tracking-wider">iPhone-ga O&apos;rnatish</h4>
-              <p className="text-[11px] text-muted-foreground text-center">
-                Apple xavfsizlik qoidalari tufayli ilovani Safari orqali o&apos;rnatishingiz lozim. Quyidagi 2 ta oddiy qadamni bajaring:
-              </p>
-            </div>
-
-            <div className="space-y-3 bg-secondary/30 p-4 rounded-2xl border border-border/50">
-              <div className="flex items-center gap-3 text-xs text-foreground font-semibold">
-                <span className="w-6 h-6 rounded-full bg-gold/10 border border-gold/30 text-gold flex items-center justify-center font-bold text-[11px]">1</span>
-                <span>Safari ostidagi <strong className="text-gold">📤 Ulashish (Share)</strong> tugmasini bosing.</span>
-              </div>
-              <div className="flex items-center gap-3 text-xs text-foreground font-semibold">
-                <span className="w-6 h-6 rounded-full bg-gold/10 border border-gold/30 text-gold flex items-center justify-center font-bold text-[11px]">2</span>
-                <span>Menyudan <strong className="text-gold">📲 Ekran kabi qo&apos;shish (Add to Home)</strong> bandini tanlang.</span>
-              </div>
-            </div>
-
-            {/* Pulsing Arrow pointing down to Safari share button */}
-            <div className="flex flex-col items-center pt-2 pb-2">
-              <span className="text-[10px] text-gold uppercase tracking-widest font-extrabold animate-pulse mb-1">Tugma telefoningiz ekrani pastida joylashgan</span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor" className="w-6 h-6 text-gold animate-bounce">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-              </svg>
+            <div className="flex gap-2.5 items-start text-xs text-muted-foreground">
+              <span className="bg-gold/10 text-gold w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">1</span>
+              <span>
+                Safari brauzerida pastdagi <strong className="text-foreground">[↑] (Share / Ulashish)</strong> tugmasini bosing.
+              </span>
             </div>
             
-            <button 
-              onClick={() => setShowIosGuide(false)}
-              className="w-full py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs uppercase tracking-wider transition-all text-center"
-            >
-              Tushundim
-            </button>
+            <div className="flex gap-2.5 items-start text-xs text-muted-foreground">
+              <span className="bg-gold/10 text-gold w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">2</span>
+              <span>
+                Menyudan pastga tushib <strong className="text-foreground">&quot;Ekran kabi qo&apos;shish&quot; (Add to Home)</strong> tanlang.
+              </span>
+            </div>
+
+            <div className="border-t border-border/10 pt-2 text-[10px] text-yellow-500/80 leading-normal">
+              ℹ️ Agar Telegram yoki Instagram ichidagi brauzerda bo&apos;lsangiz, avval o&apos;ng tepada <strong>&quot;Safari-da ochish&quot; (Open in Safari)</strong> qiling.
+            </div>
           </div>
         </div>
       )}
