@@ -104,6 +104,37 @@ export default function OrdersPage() {
           description: `Buyurtma #${orderId.slice(0, 8)} yetkazildi - Daromad`,
         });
       }
+      // 3.1. If transitioning AWAY from "delivered" AND was delivered before
+      else if (newStatus !== "delivered" && order.status === "delivered") {
+        // Restore stock in products table (increase back)
+        if (order.items && Array.isArray(order.items)) {
+          for (const item of order.items) {
+            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.product_id);
+            if (isUUID) {
+              const { data: prod } = await supabase
+                .from("products")
+                .select("stock")
+                .eq("id", item.product_id)
+                .single();
+              
+              if (prod) {
+                const currentStock = prod.stock !== undefined && prod.stock !== null ? prod.stock : 10;
+                const newStock = currentStock + item.quantity;
+                await supabase
+                  .from("products")
+                  .update({ stock: newStock })
+                  .eq("id", item.product_id);
+              }
+            }
+          }
+        }
+
+        // Delete associated income transaction from transactions table
+        await supabase
+          .from("transactions")
+          .delete()
+          .like("description", `%Buyurtma #${orderId.slice(0, 8)}%`);
+      }
     }
 
     // 4. Update the order status in Supabase database
@@ -117,7 +148,14 @@ export default function OrdersPage() {
     setOrders(prev => prev.filter(o => o.id !== orderId));
     
     const supabase = createClient();
+    // Delete the order
     await supabase.from("orders").delete().eq("id", orderId);
+    // Delete any associated transactions
+    const orderPrefix = orderId.slice(0, 8);
+    await supabase
+      .from("transactions")
+      .delete()
+      .like("description", `%Buyurtma #${orderPrefix}%`);
   };
 
   const handleManualSave = async () => {

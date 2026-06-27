@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
     // Ajratib olamiz: tovar xaridi/cargo (capital) va operatsion xarajatlar (operating)
     const capitalExpenses = transactions
-      .filter(t => t.type === "expense" && t.description && /tavar|tovar|mahsulot|xarid|oldik|yulkira|cargo|turkiya|prixod/i.test(t.description))
+      .filter(t => t.type === "expense" && t.description && /tavar|tovar|mahsulot|xarid|oldik|yulkira|cargo|kargo|turkiya|prixod/i.test(t.description))
       .reduce((s, t) => s + Number(t.amount), 0);
 
     const operatingExpenses = totalExpenses - capitalExpenses;
