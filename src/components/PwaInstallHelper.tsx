@@ -1,8 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useI18n } from "@/lib/i18n-context";
 
 export default function PwaInstallHelper() {
+  const { lang } = useI18n();
+  const isUz = lang === "uz";
+
   const [showHelper, setShowHelper] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<"android" | "ios">("android");
@@ -55,7 +59,10 @@ export default function PwaInstallHelper() {
         setShowHelper(false);
       }
     } else {
-      alert("Ilovani o'rnatish uchun brauzeringiz menyusidan (3 ta nuqta) 'Ilovani o'rnatish' (Добавить на гл. экран) tanlang.");
+      const msg = isUz 
+        ? "Ilovani o'rnatish uchun brauzeringiz menyusidan (3 ta nuqta) 'Ilovani o'rnatish' (Добавить на гл. экран) tanlang."
+        : "Для установки приложения выберите «Установить приложение» (Добавить на гл. экран) в меню вашего браузера (3 точки).";
+      alert(msg);
     }
   };
 
@@ -69,12 +76,12 @@ export default function PwaInstallHelper() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5 border-b border-border/40 pb-3">
         <h3 className="text-sm font-bold text-foreground tracking-wider flex items-center gap-2">
-          📲 MOBIL ILOVA O&apos;RNATISH
+          {isUz ? "📲 MOBIL ILOVA O'RNATISH" : "📲 УСТАНОВКА ПРИЛОЖЕНИЯ"}
         </h3>
         <button 
           onClick={() => setShowHelper(false)} 
           className="text-muted-foreground hover:text-foreground p-1 transition-colors"
-          title="Yopish"
+          title={isUz ? "Yopish" : "Закрыть"}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
@@ -107,36 +114,46 @@ export default function PwaInstallHelper() {
       {activeTab === "android" ? (
         <div className="space-y-4">
           <p className="text-xs text-muted-foreground leading-relaxed px-1">
-            Lux Atir boshqaruv panelini telefoningizga yuklab oling va brauzersiz tezkor ishlating.
+            {isUz 
+              ? "Lux Atir boshqaruv panelini telefoningizga yuklab oling va brauzersiz tezkor ishlating."
+              : "Скачайте панель управления Lux Atir на свой телефон для быстрой работы без браузера."}
           </p>
           <button
             onClick={handleInstallClick}
             className="w-full py-3 rounded-2xl bg-gradient-gold text-black font-bold uppercase tracking-wider text-xs hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-gold/25"
           >
-            📲 O&apos;RNATISH (INSTAL)
+            {isUz ? "📲 O'RNATISH (INSTAL)" : "📲 УСТАНОВИТЬ (INSTALL)"}
           </button>
         </div>
       ) : (
         <div className="space-y-4 text-left">
           <div className="bg-[#141414] p-4 rounded-2xl border border-border/20 space-y-3">
-            <h4 className="text-xs font-bold text-gold uppercase tracking-wider">iPhone-ga O&apos;rnatish:</h4>
+            <h4 className="text-xs font-bold text-gold uppercase tracking-wider">
+              {isUz ? "iPhone-ga O'rnatish:" : "Установка на iPhone:"}
+            </h4>
             
             <div className="flex gap-2.5 items-start text-xs text-muted-foreground">
               <span className="bg-gold/10 text-gold w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">1</span>
               <span>
-                Safari brauzerida pastdagi <strong className="text-foreground">[↑] (Share / Ulashish)</strong> tugmasini bosing.
+                {isUz 
+                  ? "Safari brauzerida pastdagi [↑] (Share / Ulashish) tugmasini bosing."
+                  : "В браузере Safari нажмите кнопку [↑] (Поделиться) внизу экрана."}
               </span>
             </div>
             
             <div className="flex gap-2.5 items-start text-xs text-muted-foreground">
               <span className="bg-gold/10 text-gold w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">2</span>
               <span>
-                Menyudan pastga tushib <strong className="text-foreground">&quot;Ekran kabi qo&apos;shish&quot; (Add to Home)</strong> tanlang.
+                {isUz 
+                  ? 'Menyudan pastga tushib "Ekran kabi qo\'shish" (Add to Home) tanlang.'
+                  : 'В меню выберите «На экран „Домой“» (Add to Home Screen).'}
               </span>
             </div>
 
             <div className="border-t border-border/10 pt-2 text-[10px] text-yellow-500/80 leading-normal">
-              ℹ️ Agar Telegram yoki Instagram ichidagi brauzerda bo&apos;lsangiz, avval o&apos;ng tepada <strong>&quot;Safari-da ochish&quot; (Open in Safari)</strong> qiling.
+              {isUz 
+                ? 'ℹ️ Agar Telegram yoki Instagram ichidagi brauzerda bo\'lsangiz, avval o\'ng tepada "Safari-da ochish" (Open in Safari) qiling.'
+                : 'ℹ️ Если вы находитесь внутри Telegram или Instagram, сначала нажмите кнопку меню в правом верхнем углу и выберите «Открыть в Safari».'}
             </div>
           </div>
         </div>
