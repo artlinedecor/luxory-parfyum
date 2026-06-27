@@ -69,8 +69,14 @@ export default function CashflowPage() {
     const totalExpenses = expenseTransactions.reduce((s, t) => s + Number(t.amount), 0);
     const kassaBalance = totalIncome - totalExpenses;
 
-    // Sof Foyda = Savdo - Tan narx - Rasxodlar
-    const netProfit = totalSalesRevenue - totalCOGS - totalExpenses;
+    // Ajratib olamiz: tovar xaridi/cargo (capital) va operatsion xarajatlar (operating)
+    const capitalExpenses = expenseTransactions
+      .filter(t => t.description && /tavar|tovar|mahsulot|xarid|oldik|yulkira|cargo|kargo|turkiya|prixod/i.test(t.description))
+      .reduce((s, t) => s + Number(t.amount), 0);
+    const operatingExpenses = totalExpenses - capitalExpenses;
+
+    // Sof Foyda = Savdo - Tan narx - Operatsion Rasxodlar
+    const netProfit = totalSalesRevenue - totalCOGS - operatingExpenses;
 
     return {
       totalSalesRevenue,
