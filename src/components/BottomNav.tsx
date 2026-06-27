@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useCart } from "@/lib/cart-context";
+
 const navItems = [
   {
     label: "Asosiy",
@@ -51,6 +53,7 @@ const navItems = [
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { totalItems } = useCart();
 
   // Don't show on dashboard routes
   if (pathname.startsWith("/dashboard")) return null;
@@ -83,6 +86,11 @@ export default function BottomNav() {
             >
               <div className={`relative ${isActive ? "animate-scale-in" : ""}`}>
                 {item.icon}
+                {item.label === "Savatcha" && totalItems > 0 && (
+                  <span className="absolute -top-1.5 -right-2 w-4.5 h-4.5 rounded-full bg-gradient-gold text-black text-[9px] font-extrabold flex items-center justify-center animate-scale-in shadow-md shadow-gold/20 border border-black/30">
+                    {totalItems}
+                  </span>
+                )}
                 {isActive && (
                   <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-gold" />
                 )}

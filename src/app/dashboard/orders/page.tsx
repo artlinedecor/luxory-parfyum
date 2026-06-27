@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { Order, Product } from "@/lib/types";
 import { createClient } from "@/utils/supabase/client";
@@ -23,7 +23,7 @@ export default function OrdersPage() {
   // Manual order form states
   const [manualName, setManualName] = useState("");
   const [manualPhone, setManualPhone] = useState("");
-  const [manualSelectedItems, setManualSelectedItems] = useState<{ product_id: string; title: string; quantity: number; price_at_purchase: number; product_type: string }[]>([]);
+  const [manualSelectedItems, setManualSelectedItems] = useState<{ product_id: string; title: string; quantity: number; price_at_purchase: number; product_type: "lux_copy" | "original" }[]>([]);
   const [manualStatus, setManualStatus] = useState("pending");
   const [manualSaving, setManualSaving] = useState(false);
 
@@ -230,6 +230,45 @@ export default function OrdersPage() {
     e.target.value = ""; // reset dropdown
   };
 
+  const flatItems = useMemo(() => {
+    return orders.flatMap((order) => {
+      const items = order.items || [];
+      if (items.length === 0) {
+        return [{
+          product_id: "none",
+          title: "Noma'lum mahsulot",
+          quantity: 1,
+          price_at_purchase: 0,
+          product_type: "lux_copy" as const,
+          orderId: order.id,
+          client_name: order.client_name,
+          client_phone: order.client_phone,
+          region: order.region,
+          status: order.status,
+          created_at: order.created_at,
+          receipt_url: (order as any).receipt_url,
+          order_type: order.order_type,
+          parentOrder: order,
+          uniqueKey: `${order.id}-empty`
+        }];
+      }
+      return items.map((item, index) => ({
+        ...item,
+        product_type: (item.product_type || "lux_copy") as "lux_copy" | "original",
+        orderId: order.id,
+        client_name: order.client_name,
+        client_phone: order.client_phone,
+        region: order.region,
+        status: order.status,
+        created_at: order.created_at,
+        receipt_url: (order as any).receipt_url,
+        order_type: order.order_type,
+        parentOrder: order,
+        uniqueKey: `${order.id}-${index}-${item.product_id}`
+      }));
+    });
+  }, [orders]);
+
   const removeManualProduct = (id: string) => {
     setManualSelectedItems(prev => prev.filter(i => i.product_id !== id));
   };
@@ -252,59 +291,140 @@ export default function OrdersPage() {
         </button>
       </div>
 
-      <div className="glass-card rounded-2xl overflow-hidden shadow-2xl shadow-gold/5">
+      {/* Mobile view: Stack of cards for each flat sold item */}
+      <div className="md:hidden space-y-4">
+        {isLoading && (
+          <div className="text-center py-12 text-muted-foreground text-sm animate-pulse bg-secondary/5 border border-border/50 rounded-2xl">Yuklanmoqda...</div>
+        )}
+        {!isLoading && flatItems.map((item) => {
+          const status = statusLabels[item.status] || statusLabels.pending;
+          const subtotal = item.price_at_purchase * item.quantity;
+          
+          return (
+            <div key={item.uniqueKey} className="glass-card rounded-2xl p-4 border border-gold/10 space-y-3 relative overflow-hidden bg-[#0d0d0d]/80 backdrop-blur-md">
+              {/* Card Header: Client Info & Date */}
+              <div className="flex justify-between items-start">
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-foreground">{item.client_name}</span>
+                  <a href={`tel:${item.client_phone}`} className="text-xs text-gold hover:underline mt-0.5">{item.client_phone}</a>
+                </div>
+                <span className="text-[10px] text-muted-foreground bg-secondary/40 px-2.5 py-1 rounded-lg border border-border/50">
+                  {isMounted ? new Date(item.created_at).toLocaleDateString("uz-UZ", { month: "short", day: "numeric" }) : "..."}
+                </span>
+              </div>
+
+              {/* Product Info */}
+              <div className="bg-secondary/40 p-3 rounded-xl border border-border/50 space-y-1.5">
+                <p className="text-xs font-semibold text-foreground leading-snug">{item.title}</p>
+                <div className="flex justify-between items-center text-[10px]">
+                  <span className="text-muted-foreground uppercase font-semibold">{item.product_type} • x{item.quantity}</span>
+                  <span className="text-gold font-medium">${item.price_at_purchase} / jami: <span className="font-bold">${subtotal}</span></span>
+                </div>
+              </div>
+
+              {/* Region and Receipt */}
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
+                <span>📍 {item.region}</span>
+                {item.receipt_url ? (
+                  <button 
+                    onClick={() => setLightboxUrl(item.receipt_url)} 
+                    className="inline-flex items-center gap-1 text-gold hover:underline font-bold"
+                  >
+                    🧾 Chekni ko&apos;rish
+                  </button>
+                ) : (
+                  <span className="text-muted-foreground/60">Chek yo&apos;q</span>
+                )}
+              </div>
+
+              {/* Status and Action bar */}
+              <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                <select
+                  value={item.status}
+                  onChange={(e) => handleStatusChange(item.orderId, e.target.value)}
+                  className={`text-[11px] font-bold px-3 py-1.5 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-gold/50 transition-colors ${status.color}`}
+                >
+                  <option value="pending">Kutilmoqda</option>
+                  <option value="accepted">Qabul qilindi</option>
+                  <option value="delivered">Yetkazildi</option>
+                  <option value="cancelled">Bekor qilindi</option>
+                </select>
+
+                <button
+                  onClick={() => handleDeleteOrder(item.orderId)}
+                  className="p-1.5 rounded-lg text-red-400 hover:bg-red-400/10 hover:text-red-300 transition-colors flex items-center gap-1 text-[11px] font-bold"
+                  title="O'chirish"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  O&apos;chirish
+                </button>
+              </div>
+            </div>
+          );
+        })}
+        {!isLoading && flatItems.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground text-xs uppercase tracking-widest bg-secondary/5 border border-border/50 rounded-2xl">Buyurtmalar topilmadi</div>
+        )}
+      </div>
+
+      {/* Desktop view: Table for widescreen */}
+      <div className="hidden md:block glass-card rounded-2xl overflow-hidden shadow-2xl shadow-gold/5">
         <div className="overflow-x-auto scrollbar-hide">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border bg-secondary/30">
                 <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Mijoz / Telefon</th>
-                <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Mahsulotlar</th>
+                <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Mahsulot</th>
+                <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Turi</th>
+                <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Soni</th>
+                <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Narxi</th>
+                <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Jami</th>
                 <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Manzil</th>
                 <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Chek</th>
-                <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Jami</th>
-                <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold text-right">Status</th>
+                <th className="px-6 py-5 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold text-right">Status / Amal</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
               {isLoading && (
-                <tr><td colSpan={6} className="px-6 py-12 text-center text-muted-foreground text-sm animate-pulse">Yuklanmoqda...</td></tr>
+                <tr><td colSpan={9} className="px-6 py-12 text-center text-muted-foreground text-sm animate-pulse">Yuklanmoqda...</td></tr>
               )}
-              {!isLoading && orders.map((order) => {
-                const total = calculateTotal(order);
-                const status = statusLabels[order.status] || statusLabels.pending;
-                const receiptUrl = (order as unknown as Record<string, unknown>).receipt_url as string | undefined;
+              {!isLoading && flatItems.map((item) => {
+                const status = statusLabels[item.status] || statusLabels.pending;
+                const subtotal = item.price_at_purchase * item.quantity;
 
                 return (
-                  <tr key={order.id} className="hover:bg-secondary/20 transition-colors duration-200">
+                  <tr key={item.uniqueKey} className="hover:bg-secondary/20 transition-colors duration-200">
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-foreground">{order.client_name}</span>
-                        <a href={`tel:${order.client_phone}`} className="text-xs text-gold hover:underline mt-1">{order.client_phone}</a>
+                        <span className="text-sm font-semibold text-foreground">{item.client_name}</span>
+                        <a href={`tel:${item.client_phone}`} className="text-xs text-gold hover:underline mt-1">{item.client_phone}</a>
                         <span className="text-[10px] text-muted-foreground mt-1">
-                          {isMounted ? new Date(order.created_at).toLocaleString("uz-UZ", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "..."}
+                          {isMounted ? new Date(item.created_at).toLocaleString("uz-UZ", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "..."}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="space-y-2">
-                        {(order.items || []).map((item, idx) => (
-                          <div key={idx} className="flex flex-col text-xs bg-secondary/50 p-2 rounded-lg border border-border/50">
-                            <span className="font-semibold text-foreground truncate max-w-[200px]" title={item.title}>{item.title}</span>
-                            <div className="flex items-center justify-between mt-1">
-                              <span className="text-[10px] text-muted-foreground uppercase">{item.product_type} • x{item.quantity}</span>
-                              <span className="text-gold font-medium">${item.price_at_purchase}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      <span className="text-sm font-semibold text-foreground truncate max-w-[200px]" title={item.title}>{item.title}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex text-xs text-muted-foreground bg-secondary/30 px-3 py-1.5 rounded-lg border border-border/50">{order.region}</span>
+                      <span className="text-xs text-muted-foreground uppercase font-medium">{item.product_type}</span>
                     </td>
                     <td className="px-6 py-4">
-                      {receiptUrl ? (
-                        <button onClick={() => setLightboxUrl(receiptUrl)} className="relative w-12 h-12 rounded-lg overflow-hidden border-2 border-gold/30 hover:border-gold transition-colors cursor-pointer group">
-                          <Image src={receiptUrl} alt="Chek" fill className="object-cover" sizes="48px" />
+                      <span className="text-sm font-bold text-foreground">x{item.quantity}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-semibold text-muted-foreground">${item.price_at_purchase}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-bold text-gradient-gold">${subtotal}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex text-xs text-muted-foreground bg-secondary/30 px-3 py-1.5 rounded-lg border border-border/50">{item.region}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {item.receipt_url ? (
+                        <button onClick={() => setLightboxUrl(item.receipt_url)} className="relative w-12 h-12 rounded-lg overflow-hidden border-2 border-gold/30 hover:border-gold transition-colors cursor-pointer group">
+                          <Image src={item.receipt_url} alt="Chek" fill className="object-cover" sizes="48px" />
                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white"><path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" /><path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41z" clipRule="evenodd" /></svg>
                           </div>
@@ -313,17 +433,11 @@ export default function OrdersPage() {
                         <span className="text-[10px] text-muted-foreground">—</span>
                       )}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-gradient-gold">${total}</span>
-                        <span className="text-[10px] text-muted-foreground mt-1 uppercase">{order.order_type === "deposit_50" ? "$50 Zaklad" : "To'liq"}</span>
-                      </div>
-                    </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <select
-                          value={order.status}
-                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                          value={item.status}
+                          onChange={(e) => handleStatusChange(item.orderId, e.target.value)}
                           className={`text-xs font-semibold px-3 py-1.5 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gold/50 transition-colors ${status.color}`}
                         >
                           <option value="pending">Kutilmoqda</option>
@@ -332,7 +446,7 @@ export default function OrdersPage() {
                           <option value="cancelled">Bekor qilindi</option>
                         </select>
                         <button
-                          onClick={() => handleDeleteOrder(order.id)}
+                          onClick={() => handleDeleteOrder(item.orderId)}
                           className="p-1.5 rounded-lg text-red-400 hover:bg-red-400/10 hover:text-red-300 transition-colors"
                           title="O'chirish"
                         >
@@ -343,13 +457,10 @@ export default function OrdersPage() {
                   </tr>
                 );
               })}
-              {!isLoading && orders.length === 0 && (
+              {!isLoading && flatItems.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-secondary/50 flex items-center justify-center mx-auto mb-4">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-8 h-8 text-muted-foreground"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>
-                    </div>
-                    <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Buyurtmalar topilmadi</p>
+                  <td colSpan={9} className="px-6 py-12 text-center text-muted-foreground text-sm uppercase tracking-wider">
+                    Buyurtmalar topilmadi
                   </td>
                 </tr>
               )}

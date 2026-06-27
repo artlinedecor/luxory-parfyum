@@ -71,12 +71,23 @@ export default function DashboardPage() {
     // ── SOTUVLAR (faqat yetkazilgan buyurtmalar) ──
     let totalSoldRevenue = 0;
     let totalSoldCOGS = 0;
+    let totalSoldItems = 0;
+    let totalPendingItems = 0;
 
     deliveredOrders.forEach(o => {
       if (o.items && Array.isArray(o.items)) {
         o.items.forEach(item => {
           totalSoldRevenue += item.price_at_purchase * item.quantity;
           totalSoldCOGS += (costPriceMap[item.product_id] || 0) * item.quantity;
+          totalSoldItems += item.quantity;
+        });
+      }
+    });
+
+    orders.filter(o => o.status === "pending" || o.status === "accepted").forEach(o => {
+      if (o.items && Array.isArray(o.items)) {
+        o.items.forEach(item => {
+          totalPendingItems += item.quantity;
         });
       }
     });
@@ -105,17 +116,18 @@ export default function DashboardPage() {
     // Savdoning qoldiq puli = Barcha Kirim - Barcha Chiqim
     const savdoQoldiq = kassaIncome - totalExpenses;
 
-    // ── SO'NGGI BUYURTMALAR ───────────────────
-    const recentOrders = orders.slice(0, 5).map(o => {
-      const firstProduct = o.items && o.items[0] ? o.items[0].title : "Parfyum";
-      const itemsCount = o.items ? o.items.length : 0;
-      const productText = itemsCount > 1 ? `${firstProduct} +${itemsCount - 1} ta` : firstProduct;
-      const totalAmount = o.items ? o.items.reduce((sum, item) => sum + (item.price_at_purchase * item.quantity), 0) : 0;
+    const recentOrders = orders.map(o => {
+      const items = o.items || [];
+      const totalAmount = items.reduce((sum, item) => sum + (item.price_at_purchase * item.quantity), 0);
 
       return {
         id: o.id,
         client: o.client_name,
-        product: productText,
+        items: items.map(item => ({
+          title: item.title || "Parfyum",
+          quantity: item.quantity,
+          price: item.price_at_purchase
+        })),
         amount: totalAmount,
         status: o.status,
         date: new Date(o.created_at).toLocaleDateString("uz-UZ", { month: "short", day: "numeric" }),
@@ -129,6 +141,8 @@ export default function DashboardPage() {
       expectedProfit,
       totalOrdersCount,
       pendingOrdersCount,
+      totalSoldItems,
+      totalPendingItems,
       productsCount: products.length,
       totalSoldRevenue,
       totalSoldCOGS,
@@ -207,11 +221,11 @@ export default function DashboardPage() {
               <p className="text-[10px] text-red-400 font-medium">${fmt(stats.totalCostInvested)} tikilgan</p>
             </div>
 
-            {/* Buyurtmalar */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1">
-              <p className="text-2xl font-bold text-foreground">{stats.totalOrdersCount}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Buyurtmalar</p>
-              <p className="text-[10px] text-yellow-400 font-medium">{stats.pendingOrdersCount} kutilmoqda</p>
+            {/* Sotilgan atirlar */}
+            <div className="glass-card rounded-xl p-4 text-center space-y-1 border border-gold/20">
+              <p className="text-2xl font-bold text-gradient-gold">{stats.totalSoldItems} ta</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Sotilgan Atirlar</p>
+              <p className="text-[10px] text-muted-foreground">{stats.totalOrdersCount} ta buyurtma ({stats.totalPendingItems} ta kutilmoqda)</p>
             </div>
           </div>
 
@@ -362,18 +376,133 @@ export default function DashboardPage() {
           </div>
 
           {/* ═══════════════════════════════════════════════════════ */}
+          {/* ROW 4.5: TOVARLAR JADVALI (Batafsil Hisob-kitob)         */}
+          {/* ═══════════════════════════════════════════════════════ */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-gold"><path strokeLinecap="round" strokeLinejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M10.875 12c-.621 0-1.125.504-1.125 1.125M12 12c.621 0 1.125.504 1.125 1.125m0 0v1.5c0 .621-.504 1.125-1.125 1.125m0-2.625c0-.621.504-1.125 1.125-1.125" /></svg>
+              Tovarlar hisob-kitobi (Batafsil)
+            </h3>
+            <div className="glass-card rounded-2xl overflow-hidden">
+              <div className="overflow-x-auto scrollbar-hide">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b border-border bg-secondary/20">
+                      <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">№</th>
+                      <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Nomi</th>
+                      <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Sotish narxi</th>
+                      <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Qoldiq</th>
+                      <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Tikilgan pul</th>
+                      <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Sotilgandagi</th>
+                      <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Kutilayotgan foyda</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground text-sm">
+                          Omborda tovarlar topilmadi
+                        </td>
+                      </tr>
+                    ) : (
+                      <>
+                        {products.map((product, index) => {
+                          const stock = product.stock || 0;
+                          const price = product.price_usd || 0;
+                          const costPrice = (product as any).cost_price_usd || 0;
+                          const invested = stock * costPrice;
+                          const revenue = stock * price;
+                          const profit = revenue - invested;
+                          return (
+                            <tr key={product.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
+                              <td className="px-4 py-3 text-sm text-muted-foreground">{index + 1}</td>
+                              <td className="px-4 py-3 text-sm font-medium text-foreground max-w-[200px] truncate" title={product.title}>
+                                {product.title}
+                              </td>
+                              <td className="px-4 py-3 text-sm text-foreground text-right font-medium">${fmt(price)}</td>
+                              <td className="px-4 py-3 text-sm text-right">
+                                <span className={`font-semibold px-2.5 py-1 rounded-full text-xs ${stock > 0 ? 'bg-blue-500/10 text-blue-400' : 'bg-red-500/10 text-red-400'}`}>
+                                  {stock} ta
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                <span className="text-sm text-red-400 font-semibold">${fmt(invested)}</span>
+                                <span className="block text-[10px] text-muted-foreground">({fmt(costPrice)} × {stock})</span>
+                              </td>
+                              <td className="px-4 py-3 text-sm text-green-400 text-right font-semibold">${fmt(revenue)}</td>
+                              <td className={`px-4 py-3 text-sm font-bold text-right ${profit >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>
+                                ${fmt(profit)}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                        {/* JAMI ROW */}
+                        <tr className="bg-secondary/40 border-t-2 border-gold/30">
+                          <td className="px-4 py-4 text-sm font-bold text-foreground" colSpan={2}>JAMI</td>
+                          <td className="px-4 py-4 text-sm text-foreground text-right font-bold">—</td>
+                          <td className="px-4 py-4 text-sm text-blue-400 text-right font-bold">{stats.totalStock} ta</td>
+                          <td className="px-4 py-4 text-sm text-red-400 text-right font-bold">${fmt(stats.totalCostInvested)}</td>
+                          <td className="px-4 py-4 text-sm text-green-400 text-right font-bold">${fmt(stats.expectedRevenue)}</td>
+                          <td className="px-4 py-4 text-sm font-bold text-right text-gradient-gold">${fmt(stats.expectedProfit)}</td>
+                        </tr>
+                      </>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* ═══════════════════════════════════════════════════════ */}
           {/* ROW 5: SO'NGGI BUYURTMALAR                            */}
           {/* ═══════════════════════════════════════════════════════ */}
           <div className="glass-card rounded-2xl overflow-hidden">
             <div className="px-6 py-4 border-b border-border bg-secondary/10">
-              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">So&apos;nggi buyurtmalar</h3>
+              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Buyurtmalar ro&apos;yxati ({stats.recentOrders.length} ta)</h3>
             </div>
-            <div className="overflow-x-auto scrollbar-hide">
+
+            {/* Mobile View */}
+            <div className="block md:hidden divide-y divide-border/50">
+              {stats.recentOrders.map((order) => {
+                const status = statusLabels[order.status] || statusLabels.pending;
+                return (
+                  <div key={order.id} className="p-4 space-y-2 bg-[#0d0d0d]/40">
+                    <div className="flex justify-between items-start">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-foreground">{order.client}</span>
+                        <span className="text-[10px] text-muted-foreground mt-0.5">{order.date}</span>
+                      </div>
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${status.color}`}>{status.text}</span>
+                    </div>
+                    <div className="space-y-1 bg-secondary/40 p-2.5 rounded-xl border border-border/50">
+                      {order.items.map((item, idx) => (
+                        <div key={idx} className="flex justify-between text-xs">
+                          <span className="text-muted-foreground truncate max-w-[200px]">{item.title}</span>
+                          <span className="text-foreground font-semibold">x{item.quantity}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center pt-1 text-xs">
+                      <span className="text-muted-foreground font-medium">Jami summa:</span>
+                      <span className="text-gold font-bold">${order.amount}</span>
+                    </div>
+                  </div>
+                );
+              })}
+              {stats.recentOrders.length === 0 && (
+                <div className="px-6 py-8 text-center text-muted-foreground text-sm uppercase tracking-wider">
+                  So&apos;nggi buyurtmalar topilmadi
+                </div>
+              )}
+            </div>
+
+            {/* Desktop View */}
+            <div className="hidden md:block overflow-x-auto scrollbar-hide">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border bg-secondary/20">
                     <th className="text-left px-6 py-3 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Mijoz</th>
-                    <th className="text-left px-6 py-3 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Mahsulot</th>
+                    <th className="text-left px-6 py-3 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Mahsulotlar</th>
                     <th className="text-left px-6 py-3 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Summa</th>
                     <th className="text-left px-6 py-3 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Status</th>
                     <th className="text-left px-6 py-3 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Sana</th>
@@ -385,7 +514,16 @@ export default function DashboardPage() {
                     return (
                       <tr key={order.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                         <td className="px-6 py-3 text-sm text-foreground font-semibold whitespace-nowrap">{order.client}</td>
-                        <td className="px-6 py-3 text-sm text-muted-foreground whitespace-nowrap">{order.product}</td>
+                        <td className="px-6 py-3 text-sm text-muted-foreground">
+                          <div className="space-y-1">
+                            {order.items.map((item, idx) => (
+                              <div key={idx} className="flex items-center gap-1.5">
+                                <span className="bg-secondary px-1.5 py-0.5 rounded text-[10px] font-semibold text-foreground">x{item.quantity}</span>
+                                <span className="text-xs truncate max-w-[200px]" title={item.title}>{item.title}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </td>
                         <td className="px-6 py-3 text-sm text-gold font-semibold whitespace-nowrap">${order.amount}</td>
                         <td className="px-6 py-3 whitespace-nowrap">
                           <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${status.color}`}>{status.text}</span>

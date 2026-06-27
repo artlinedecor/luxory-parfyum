@@ -51,12 +51,14 @@ export default function CashflowPage() {
     const deliveredOrders = orders.filter(o => o.status === "delivered");
     let totalSalesRevenue = 0;
     let totalCOGS = 0;
+    let totalSoldItems = 0;
 
     deliveredOrders.forEach(o => {
       if (o.items && Array.isArray(o.items)) {
         o.items.forEach(item => {
           totalSalesRevenue += item.price_at_purchase * item.quantity;
           totalCOGS += (costPriceMap[item.product_id] || 0) * item.quantity;
+          totalSoldItems += item.quantity;
         });
       }
     });
@@ -88,6 +90,7 @@ export default function CashflowPage() {
       incomeTransactions,
       expenseTransactions,
       deliveredOrdersCount: deliveredOrders.length,
+      totalSoldItems,
     };
   }, [transactions, orders, products]);
 
@@ -237,7 +240,7 @@ export default function CashflowPage() {
         <div className="glass-card rounded-xl p-5 border-l-4 border-l-blue-500/50">
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Jami Savdo</p>
           <p className="text-2xl font-bold text-blue-400">${fmt(accounting.totalSalesRevenue)}</p>
-          <p className="text-[10px] text-muted-foreground mt-1">{accounting.deliveredOrdersCount} ta buyurtma</p>
+          <p className="text-[10px] text-muted-foreground mt-1">{accounting.totalSoldItems} ta atir ({accounting.deliveredOrdersCount} ta buyurtma)</p>
         </div>
         <div className="glass-card rounded-xl p-5 border-l-4 border-l-red-500/50">
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Jami Rasxod</p>
