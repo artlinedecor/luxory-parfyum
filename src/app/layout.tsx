@@ -31,6 +31,9 @@ export const metadata: Metadata = {
   verification: {
     google: "3CAgz1XkqiojYhPFeqPz52IlpY03fJUlMzchSDJ8XcY",
     yandex: "a1ae49387e10bf4b",
+    other: {
+      "facebook-domain-verification": "jws9hd9fxfxfdbjfsrdv85jmsyhyxf",
+    },
   },
   appleWebApp: {
     capable: true,
