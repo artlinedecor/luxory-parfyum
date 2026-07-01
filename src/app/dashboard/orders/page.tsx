@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { Order, Product } from "@/lib/types";
 import { createClient } from "@/utils/supabase/client";
+import { trackDmConversion } from "@/lib/meta-tracker";
 
 const statusLabels: Record<string, { text: string; color: string }> = {
   pending: { text: "Kutilmoqda", color: "text-yellow-400 bg-yellow-400/10 border border-yellow-400/20" },
@@ -176,10 +177,25 @@ export default function OrdersPage() {
     }).select().single();
 
     if (!error && newOrderData) {
+      // DM / qo'lda savdo konversiyasini Meta CAPI ga yuborish (action_source: "chat").
+      // Brauzer Pixel ishlatilmaydi — bu sayt tashqarisidagi (Instagram/Telegram DM) savdo.
+      const order = newOrderData as Order;
+      trackDmConversion({
+        eventName: "Purchase",
+        eventId: `dm_pur_${order.id}`,
+        clientName: manualName,
+        clientPhone: manualPhone,
+        value: manualTotal,
+        currency: "USD",
+        customData: {
+          content_ids: manualSelectedItems.map((i) => i.product_id),
+          content_type: "product",
+          num_items: manualSelectedItems.reduce((s, i) => s + i.quantity, 0),
+        },
+      });
+
       // If created as 'delivered', we must apply the same logic as handleStatusChange
       if (manualStatus === "delivered") {
-        const order = newOrderData as Order;
-        
         // Decrease stock
         for (const item of manualSelectedItems) {
           const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.product_id);
