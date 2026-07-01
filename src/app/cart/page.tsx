@@ -58,6 +58,20 @@ export default function CartPage() {
     }
   }, []);
 
+  // InitiateCheckout — savatcha sahifasi ochilganda (agar mahsulotlar bo'lsa)
+  useEffect(() => {
+    if (items.length > 0) {
+      const eid = `ic_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+      trackMetaEvent("InitiateCheckout", eid, {}, {
+        value: items.reduce((s, i) => s + i.product.price_usd * i.quantity, 0),
+        currency: "USD",
+        num_items: items.reduce((s, i) => s + i.quantity, 0),
+        content_ids: items.map(i => i.product.id),
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const hasOriginal = items.some(
     (item) => item.product.product_type === "original"
   );

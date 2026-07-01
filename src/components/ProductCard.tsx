@@ -109,6 +109,17 @@ export default function ProductCard({
                 e.preventDefault();
                 e.stopPropagation();
                 onAddToCart?.(product);
+                // AddToCart pixel event
+                const eid = `atc_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+                import("@/lib/meta-tracker").then(({ trackMetaEvent }) => {
+                  trackMetaEvent("AddToCart", eid, {}, {
+                    content_ids: [product.id],
+                    content_name: product.title,
+                    content_type: "product",
+                    value: product.price_usd,
+                    currency: "USD",
+                  });
+                });
               }}
               className="w-full py-2.5 px-4 rounded-xl border border-gold/30 text-gold text-xs font-bold uppercase tracking-wider
                          hover:bg-gold/10 active:scale-[0.98] transition-all duration-300"

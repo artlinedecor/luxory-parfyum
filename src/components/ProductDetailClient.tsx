@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
+import { trackMetaEvent } from "@/lib/meta-tracker";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 
@@ -25,9 +26,31 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const displayDesc = lang === "ru" && product.description_ru ? product.description_ru : product.description;
   const isOriginal = product.product_type === "original";
 
+  // ViewContent — mahsulot sahifasi ochilganda
+  useEffect(() => {
+    const eid = `vc_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    trackMetaEvent("ViewContent", eid, {}, {
+      content_ids: [product.id],
+      content_name: product.title,
+      content_type: "product",
+      value: product.price_usd,
+      currency: "USD",
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleAddToCart = () => {
     addItem(product);
     setAdded(true);
+    // AddToCart event
+    const eid = `atc_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    trackMetaEvent("AddToCart", eid, {}, {
+      content_ids: [product.id],
+      content_name: product.title,
+      content_type: "product",
+      value: product.price_usd,
+      currency: "USD",
+    });
     setTimeout(() => setAdded(false), 2000);
   };
 
