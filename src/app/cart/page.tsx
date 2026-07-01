@@ -197,7 +197,12 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
 📎 Iltimos, ushbu xabarga to'lov chekining (skrinshotini) biriktirib yuboring!`;
 
       const encodedMessage = encodeURIComponent(textMessage);
-      const generatedTelegramUrl = `https://t.me/${dynTelegramAdminUsername}?text=${encodedMessage}`;
+      // telegramAdminUsername ham to'liq URL ("https://t.me/Jelyor"), ham bare username ("Jelyor" / "@Jelyor")
+      // bo'lishi mumkin — ikkala holatni ham to'g'ri t.me linkiga keltiramiz.
+      const tgBase = dynTelegramAdminUsername.startsWith("http")
+        ? dynTelegramAdminUsername
+        : `https://t.me/${dynTelegramAdminUsername.replace("@", "")}`;
+      const generatedTelegramUrl = `${tgBase}?text=${encodedMessage}`;
       setTelegramUrl(generatedTelegramUrl);
 
       // Trigger Lead / Contact Event (Client + Server Deduplicated)
@@ -270,7 +275,7 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
             </div>
             <div className="flex flex-col gap-3">
               <a
-                href={telegramUrl || `https://t.me/${dynTelegramAdminUsername}`}
+                href={telegramUrl || (dynTelegramAdminUsername.startsWith("http") ? dynTelegramAdminUsername : `https://t.me/${dynTelegramAdminUsername.replace("@", "")}`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => {
