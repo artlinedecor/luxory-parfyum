@@ -42,7 +42,8 @@ export default function ProductCard({
           alt={`${displayTitle} — Original va Super Klon atir do'koni`}
           fill
           loading="lazy"
-          className={`object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          quality={65}
+          className={`object-cover transition-transform duration-300 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           onError={() => setImageError(true)}
           onLoad={() => setImageLoaded(true)}

@@ -112,7 +112,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
         {filteredProducts.map((product, index) => (
           <div
             key={product.id}
-            className="animate-fade-in relative flex"
+            className="relative flex"
           >
             <ProductCard
               product={product}
