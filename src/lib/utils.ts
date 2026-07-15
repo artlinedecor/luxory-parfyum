@@ -14,7 +14,7 @@ export function calculateOriginalPriceUzs(priceUsd: number): number {
 }
 
 export function calculatePremiumPriceUzs(priceUsd: number): number {
-  return (priceUsd * EXCHANGE_RATE) + PREMIUM_EXTRA_FEE;
+  return 800000;
 }
 
 export function formatUzs(amount: number): string {
