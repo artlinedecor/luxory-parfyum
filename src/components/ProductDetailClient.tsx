@@ -7,6 +7,7 @@ import { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
 import { trackMetaEvent } from "@/lib/meta-tracker";
+import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 
@@ -33,8 +34,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       content_ids: [product.id],
       content_name: product.title,
       content_type: "product",
-      value: product.price_usd,
-      currency: "USD",
+      value: isOriginal ? calculateOriginalPriceUzs(product.price_usd) : calculatePremiumPriceUzs(product.price_usd),
+      currency: "UZS",
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -48,8 +49,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       content_ids: [product.id],
       content_name: product.title,
       content_type: "product",
-      value: product.price_usd,
-      currency: "USD",
+      value: isOriginal ? calculateOriginalPriceUzs(product.price_usd) : calculatePremiumPriceUzs(product.price_usd),
+      currency: "UZS",
     });
     setTimeout(() => setAdded(false), 2000);
   };
@@ -91,7 +92,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               quality={75}
               className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
               sizes="(max-width: 768px) 100vw, 50vw"
-              onError={() => setImageError(true)}
+              onError={() => { 
+                if (!imageError) setImageError(true); 
+                setImageLoaded(true); 
+              }}
               onLoad={() => setImageLoaded(true)}
             />
             {/* Overlay Gradient */}
@@ -101,11 +105,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             <div className="absolute top-4 left-4 z-10">
               {isOriginal ? (
                 <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-gold text-black text-xs font-bold uppercase tracking-wider shadow-lg shadow-gold/20">
-                  ⚡ Premium Original
+                  ⚡ Original atir
                 </span>
               ) : (
                 <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-semibold uppercase tracking-wider border border-white/15">
-                  {lang === "ru" ? "Супер Клон" : "Super Klon"}
+                  {lang === "ru" ? "Люкс Премиум" : "Lyuks Premium atir"}
                 </span>
               )}
             </div>
@@ -123,10 +127,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 {displayTitle}
               </h1>
               <div className="flex items-baseline gap-2 pt-2">
-                <span className="text-3xl font-extrabold text-gradient-gold">${product.price_usd}</span>
-                {isOriginal && (
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">USD</span>
-                )}
+                <span className="text-3xl font-extrabold text-gradient-gold">
+                  {formatUzs(isOriginal ? calculateOriginalPriceUzs(product.price_usd) : calculatePremiumPriceUzs(product.price_usd))}
+                </span>
+                <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">so'm</span>
               </div>
             </div>
 
@@ -134,28 +138,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
             {/* Product Actions */}
             <div className="space-y-4">
-              {isOriginal ? (
-                <div className="space-y-3">
-                  <button
-                    onClick={handleAddToCart}
-                    className="w-full py-4 rounded-2xl bg-gradient-gold text-black text-sm font-bold uppercase tracking-widest hover:opacity-90 active:scale-[0.98] transition-all duration-300 shadow-xl shadow-gold/10"
-                  >
-                    {added ? t("btn_added") : t("btn_order_deposit")}
-                  </button>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed text-center">
-                    {lang === "ru" 
-                      ? "* Оригинальные ароматы доставляются на заказ с депозитом $50." 
-                      : "* Original atirlar buyurtma asosida $50 zaklad bilan olib kelinadi."}
-                  </p>
-                </div>
-              ) : (
-                <button
-                  onClick={handleAddToCart}
-                  className="w-full py-4 rounded-2xl border border-gold/30 text-gold text-sm font-bold uppercase tracking-widest hover:bg-gold/10 active:scale-[0.98] transition-all duration-300"
-                >
-                  {added ? t("btn_added") : t("btn_add_cart")}
-                </button>
-              )}
+              <button
+                onClick={handleAddToCart}
+                className={`w-full py-4 rounded-2xl text-sm font-bold uppercase tracking-widest active:scale-[0.98] transition-all duration-300 ${isOriginal ? 'bg-gradient-gold text-black hover:opacity-90 shadow-xl shadow-gold/10' : 'border border-gold/30 text-gold hover:bg-gold/10'}`}
+              >
+                {added ? t("btn_added") : t("btn_add_cart")}
+              </button>
             </div>
 
             {/* Description */}

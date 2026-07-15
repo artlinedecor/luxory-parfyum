@@ -1,3 +1,8 @@
+DROP TABLE IF EXISTS transactions CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
 -- 1. Foydalanuvchilar va barcha bizneslar jadvali (Users)
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -12,9 +17,14 @@ CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     merchant_id UUID REFERENCES users(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
+    title_ru TEXT,
     description TEXT,
-    price_usd NUMERIC(10, 2) NOT NULL, -- Narxlar oson hisob-kitob uchun dollarda saqlanadi
-    product_type TEXT CHECK (product_type IN ('lux_copy', 'original')) NOT NULL,
+    description_ru TEXT,
+    price_usd NUMERIC(10, 2) NOT NULL,
+    cost_price_usd NUMERIC(10, 2) DEFAULT 0,
+    stock INTEGER DEFAULT 0,
+    gender TEXT,
+    product_type TEXT NOT NULL,
     image_url TEXT,
     is_available BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from '@/lib/utils';
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
 
     const productLines = (items || [])
       .map((item: { title: string; product_type: string; quantity: number; price_at_purchase: number }) =>
-        `- ${item.title} (${item.product_type === 'original' ? 'Original' : 'Super Klon'}) x${item.quantity} — $${item.price_at_purchase}`
+        `- ${item.title} (${item.product_type === 'original' ? 'Original atir' : 'Lyuks Premium atir'}) x${item.quantity} — ${formatUzs(item.product_type === 'original' ? calculateOriginalPriceUzs(item.price_at_purchase) : calculatePremiumPriceUzs(item.price_at_purchase))} so'm`
       )
       .join('\n');
 
@@ -28,8 +29,8 @@ export async function POST(req: NextRequest) {
 📦 Mahsulotlar:
 ${productLines}
 
-💰 Jami summa: $${totalAmount}
-🧾 To'lov: ${orderType === 'deposit_50' ? '$50 depozit (Chek ilova qilindi)' : "To'liq to'lov"}`;
+💰 Jami summa: ${formatUzs(totalAmount)} so'm
+🧾 To'lov: To'liq to'lov`;
 
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',

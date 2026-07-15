@@ -10,6 +10,7 @@ import { useState, useRef, useEffect } from "react";
 import { useI18n } from "@/lib/i18n-context";
 import { createClient } from "@/utils/supabase/client";
 import { trackMetaEvent } from "@/lib/meta-tracker";
+import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 
 const REGIONS = [
   "region_tashkent_city",
@@ -63,8 +64,8 @@ export default function CartPage() {
     if (items.length > 0) {
       const eid = `ic_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
       trackMetaEvent("InitiateCheckout", eid, {}, {
-        value: items.reduce((s, i) => s + i.product.price_usd * i.quantity, 0),
-        currency: "USD",
+        value: totalPrice,
+        currency: "UZS",
         num_items: items.reduce((s, i) => s + i.quantity, 0),
         content_ids: items.map(i => i.product.id),
       });
@@ -76,12 +77,7 @@ export default function CartPage() {
     (item) => item.product.product_type === "original"
   );
 
-  const paymentAmount = items.reduce((sum, item) => {
-    if (item.product.product_type === "original") {
-      return sum + siteConfig.depositAmount * item.quantity;
-    }
-    return sum + item.product.price_usd * item.quantity;
-  }, 0);
+  const paymentAmount = totalPrice;
 
   const handleReceiptSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -90,6 +86,38 @@ export default function CartPage() {
     const reader = new FileReader();
     reader.onload = () => setReceiptPreview(reader.result as string);
     reader.readAsDataURL(file);
+  };
+
+  const handleUzumCheckout = async () => {
+    if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion) return;
+    setLoading(true);
+    try {
+      const response = await fetch("/api/uzumnasiya/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientPhone,
+          period: "12", // Default 12 months, you can add a selector later
+          products: items.map(item => ({
+            id: item.product.id,
+            title: item.product.title,
+            price_usd: item.product.product_type === 'original' ? calculateOriginalPriceUzs(item.product.price_usd) : calculatePremiumPriceUzs(item.product.price_usd),
+            quantity: item.quantity
+          }))
+        })
+      });
+      const data = await response.json();
+      if (data.webview_path) {
+        window.location.href = data.webview_path; // Redirect to Uzum Nasiya
+      } else {
+        throw new Error(data.error || "Uzum Nasiya API error");
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert("Muddatli to'lov tizimi (Uzum) bilan ulanishda xatolik yuz berdi. Iltimos kalit (token) to'g'riligini tekshiring.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCheckout = async () => {
@@ -134,7 +162,7 @@ export default function CartPage() {
         client_name: clientName,
         client_phone: clientPhone,
         region: regionDisplay,
-        order_type: hasOriginal ? "deposit_50" : "full_payment",
+        order_type: "full_payment",
         status: "pending",
       };
 
@@ -164,23 +192,21 @@ export default function CartPage() {
         "Purchase",
         purchaseEventId,
         { client_name: clientName, client_phone: clientPhone },
-        { value: paymentAmount, currency: "USD" }
+        { value: paymentAmount, currency: "UZS" }
       );
 
       // 4. Generate beautiful prefilled template message for shaxsiy telegram
       const productLines = items
         .map((item) => {
-          const type = item.product.product_type === "original" ? "Original" : "Super Klon";
+          const type = item.product.product_type === "original" ? "Original atir" : "Lyuks Premium atir";
           const price = item.product.product_type === "original"
-              ? `$${siteConfig.depositAmount} zaklad`
-              : `$${item.product.price_usd}`;
+              ? `${formatUzs(calculateOriginalPriceUzs(item.product.price_usd))} so'm`
+              : `${formatUzs(calculatePremiumPriceUzs(item.product.price_usd))} so'm`;
           return `- ${item.product.title} (${type}) x${item.quantity} - ${price}`;
         })
         .join("\n");
 
-      const paymentType = hasOriginal 
-        ? `$${paymentAmount} ($${siteConfig.depositAmount} zaklad)` 
-        : `$${paymentAmount} (to'liq narx)`;
+      const paymentType = `${formatUzs(paymentAmount)} so'm`;
 
       const textMessage = `🛍 YANGI BUYURTMA!
 👤 Mijoz: ${clientName}
@@ -228,7 +254,7 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
             address: clientAddress,
             items: orderItems,
             totalAmount: paymentAmount,
-            orderType: hasOriginal ? "deposit_50" : "full_payment",
+            orderType: "full_payment",
             receiptUrl: receiptPublicUrl,
           }),
         });
@@ -369,14 +395,11 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
                   <h3 className="text-sm font-semibold text-foreground truncate">{item.product.title}</h3>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-gold/10 text-gold font-semibold uppercase">
-                      {item.product.product_type === "original" ? "Original" : "Super Klon"}
+                      {item.product.product_type === "original" ? "Original" : "Lyuks Premium"}
                     </span>
-                    {item.product.product_type === "original" && (
-                      <span className="text-[10px] text-gold font-medium">${siteConfig.depositAmount} zaklad</span>
-                    )}
                   </div>
                   <p className="text-sm font-bold text-gradient-gold">
-                    ${item.product.product_type === "original" ? siteConfig.depositAmount : item.product.price_usd}
+                    {item.product.product_type === "original" ? formatUzs(calculateOriginalPriceUzs(item.product.price_usd)) : formatUzs(calculatePremiumPriceUzs(item.product.price_usd))} so'm
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -459,17 +482,14 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
           <div className="glass-card rounded-xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">{t("cart_total_price")}:</span>
-              <span className="text-sm text-muted-foreground line-through">${totalPrice}</span>
+              <span className="text-sm text-muted-foreground line-through"></span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-base font-semibold text-foreground">
-                {hasOriginal ? t("cart_payable_amount") + ":" : t("cart_total") + ":"}
+                {t("cart_payable_amount")}:
               </span>
-              <span className="text-2xl font-bold text-gradient-gold">${paymentAmount}</span>
+              <span className="text-2xl font-bold text-gradient-gold">{formatUzs(paymentAmount)} so'm</span>
             </div>
-            {hasOriginal && (
-              <p className="text-[10px] text-gold/70 leading-relaxed">{t("cart_deposit_note")}</p>
-            )}
 
             <button
               id="checkout-btn"
@@ -487,6 +507,26 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
                 <>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
                   {t("cart_btn_checkout")}
+                </>
+              )}
+            </button>
+
+            {/* Uzum Nasiya Checkout Button */}
+            <button
+              id="uzum-checkout-btn"
+              onClick={handleUzumCheckout}
+              disabled={loading || !clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion}
+              className="w-full py-4 rounded-xl bg-[#6100FF] text-white font-bold text-sm tracking-wider
+                         hover:bg-[#5000E0] active:scale-[0.98] transition-all duration-300
+                         shadow-lg shadow-[#6100FF]/25
+                         disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
+                         flex items-center justify-center gap-2 mt-2"
+            >
+              {loading ? (
+                <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <span>Uzum Nasiya (Bo'lib to'lash)</span>
                 </>
               )}
             </button>

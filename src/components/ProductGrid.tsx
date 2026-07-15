@@ -11,23 +11,22 @@ interface ProductGridProps {
 }
 
 export default function ProductGrid({ products }: ProductGridProps) {
-  const [activeTab, setActiveTab] = useState<"all" | "lux" | "original">("lux");
   const [genderFilter, setGenderFilter] = useState<"all" | "male" | "female" | "unisex">("all");
   const [addedId, setAddedId] = useState<string | null>(null);
   const { addItem } = useCart();
   const { t, lang } = useI18n();
 
   const filteredProducts = products.filter((p) => {
-    const typeMatch =
-      activeTab === "all" ||
-      p.product_type === (activeTab === "lux" ? "lux_copy" : "original");
     const productGender = p.gender || "unisex";
     const genderMatch =
       genderFilter === "all" || 
       productGender === genderFilter || 
       (genderFilter !== "unisex" && productGender === "unisex");
-    return typeMatch && genderMatch;
+    return genderMatch;
   });
+
+  const originalProducts = filteredProducts.filter(p => p.product_type === "original");
+  const premiumProducts = filteredProducts.filter(p => p.product_type !== "original");
 
   const handleAddToCart = (product: Product) => {
     addItem(product);
@@ -50,43 +49,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Type Tabs */}
-      <div
-        id="product-tabs"
-        className="flex gap-1 p-1 rounded-2xl bg-secondary/50 backdrop-blur-sm w-fit mx-auto"
-      >
-        <button
-          onClick={() => setActiveTab("all")}
-          className={`px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
-            activeTab === "all"
-              ? "bg-gradient-gold text-black shadow-lg shadow-gold/20 scale-105"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {t("tab_all")}
-        </button>
-        <button
-          onClick={() => setActiveTab("lux")}
-          className={`px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
-            activeTab === "lux"
-              ? "bg-gradient-gold text-black shadow-lg shadow-gold/20 scale-105"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {t("tab_lux")}
-        </button>
-        <button
-          onClick={() => setActiveTab("original")}
-          className={`px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
-            activeTab === "original"
-              ? "bg-gradient-gold text-black shadow-lg shadow-gold/20 scale-105"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {t("tab_original")}
-        </button>
-      </div>
-
       {/* Gender Filter */}
       <div className="flex gap-2 justify-center flex-wrap">
         {(["all", "male", "female", "unisex"] as const).map((g) => (
@@ -107,27 +69,61 @@ export default function ProductGrid({ products }: ProductGridProps) {
         ))}
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
-        {filteredProducts.map((product, index) => (
-          <div
-            key={product.id}
-            className="relative flex"
-          >
-            <ProductCard
-              product={product}
-              onAddToCart={handleAddToCart}
-              onOrder={handleOrder}
-            />
-            {/* "Qo'shildi" notification */}
-            {addedId === product.id && (
-              <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-lg bg-gold text-black text-[10px] font-bold uppercase tracking-wider animate-scale-in shadow-lg">
-                {t("btn_added")}
-              </div>
-            )}
+      {/* Original Section */}
+      {originalProducts.length > 0 && (
+        <div className="space-y-6 pt-4">
+          <div className="flex items-center gap-4">
+            <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
+              Original <span className="text-gradient-gold">atirlar</span>
+            </h2>
+            <div className="flex-1 h-px bg-border"></div>
           </div>
-        ))}
-      </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+            {originalProducts.map((product) => (
+              <div key={product.id} className="relative flex">
+                <ProductCard
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                  onOrder={handleOrder}
+                />
+                {addedId === product.id && (
+                  <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-lg bg-gold text-black text-[10px] font-bold uppercase tracking-wider animate-scale-in shadow-lg">
+                    {t("btn_added")}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Lyuks Premium Section */}
+      {premiumProducts.length > 0 && (
+        <div className="space-y-6 pt-12">
+          <div className="flex items-center gap-4">
+            <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
+              Lyuks Premium <span className="text-gradient-gold">atirlar</span>
+            </h2>
+            <div className="flex-1 h-px bg-border"></div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+            {premiumProducts.map((product) => (
+              <div key={product.id} className="relative flex">
+                <ProductCard
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                  onOrder={handleOrder}
+                />
+                {addedId === product.id && (
+                  <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-lg bg-gold text-black text-[10px] font-bold uppercase tracking-wider animate-scale-in shadow-lg">
+                    {t("btn_added")}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Empty state */}
       {filteredProducts.length === 0 && (

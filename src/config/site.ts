@@ -24,7 +24,7 @@ export const siteConfig = {
   // ── To'lov ───────────────────────────────────────
   paymentCard: "5614 6821 1469 4302",
   paymentCardHolder: "Jalalov Elyorbek",
-  depositAmount: 50, // Original atirlar uchun zaklad summasi ($)
+  depositAmount: 605000, // Original atirlar uchun zaklad summasi (UZS)
 
   // ── SEO ──────────────────────────────────────────
   seoTitle: "Lux Atir — Toshkentda Original Atirlar va Super Klon Parfyumeriya Do'koni",
