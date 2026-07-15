@@ -84,7 +84,7 @@ const translations: Record<Language, Record<string, string>> = {
     region_karakalpakstan: "Qoraqalpog'iston Respublikasi",
     // Product
     btn_add_cart: "Savatchaga",
-    btn_order_deposit: "$50 Zaklad bilan buyurtma",
+    btn_order_deposit: "Savatga qo'shish",
     btn_added: "✓ Qo'shildi",
   },
   ru: {
@@ -160,7 +160,7 @@ const translations: Record<Language, Record<string, string>> = {
     region_karakalpakstan: "Республика Каракалпакстан",
     // Product
     btn_add_cart: "В корзину",
-    btn_order_deposit: "Заказать с депозитом $50",
+    btn_order_deposit: "В корзину",
     btn_added: "✓ Добавлено",
   }
 };
