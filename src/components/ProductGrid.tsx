@@ -34,12 +34,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
     setTimeout(() => setAddedId(null), 1200);
   };
 
-  const handleOrder = (product: Product) => {
-    addItem(product);
-    setAddedId(product.id);
-    setTimeout(() => setAddedId(null), 1200);
-  };
-
   const genderLabels: Record<string, { uz: string; ru: string }> = {
     all: { uz: "Barchasi", ru: "Все" },
     male: { uz: "Erkaklar", ru: "Мужские" },
@@ -84,7 +78,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
                 <ProductCard
                   product={product}
                   onAddToCart={handleAddToCart}
-                  onOrder={handleOrder}
                 />
                 {addedId === product.id && (
                   <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-lg bg-gold text-black text-[10px] font-bold uppercase tracking-wider animate-scale-in shadow-lg">
@@ -112,7 +105,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
                 <ProductCard
                   product={product}
                   onAddToCart={handleAddToCart}
-                  onOrder={handleOrder}
                 />
                 {addedId === product.id && (
                   <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-lg bg-gold text-black text-[10px] font-bold uppercase tracking-wider animate-scale-in shadow-lg">
