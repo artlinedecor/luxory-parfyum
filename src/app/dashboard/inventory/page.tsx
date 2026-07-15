@@ -11,6 +11,7 @@ export default function InventoryPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [loadingProducts, setLoadingProducts] = useState(true);
+  const [activeTab, setActiveTab] = useState<"in_stock" | "all">("in_stock");
 
   // Form states
   const [title, setTitle] = useState("");
@@ -270,6 +271,30 @@ export default function InventoryPage() {
         </button>
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-2 p-1 bg-secondary/30 w-fit rounded-xl backdrop-blur-sm border border-border/50">
+        <button
+          onClick={() => setActiveTab("in_stock")}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            activeTab === "in_stock"
+              ? "bg-gradient-gold text-black shadow-md shadow-gold/10"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Omborda mavjud (Skladda)
+        </button>
+        <button
+          onClick={() => setActiveTab("all")}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            activeTab === "all"
+              ? "bg-gradient-gold text-black shadow-md shadow-gold/10"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Barcha Assortiment
+        </button>
+      </div>
+
       {/* Table */}
       <div className="glass-card rounded-2xl overflow-hidden">
         <div className="overflow-x-auto scrollbar-hide">
@@ -285,7 +310,7 @@ export default function InventoryPage() {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {(activeTab === "in_stock" ? products.filter(p => p.stock && p.stock > 0) : products).map((product) => (
                 <tr key={product.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                   <td className="px-6 py-3">
                     <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-secondary">
@@ -331,10 +356,10 @@ export default function InventoryPage() {
                   </td>
                 </tr>
               ))}
-              {products.length === 0 && (
+              {(activeTab === "in_stock" ? products.filter(p => p.stock && p.stock > 0) : products).length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground text-sm">
-                    Mahsulotlar topilmadi
+                  <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground text-sm">
+                    {activeTab === "in_stock" ? "Skladda mavjud mahsulotlar yo'q" : "Mahsulotlar topilmadi"}
                   </td>
                 </tr>
               )}

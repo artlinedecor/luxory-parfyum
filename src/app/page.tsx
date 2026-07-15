@@ -18,7 +18,7 @@ import Link from "next/link";
 export default function Home() {
   const { t, lang } = useI18n();
   const { shopName, logoUrl, shopAddress, telegramAdminUsername, telegramChannel, shopPhone } = useShopSettings();
-  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -27,6 +27,7 @@ export default function Home() {
         const { data, error } = await supabase
           .from("products")
           .select("*")
+          .eq("is_available", true)
           .order("created_at", { ascending: false });
 
         if (error) throw error;

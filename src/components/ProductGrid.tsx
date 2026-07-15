@@ -17,14 +17,16 @@ export default function ProductGrid({ products }: ProductGridProps) {
   const { addItem } = useCart();
   const { t, lang } = useI18n();
 
-  const filteredProducts = products.filter((p) => {
-    const productGender = p.gender || "unisex";
-    const genderMatch =
-      genderFilter === "all" || 
-      productGender === genderFilter || 
-      (genderFilter !== "unisex" && productGender === "unisex");
-    return genderMatch;
-  });
+  const filteredProducts = products
+    .filter((p) => p.image_url && p.image_url.trim() !== "")
+    .filter((p) => {
+      const productGender = p.gender || "unisex";
+      const genderMatch =
+        genderFilter === "all" || 
+        productGender === genderFilter || 
+        (genderFilter !== "unisex" && productGender === "unisex");
+      return genderMatch;
+    });
 
   const originalProducts = filteredProducts.filter(p => p.product_type === "original");
   const premiumProducts = filteredProducts.filter(p => p.product_type !== "original");

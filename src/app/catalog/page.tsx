@@ -14,7 +14,7 @@ import { useShopSettings } from "@/lib/settings-context";
 export default function CatalogPage() {
   const { t } = useI18n();
   const { shopPhone, telegramAdminUsername, telegramChannel } = useShopSettings();
-  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -23,6 +23,7 @@ export default function CatalogPage() {
         const { data, error } = await supabase
           .from("products")
           .select("*")
+          .eq("is_available", true)
           .order("created_at", { ascending: false });
 
         if (error) throw error;
