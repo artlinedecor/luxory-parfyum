@@ -40,9 +40,6 @@ export default function CartPage() {
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null);
   const [finalAmount, setFinalAmount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-  const [receiptFile, setReceiptFile] = useState<File | null>(null);
-  const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [dynPaymentCard, setDynPaymentCard] = useState<string>(siteConfig.paymentCard);
   const [dynPaymentCardHolder, setDynPaymentCardHolder] = useState<string>(siteConfig.paymentCardHolder);
@@ -79,15 +76,6 @@ export default function CartPage() {
   );
 
   const paymentAmount = totalPrice;
-
-  const handleReceiptSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setReceiptFile(file);
-    const reader = new FileReader();
-    reader.onload = () => setReceiptPreview(reader.result as string);
-    reader.readAsDataURL(file);
-  };
 
   const handleUzumCheckout = async () => {
     if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion) return;
@@ -128,25 +116,8 @@ export default function CartPage() {
 
     try {
       const supabase = createClient();
-      let receiptPublicUrl: string | null = null;
 
-      // 1. Upload receipt to Supabase Storage (if provided)
-      if (receiptFile) {
-        const ext = receiptFile.name.split(".").pop() || "jpg";
-        const fileName = `receipts/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-        const { error: uploadError } = await supabase.storage
-          .from("product-images")
-          .upload(fileName, receiptFile, { cacheControl: "3600", upsert: false });
-
-        if (!uploadError) {
-          const { data: urlData } = supabase.storage
-            .from("product-images")
-            .getPublicUrl(fileName);
-          receiptPublicUrl = urlData?.publicUrl || null;
-        }
-      }
-
-      // 2. Prepare order items (clean JSONB array)
+      // 1. Prepare order items (clean JSONB array)
       const orderItems = items.map((item) => ({
         product_id: item.product.id,
         quantity: item.quantity,
@@ -167,19 +138,7 @@ export default function CartPage() {
         total_amount: paymentAmount, // Added for Click validation
       };
 
-      if (receiptPublicUrl) {
-        insertPayload.receipt_url = receiptPublicUrl;
-      }
-
       let { data: newOrder, error } = await supabase.from("orders").insert(insertPayload).select('id').single();
-
-      // Retry without receipt_url if column doesn't exist yet
-      if (error && receiptPublicUrl) {
-        delete insertPayload.receipt_url;
-        const retry = await supabase.from("orders").insert(insertPayload).select('id').single();
-        newOrder = retry.data;
-        error = retry.error;
-      }
 
       if (error || !newOrder) {
         console.error("Supabase insert error:", error);
@@ -220,7 +179,6 @@ export default function CartPage() {
             items: orderItems,
             totalAmount: paymentAmount,
             orderType: "full_payment",
-            receiptUrl: receiptPublicUrl,
           }),
         });
       } catch (e) {
@@ -414,31 +372,6 @@ export default function CartPage() {
                 <input id="client-address" type="text" value={clientAddress} onChange={(e) => setClientAddress(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 transition-all" />
               </div>
 
-              {/* Receipt Upload */}
-              <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground">{t("cart_receipt_label")}</label>
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-secondary border border-dashed border-gold/30 cursor-pointer hover:bg-gold/5 transition-all"
-                >
-                  {receiptPreview ? (
-                    <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
-                      <Image src={receiptPreview} alt="Receipt" fill className="object-cover" sizes="40px" />
-                    </div>
-                  ) : (
-                    <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center flex-shrink-0">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5 text-gold"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-foreground truncate">
-                      {receiptFile ? receiptFile.name : t("cart_receipt_placeholder")}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">{t("cart_receipt_hint")}</p>
-                  </div>
-                </div>
-                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleReceiptSelect} className="hidden" />
-              </div>
             </div>
           </div>
 
