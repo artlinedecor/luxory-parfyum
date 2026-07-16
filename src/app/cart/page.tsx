@@ -204,8 +204,8 @@ export default function CartPage() {
         <main className="flex-1 pt-24 pb-24 md:pb-16 flex items-center justify-center">
           <div className="max-w-md mx-auto px-4 text-center space-y-6 animate-fade-in">
             <div className="w-20 h-20 rounded-full bg-gold-muted flex items-center justify-center mx-auto animate-scale-in">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-10 h-10 text-gold">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10 text-gold">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
               </svg>
             </div>
             <h2 className="font-heading text-2xl font-bold text-foreground">
@@ -222,21 +222,25 @@ export default function CartPage() {
               <p className="text-[10px] text-muted-foreground text-center -mt-2 mb-3">To'lovni uyingizdan chiqmasdan, xavfsiz amalga oshiring</p>
               
               <a 
-                href={`https://my.click.uz/services/pay?service_id=${process.env.NEXT_PUBLIC_CLICK_SERVICE_ID || '0'}&merchant_id=${process.env.NEXT_PUBLIC_CLICK_MERCHANT_ID || '0'}&amount=${finalAmount}&transaction_param=${submittedOrderId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3 rounded-xl bg-[#00A1F1] text-white font-bold text-sm tracking-wider hover:bg-[#0090D8] transition-all flex items-center justify-center gap-2"
+                href={`https://my.click.uz/services/pay?service_id=${process.env.NEXT_PUBLIC_CLICK_SERVICE_ID || '0'}&merchant_id=${process.env.NEXT_PUBLIC_CLICK_MERCHANT_ID || '0'}&amount=${finalAmount}&transaction_param=${submittedOrderId}&return_url=https://parfumelux.uz/payment-success`}
+                className="w-full py-3 rounded-xl bg-[#00A1F1] text-white font-bold text-sm tracking-wider hover:bg-[#0090D8] transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#00A1F1]/20"
               >
+                {/* Minimal Click Logo SVG */}
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+                </svg>
                 Click orqali to'lash
               </a>
 
               <a 
-                href={`https://my.click.uz/services/pay?service_id=${process.env.NEXT_PUBLIC_CLICK_SERVICE_ID || '0'}&merchant_id=${process.env.NEXT_PUBLIC_CLICK_MERCHANT_ID || '0'}&amount=${finalAmount}&transaction_param=${submittedOrderId}&card_type=uzcard`}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`https://my.click.uz/services/pay?service_id=${process.env.NEXT_PUBLIC_CLICK_SERVICE_ID || '0'}&merchant_id=${process.env.NEXT_PUBLIC_CLICK_MERCHANT_ID || '0'}&amount=${finalAmount}&transaction_param=${submittedOrderId}&card_type=uzcard&return_url=https://parfumelux.uz/payment-success`}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-[#141517] to-[#202124] border border-white/10 text-white font-bold text-sm tracking-wider hover:border-gold/50 transition-all flex items-center justify-center gap-2"
               >
-                Karta orqali to'lash (Uzcard/Humo)
+                {/* Generic Credit Card SVG */}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                </svg>
+                Karta bilan to'lash (Uzcard/Humo)
               </a>
             </div>
 
@@ -245,6 +249,9 @@ export default function CartPage() {
                 href="/catalog"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-gold/30 text-gold font-semibold text-sm hover:bg-gold/10 transition-all"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
                 {t("cart_back_btn")}
               </Link>
             </div>
