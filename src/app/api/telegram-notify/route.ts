@@ -32,22 +32,26 @@ ${productLines}
 💰 Jami summa: ${formatUzs(totalAmount)} so'm
 🧾 To'lov: To'liq to'lov`;
 
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text: message }),
-    });
+    const chatIds = chatId.split(',').map(id => id.trim()).filter(Boolean);
 
-    if (receiptUrl) {
-      await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+    for (const id of chatIds) {
+      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: chatId,
-          photo: receiptUrl,
-          caption: `🧾 To'lov cheki — ${clientName} (${clientPhone})`,
-        }),
+        body: JSON.stringify({ chat_id: id, text: message }),
       });
+
+      if (receiptUrl) {
+        await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: id,
+            photo: receiptUrl,
+            caption: `🧾 To'lov cheki — ${clientName} (${clientPhone})`,
+          }),
+        });
+      }
     }
 
     return NextResponse.json({ ok: true });
