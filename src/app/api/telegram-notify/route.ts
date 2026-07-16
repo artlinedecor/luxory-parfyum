@@ -7,8 +7,8 @@ export async function POST(req: NextRequest) {
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
-    if (!token || !chatId) {
-      console.warn('Telegram Bot credentials not configured. Skipping notification.');
+    if (!token) {
+      console.warn('Telegram Bot token not configured. Skipping notification.');
       return NextResponse.json({ ok: true, skipped: true });
     }
 
@@ -32,7 +32,26 @@ ${productLines}
 💰 Jami summa: ${formatUzs(totalAmount)} so'm
 🧾 To'lov: To'liq to'lov`;
 
-    const chatIds = chatId.split(',').map(id => id.trim()).filter(Boolean);
+    const { createClient } = require('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    
+    // 1. Get static IDs from ENV
+    let chatIds = (chatId || '').split(',').map(id => id.trim()).filter(Boolean);
+    
+    // 2. Fetch dynamic IDs from Supabase
+    const { data: adminUsers } = await supabase
+      .from('users')
+      .select('email')
+      .eq('role', 'superadmin')
+      .like('email', '%@telegram.bot');
+      
+    if (adminUsers) {
+      const dynamicIds = adminUsers.map((u: {email: string}) => u.email.split('@')[0]);
+      chatIds = [...new Set([...chatIds, ...dynamicIds])]; // Merge and unique
+    }
 
     for (const id of chatIds) {
       await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
