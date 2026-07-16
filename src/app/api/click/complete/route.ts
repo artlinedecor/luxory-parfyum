@@ -89,27 +89,6 @@ export async function POST(req: NextRequest) {
       })
       .eq('id', merchant_trans_id);
 
-    // 4.5. Send Telegram Notification
-    try {
-      const baseUrl = req.nextUrl.origin;
-      await fetch(`${baseUrl}/api/telegram-notify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          clientName: order.client_name,
-          clientPhone: order.client_phone,
-          region: order.region,
-          address: '', // Already included in region typically
-          items: order.items,
-          totalAmount: order.total_amount || amount,
-          orderType: "click_online_payment",
-          receiptUrl: null, // No manual receipt needed
-        }),
-      });
-    } catch (e) {
-      console.error('Click Complete Telegram Notify Error:', e);
-    }
-
     // 5. Trigger OFD Fiscalization
     if (order.items && order.items.length > 0) {
       await submitOfdData(order, parseInt(click_paydoc_id));
