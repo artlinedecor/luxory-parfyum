@@ -37,6 +37,8 @@ export default function CartPage() {
   const [clientRegion, setClientRegion] = useState("");
   const [clientAddress, setClientAddress] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null);
+  const [finalAmount, setFinalAmount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
@@ -156,7 +158,6 @@ export default function CartPage() {
 
       // 3. Insert into Supabase — NO merchant_id (avoids FK constraint on "m1")
       const regionDisplay = `${t(clientRegion)} — ${clientAddress}`;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const insertPayload: Record<string, any> = {
         items: orderItems,
         client_name: clientName,
@@ -164,27 +165,31 @@ export default function CartPage() {
         region: regionDisplay,
         order_type: "full_payment",
         status: "pending",
+        total_amount: paymentAmount, // Added for Click validation
       };
 
       if (receiptPublicUrl) {
         insertPayload.receipt_url = receiptPublicUrl;
       }
 
-      let { error } = await supabase.from("orders").insert(insertPayload);
+      let { data: newOrder, error } = await supabase.from("orders").insert(insertPayload).select('id').single();
 
       // Retry without receipt_url if column doesn't exist yet
       if (error && receiptPublicUrl) {
         delete insertPayload.receipt_url;
-        const retry = await supabase.from("orders").insert(insertPayload);
+        const retry = await supabase.from("orders").insert(insertPayload).select('id').single();
+        newOrder = retry.data;
         error = retry.error;
       }
 
-      if (error) {
+      if (error || !newOrder) {
         console.error("Supabase insert error:", error);
         alert("Buyurtmani saqlashda xatolik yuz berdi. Iltimos qayta urinib ko'ring.");
         setLoading(false);
         return;
       }
+      
+      setSubmittedOrderId(newOrder.id);
 
       // Trigger Purchase Event (Client + Server Deduplicated)
       const purchaseEventId = `pur_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
@@ -195,42 +200,6 @@ export default function CartPage() {
         { value: paymentAmount, currency: "UZS" }
       );
 
-      // 4. Generate beautiful prefilled template message for shaxsiy telegram
-      const productLines = items
-        .map((item) => {
-          const type = item.product.product_type === "original" ? "Original atir" : "Lyuks Premium atir";
-          const price = item.product.product_type === "original"
-              ? `${formatUzs(calculateOriginalPriceUzs(item.product.price_usd))} so'm`
-              : `${formatUzs(calculatePremiumPriceUzs(item.product.price_usd))} so'm`;
-          return `- ${item.product.title} (${type}) x${item.quantity} - ${price}`;
-        })
-        .join("\n");
-
-      const paymentType = `${formatUzs(paymentAmount)} so'm`;
-
-      const textMessage = `🛍 YANGI BUYURTMA!
-👤 Mijoz: ${clientName}
-📞 Telefon: ${clientPhone}
-📍 Viloyat: ${t(clientRegion)}
-📍 Manzil: ${clientAddress}
-
-📦 Tanlangan Atirlar:
-${productLines}
-
-💰 Jami Summa: ${paymentType}
-${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
-
-📎 Iltimos, ushbu xabarga to'lov chekining (skrinshotini) biriktirib yuboring!`;
-
-      const encodedMessage = encodeURIComponent(textMessage);
-      // telegramAdminUsername ham to'liq URL ("https://t.me/Jelyor"), ham bare username ("Jelyor" / "@Jelyor")
-      // bo'lishi mumkin — ikkala holatni ham to'g'ri t.me linkiga keltiramiz.
-      const tgBase = dynTelegramAdminUsername.startsWith("http")
-        ? dynTelegramAdminUsername
-        : `https://t.me/${dynTelegramAdminUsername.replace("@", "")}`;
-      const generatedTelegramUrl = `${tgBase}?text=${encodedMessage}`;
-      setTelegramUrl(generatedTelegramUrl);
-
       // Trigger Lead / Contact Event (Client + Server Deduplicated)
       const leadEventId = `lead_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
       trackMetaEvent(
@@ -239,29 +208,7 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
         { client_name: clientName, client_phone: clientPhone }
       );
 
-      // Open automatically in new tab
-      window.open(generatedTelegramUrl, "_blank");
-
-      // 5. Send Telegram Bot notification in the background (fire-and-forget, never blocks the user)
-      try {
-        await fetch("/api/telegram-notify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            clientName,
-            clientPhone,
-            region: t(clientRegion),
-            address: clientAddress,
-            items: orderItems,
-            totalAmount: paymentAmount,
-            orderType: "full_payment",
-            receiptUrl: receiptPublicUrl,
-          }),
-        });
-      } catch (e) {
-        console.warn("Background Telegram Bot notification failed:", e);
-      }
-
+      setFinalAmount(paymentAmount);
       setSubmitted(true);
       clearCart();
     } catch (err) {
@@ -290,29 +237,34 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
             <p className="text-sm text-muted-foreground leading-relaxed">
               {t("cart_success_desc")}
             </p>
-             <div className="glass-card rounded-xl p-4 space-y-2">
-              <p className="text-xs text-muted-foreground">{t("cart_payment_card")}:</p>
-              <p className="text-gold font-mono font-bold text-lg tracking-wider">
-                {dynPaymentCard}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {dynPaymentCardHolder}
-              </p>
-            </div>
-            <div className="flex flex-col gap-3">
-              <a
-                href={telegramUrl || (dynTelegramAdminUsername.startsWith("http") ? dynTelegramAdminUsername : `https://t.me/${dynTelegramAdminUsername.replace("@", "")}`)}
+
+
+            {/* Click Payment Options */}
+            <div className="glass-card rounded-xl p-4 space-y-3">
+              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider text-center">Onlayn To'lov</h3>
+              <p className="text-[10px] text-muted-foreground text-center -mt-2 mb-3">To'lovni uyingizdan chiqmasdan, xavfsiz amalga oshiring</p>
+              
+              <a 
+                href={`https://my.click.uz/services/pay?service_id=${process.env.NEXT_PUBLIC_CLICK_SERVICE_ID || '0'}&merchant_id=${process.env.NEXT_PUBLIC_CLICK_MERCHANT_ID || '0'}&amount=${finalAmount}&transaction_param=${submittedOrderId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => {
-                  const leadClickId = `lead_success_click_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-                  trackMetaEvent("Lead", leadClickId, { client_name: clientName, client_phone: clientPhone });
-                }}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0088cc] text-white font-bold text-sm uppercase tracking-wider hover:opacity-90 transition-opacity"
+                className="w-full py-3 rounded-xl bg-[#00A1F1] text-white font-bold text-sm tracking-wider hover:bg-[#0090D8] transition-all flex items-center justify-center gap-2"
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.96 6.504-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-                {t("cart_send_check_btn")}
+                Click orqali to'lash
               </a>
+
+              <a 
+                href={`https://my.click.uz/services/pay?service_id=${process.env.NEXT_PUBLIC_CLICK_SERVICE_ID || '0'}&merchant_id=${process.env.NEXT_PUBLIC_CLICK_MERCHANT_ID || '0'}&amount=${finalAmount}&transaction_param=${submittedOrderId}&card_type=uzcard`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#141517] to-[#202124] border border-white/10 text-white font-bold text-sm tracking-wider hover:border-gold/50 transition-all flex items-center justify-center gap-2"
+              >
+                Karta orqali to'lash (Uzcard/Humo)
+              </a>
+            </div>
+
+            <div className="flex flex-col gap-3">
+
               <Link
                 href="/catalog"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-gold/30 text-gold font-semibold text-sm hover:bg-gold/10 transition-all"
@@ -414,12 +366,6 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
             ))}
           </div>
 
-          {/* Payment Card Info */}
-          <div className="glass-card rounded-xl p-4 space-y-2 shimmer">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">{t("cart_payment_card")}</p>
-            <p className="text-gold font-mono font-bold text-xl tracking-wider">{siteConfig.paymentCard}</p>
-            <p className="text-xs text-muted-foreground">{siteConfig.paymentCardHolder}</p>
-          </div>
 
           {/* Checkout Form */}
           <div className="glass-card rounded-xl p-6 space-y-4">
