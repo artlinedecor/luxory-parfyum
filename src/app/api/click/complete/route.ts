@@ -89,6 +89,25 @@ export async function POST(req: NextRequest) {
       })
       .eq('id', merchant_trans_id);
 
+    // Send Telegram Notification ONLY on successful payment
+    try {
+      await fetch(new URL("/api/telegram-notify", req.url).toString(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientName: order.client_name,
+          clientPhone: order.client_phone,
+          region: order.region, // In DB we store "Region - Address", wait no, we store regionDisplay in region, and nothing in address if it was combined. Let's just pass what we have.
+          address: order.client_address || "",
+          items: order.items,
+          totalAmount: order.total_amount,
+          orderType: order.order_type,
+        }),
+      });
+    } catch (e) {
+      console.warn("Telegram Bot notification failed in webhook:", e);
+    }
+
     // 5. Trigger OFD Fiscalization
     if (order.items && order.items.length > 0) {
       await submitOfdData(order, parseInt(click_paydoc_id));

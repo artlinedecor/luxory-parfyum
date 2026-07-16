@@ -166,25 +166,6 @@ export default function CartPage() {
         { client_name: clientName, client_phone: clientPhone }
       );
 
-      // 5. Send Telegram Bot notification in the background (fire-and-forget, never blocks the user)
-      try {
-        await fetch("/api/telegram-notify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            clientName,
-            clientPhone,
-            region: t(clientRegion),
-            address: clientAddress,
-            items: orderItems,
-            totalAmount: paymentAmount,
-            orderType: "full_payment",
-          }),
-        });
-      } catch (e) {
-        console.warn("Background Telegram Bot notification failed:", e);
-      }
-
       setFinalAmount(paymentAmount);
       setSubmitted(true);
       clearCart();
