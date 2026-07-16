@@ -42,7 +42,6 @@ export default function CartPage() {
   const [loading, setLoading] = useState(false);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
-  const [telegramUrl, setTelegramUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [dynPaymentCard, setDynPaymentCard] = useState<string>(siteConfig.paymentCard);
@@ -200,42 +199,6 @@ export default function CartPage() {
         { value: paymentAmount, currency: "UZS" }
       );
 
-      // 4. Generate beautiful prefilled template message for shaxsiy telegram
-      const productLines = items
-        .map((item) => {
-          const type = item.product.product_type === "original" ? "Original atir" : "Lyuks Premium atir";
-          const price = item.product.product_type === "original"
-              ? `${formatUzs(calculateOriginalPriceUzs(item.product.price_usd))} so'm`
-              : `${formatUzs(calculatePremiumPriceUzs(item.product.price_usd))} so'm`;
-          return `- ${item.product.title} (${type}) x${item.quantity} - ${price}`;
-        })
-        .join("\n");
-
-      const paymentType = `${formatUzs(paymentAmount)} so'm`;
-
-      const textMessage = `🛍 YANGI BUYURTMA!
-👤 Mijoz: ${clientName}
-📞 Telefon: ${clientPhone}
-📍 Viloyat: ${t(clientRegion)}
-📍 Manzil: ${clientAddress}
-
-📦 Tanlangan Atirlar:
-${productLines}
-
-💰 Jami Summa: ${paymentType}
-${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
-
-📎 Iltimos, ushbu xabarga to'lov chekining (skrinshotini) biriktirib yuboring!`;
-
-      const encodedMessage = encodeURIComponent(textMessage);
-      // telegramAdminUsername ham to'liq URL ("https://t.me/Jelyor"), ham bare username ("Jelyor" / "@Jelyor")
-      // bo'lishi mumkin — ikkala holatni ham to'g'ri t.me linkiga keltiramiz.
-      const tgBase = dynTelegramAdminUsername.startsWith("http")
-        ? dynTelegramAdminUsername
-        : `https://t.me/${dynTelegramAdminUsername.replace("@", "")}`;
-      const generatedTelegramUrl = `${tgBase}?text=${encodedMessage}`;
-      setTelegramUrl(generatedTelegramUrl);
-
       // Trigger Lead / Contact Event (Client + Server Deduplicated)
       const leadEventId = `lead_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
       trackMetaEvent(
@@ -243,9 +206,6 @@ ${receiptPublicUrl ? `🧾 Chek havolasi: ${receiptPublicUrl}` : ""}
         leadEventId,
         { client_name: clientName, client_phone: clientPhone }
       );
-
-      // Open automatically in new tab
-      window.open(generatedTelegramUrl, "_blank");
 
       // 5. Send Telegram Bot notification in the background (fire-and-forget, never blocks the user)
       try {
