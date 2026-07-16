@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Header } from "@/components/Header";
-import { BottomNav } from "@/components/BottomNav";
+import Header from "@/components/Header";
+import BottomNav from "@/components/BottomNav";
 
 export default function PaymentSuccessPage() {
   return (
