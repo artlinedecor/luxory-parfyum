@@ -10,10 +10,12 @@ const PREMIUM_EXTRA_FEE = 40000;
 const ORIGINAL_EXTRA_USD = 100;
 
 export function calculateOriginalPriceUzs(priceUsd: number): number {
+  if (priceUsd === 0.01) return 1000;
   return (priceUsd + ORIGINAL_EXTRA_USD) * EXCHANGE_RATE;
 }
 
 export function calculatePremiumPriceUzs(priceUsd: number): number {
+  if (priceUsd === 0.01) return 1000;
   return 800000;
 }
 
