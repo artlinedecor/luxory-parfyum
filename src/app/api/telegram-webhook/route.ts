@@ -17,7 +17,28 @@ export async function POST(req: NextRequest) {
       if (text === "/start") {
         replyMessage = "Assalomu alaykum! Admin ekanligingizni tasdiqlash uchun parolni kiriting:";
       } else if (text === "adminbek1") {
-        replyMessage = `✅ Parol qabul qilindi!\n\nSizning Chat ID raqamingiz:\n\n${chatId}\n\nUshbu raqamni nusxalab oling va Vercel'dagi TELEGRAM_CHAT_ID kalitining qiymatiga vergul orqali qo'shib qo'ying.`;
+        // Save to Supabase users table dynamically
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        
+        if (supabaseUrl && supabaseKey) {
+          const { createClient } = require("@supabase/supabase-js");
+          const supabase = createClient(supabaseUrl, supabaseKey);
+          
+          const email = `${chatId}@telegram.bot`;
+          const { error } = await supabase.from('users').upsert(
+            { email, full_name: 'Telegram Admin', role: 'superadmin' },
+            { onConflict: 'email' }
+          );
+          
+          if (!error) {
+            replyMessage = `✅ Parol qabul qilindi!\n\nSiz tizimga avtomatik tarzda admin sifatida qo'shildingiz. Endi barcha yangi buyurtmalar to'g'ridan-to'g'ri shu bot orqali sizga keladi! Hech qanday Vercel sozlamasi shart emas.`;
+          } else {
+            replyMessage = `❌ Bazaga ulanishda xatolik yuz berdi: ${error.message}`;
+          }
+        } else {
+           replyMessage = `❌ Supabase kalitlari topilmadi.`;
+        }
       } else {
         replyMessage = "❌ Noto'g'ri parol.";
       }

@@ -4,6 +4,9 @@ import { Metadata } from "next";
 import ProductDetailClient from "@/components/ProductDetailClient";
 import { siteConfig } from "@/config/site";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }

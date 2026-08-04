@@ -28,11 +28,19 @@ export default function Home() {
           .from("products")
           .select("*")
           .eq("is_available", true)
+          .order("stock", { ascending: false })
           .order("created_at", { ascending: false });
 
         if (error) throw error;
         if (data && data.length > 0) {
-          setProducts(data);
+          const sorted = [...data].sort((a, b) => {
+            const aStock = a.stock || 0;
+            const bStock = b.stock || 0;
+            if (aStock > 0 && bStock === 0) return -1;
+            if (aStock === 0 && bStock > 0) return 1;
+            return 0;
+          });
+          setProducts(sorted);
         }
       } catch (e) {
         console.error("Error fetching database products:", e);

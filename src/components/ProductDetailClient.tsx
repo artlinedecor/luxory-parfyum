@@ -89,12 +89,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               alt={displayTitle}
               fill
               priority
-              quality={75}
-              className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+              unoptimized={true}
+              className="object-cover transition-opacity duration-300 opacity-100"
               sizes="(max-width: 768px) 100vw, 50vw"
               onError={() => { 
                 if (!imageError) setImageError(true); 
-                setImageLoaded(true); 
               }}
               onLoad={() => setImageLoaded(true)}
             />

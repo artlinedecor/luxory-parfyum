@@ -26,6 +26,13 @@ export default function ProductGrid({ products }: ProductGridProps) {
         productGender === genderFilter || 
         (genderFilter !== "unisex" && productGender === "unisex");
       return genderMatch;
+    })
+    .sort((a, b) => {
+      const aStock = a.stock || 0;
+      const bStock = b.stock || 0;
+      if (aStock > 0 && bStock === 0) return -1;
+      if (aStock === 0 && bStock > 0) return 1;
+      return 0;
     });
 
   const originalProducts = filteredProducts.filter(p => p.product_type === "original");
