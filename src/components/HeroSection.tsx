@@ -79,14 +79,17 @@ export default function HeroSection() {
             </svg>
           </Link>
 
-          <Link
-            href="/catalog?type=original"
-            id="hero-cta-original"
+          <a
+            href="https://www.instagram.com/elore_parfumes?igsh=a2xrMmp1ZmpleGpm"
+            target="_blank"
+            rel="noopener noreferrer"
+            id="hero-cta-instagram"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-gold/30 text-gold font-semibold text-sm uppercase tracking-wider
                        hover:bg-gold/10 transition-all duration-300"
           >
-            {t("btn_original")}
-          </Link>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            Instagram
+          </a>
         </div>
 
         {/* Social Links / Contacts */}
@@ -108,7 +111,7 @@ export default function HeroSection() {
         {/* Stats */}
         <div className="flex items-center justify-center gap-8 sm:gap-12 pt-8">
           <div className="text-center">
-            <div className="text-2xl sm:text-3xl font-bold text-gradient-gold">500+</div>
+            <div className="text-2xl sm:text-3xl font-bold text-gradient-gold">200+</div>
             <div className="text-xs text-muted-foreground mt-1">{t("stats_products")}</div>
           </div>
           <div className="w-px h-10 bg-border" />

@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import HeroSection from "@/components/HeroSection";
 import ProductGrid from "@/components/ProductGrid";
+import StockCarousel from "@/components/StockCarousel";
 import { MOCK_PRODUCTS } from "@/lib/mock-data";
 import { siteConfig } from "@/config/site";
 import { useI18n } from "@/lib/i18n-context";
@@ -82,6 +83,9 @@ export default function Home() {
       <main className="flex-1">
         {/* Hero Section */}
         <HeroSection />
+
+        {/* Astatka (omborda bor) — aylanuvchi banner */}
+        <StockCarousel products={products} />
 
         {/* Featured Products */}
         <section id="featured-products" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
