@@ -36,6 +36,7 @@ export default function CartPage() {
   const [clientPhone, setClientPhone] = useState("");
   const [clientRegion, setClientRegion] = useState("");
   const [clientAddress, setClientAddress] = useState("");
+  const [uzumPeriod, setUzumPeriod] = useState<"3" | "6" | "12">("12");
   const [submitted, setSubmitted] = useState(false);
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null);
   const [finalAmount, setFinalAmount] = useState<number>(0);
@@ -85,25 +86,29 @@ export default function CartPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          clientName,
           clientPhone,
-          period: "12", // Default 12 months, you can add a selector later
+          clientAddress,
+          clientRegion: t(clientRegion),
+          period: uzumPeriod,
           products: items.map(item => ({
             id: item.product.id,
             title: item.product.title,
-            price_usd: item.product.product_type === 'original' ? calculateOriginalPriceUzs(item.product.price_usd) : calculatePremiumPriceUzs(item.product.price_usd),
+            product_type: item.product.product_type,
+            price_usd: item.product.price_usd,
             quantity: item.quantity
           }))
         })
       });
       const data = await response.json();
-      if (data.webview_path) {
+      if (data.success && data.webview_path) {
         window.location.href = data.webview_path; // Redirect to Uzum Nasiya
       } else {
-        throw new Error(data.error || "Uzum Nasiya API error");
+        throw new Error(data.error || "Uzum Nasiya API xatoligi");
       }
     } catch (err: any) {
-      console.error(err);
-      alert("Muddatli to'lov tizimi (Uzum) bilan ulanishda xatolik yuz berdi. Iltimos kalit (token) to'g'riligini tekshiring.");
+      console.error("Uzum checkout error:", err);
+      alert(err.message || "Muddatli to'lov tizimi (Uzum) bilan ulanishda xatolik yuz berdi. Iltimos kalit (token) to'g'riligini tekshiring.");
     } finally {
       setLoading(false);
     }
@@ -396,25 +401,58 @@ export default function CartPage() {
               )}
             </button>
 
-            {/* Uzum Nasiya Checkout Button */}
-            <button
-              id="uzum-checkout-btn"
-              onClick={handleUzumCheckout}
-              disabled={loading || !clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion}
-              className="w-full py-4 rounded-xl bg-[#6100FF] text-white font-bold text-sm tracking-wider
-                         hover:bg-[#5000E0] active:scale-[0.98] transition-all duration-300
-                         shadow-lg shadow-[#6100FF]/25
-                         disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
-                         flex items-center justify-center gap-2 mt-2"
-            >
-              {loading ? (
-                <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>Uzum Nasiya (Bo'lib to'lash)</span>
-                </>
-              )}
-            </button>
+            {/* Uzum Nasiya Checkout Box */}
+            <div className="pt-3 border-t border-border/60 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#6100FF] animate-pulse" />
+                  Uzum Nasiya (Bo&apos;lib to&apos;lash)
+                </span>
+                <span className="text-xs text-[#A78BFA] font-bold">
+                  {formatUzs(Math.round(paymentAmount / Number(uzumPeriod)))} so&apos;m/oy
+                </span>
+              </div>
+
+              {/* Period selection tabs */}
+              <div className="grid grid-cols-3 gap-2">
+                {(["3", "6", "12"] as const).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setUzumPeriod(p)}
+                    className={`py-2 px-1 text-xs font-semibold rounded-xl border transition-all duration-200 ${
+                      uzumPeriod === p
+                        ? "bg-[#6100FF]/20 border-[#6100FF] text-white shadow-md shadow-[#6100FF]/25 scale-[1.02]"
+                        : "bg-secondary/50 border-border text-muted-foreground hover:border-[#6100FF]/50"
+                    }`}
+                  >
+                    {p} oy
+                  </button>
+                ))}
+              </div>
+
+              <button
+                id="uzum-checkout-btn"
+                onClick={handleUzumCheckout}
+                disabled={loading || !clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#6100FF] via-[#7B2CBF] to-[#6100FF] text-white font-bold text-sm tracking-wide
+                           hover:brightness-110 active:scale-[0.98] transition-all duration-300
+                           shadow-lg shadow-[#6100FF]/30
+                           disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
+                           flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-2 0H3V6h14v8zm4-10H5v2h16v10h2V6c0-1.1-.9-2-2-2z" />
+                    </svg>
+                    <span>Uzum Nasiya orqali olish</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Telegram Channel */}
