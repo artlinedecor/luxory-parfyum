@@ -11,40 +11,32 @@ interface StockCarouselProps {
 }
 
 /**
- * Astatka (omborda bor) mahsulotlarni doimiy aylanuvchi banner —
- * "tez sotilar" maqsadida diqqatni tortadi.
+ * Tanlangan atirlar — doimiy aylanuvchi lyuks banner (diqqatni tortadi).
  */
 export default function StockCarousel({ products }: StockCarouselProps) {
   const { t, lang } = useI18n();
 
-  const inStock = products
-    .filter((p) => (Number(p.stock) || 0) > 0)
-    .sort((a, b) => (Number(a.stock) || 0) - (Number(b.stock) || 0)); // kam qolganlar oldinda
+  // Rasmi bor mahsulotlardan tanlangan to'plam
+  const featured = products.filter((p) => p.image_url).slice(0, 24);
 
-  if (inStock.length === 0) return null;
+  if (featured.length < 4) return null;
 
   // Uzluksiz aylanma uchun ro'yxatni ikki marta takrorlaymiz
-  const loop = [...inStock, ...inStock];
+  const loop = [...featured, ...featured];
 
   return (
-    <section className="relative py-8 overflow-hidden border-y border-gold/15 bg-gradient-to-r from-gold/[0.03] via-gold/[0.07] to-gold/[0.03]">
+    <section className="relative py-9 overflow-hidden border-y border-gold/15 bg-gradient-to-r from-gold/[0.02] via-gold/[0.07] to-gold/[0.02]">
       {/* Heading */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl animate-pulse">🔥</span>
-          <div>
-            <h3 className="font-heading text-lg sm:text-xl font-bold text-gradient-gold leading-tight">
-              {t("hotstock_title")}
-            </h3>
-            <p className="text-[11px] sm:text-xs text-muted-foreground">
-              {t("hotstock_subtitle")}
-            </p>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 flex items-center gap-3">
+        <span className="text-xl">💎</span>
+        <div>
+          <h3 className="font-heading text-lg sm:text-xl font-bold text-gradient-gold leading-tight tracking-tight">
+            {t("hotstock_title")}
+          </h3>
+          <p className="text-[11px] sm:text-xs text-muted-foreground">
+            {t("hotstock_subtitle")}
+          </p>
         </div>
-        <span className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/25 text-green-400 text-xs font-bold">
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          {inStock.length} {lang === "ru" ? "шт" : "ta"}
-        </span>
       </div>
 
       {/* Marquee track */}

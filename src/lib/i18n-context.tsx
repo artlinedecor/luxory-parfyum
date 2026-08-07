@@ -46,10 +46,9 @@ const translations: Record<Language, Record<string, string>> = {
     empty_catalog: "Bu bo'limda hozircha mahsulot yo'q",
     search_placeholder: "Atir nomini qidiring...",
     search_no_results: "topilmadi",
-    filter_in_stock: "Omborda bor",
     installment: "Bo'lib to'lash mumkin",
     installment_short: "Bo'lib to'lash",
-    hotstock_title: "Omborda mavjud",
+    hotstock_title: "Mashhur atirlar",
     hotstock_subtitle: "Bo'lib to'lashga ham olishingiz mumkin",
     // Cart
     cart_empty_title: "Savatcha bo'sh",
@@ -129,10 +128,9 @@ const translations: Record<Language, Record<string, string>> = {
     empty_catalog: "В этом разделе пока нет товаров",
     search_placeholder: "Поиск аромата по названию...",
     search_no_results: "не найдено",
-    filter_in_stock: "В наличии",
     installment: "Можно в рассрочку",
     installment_short: "Рассрочка",
-    hotstock_title: "В наличии на складе",
+    hotstock_title: "Популярные ароматы",
     hotstock_subtitle: "Можно оформить в рассрочку",
     // Cart
     cart_empty_title: "Корзина пуста",

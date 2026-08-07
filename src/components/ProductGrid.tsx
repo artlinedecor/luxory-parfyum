@@ -14,7 +14,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
   const [genderFilter, setGenderFilter] = useState<
     "all" | "male" | "female" | "unisex"
   >("all");
-  const [inStockOnly, setInStockOnly] = useState(false);
   const [query, setQuery] = useState("");
   const [addedId, setAddedId] = useState<string | null>(null);
   const { addItem } = useCart();
@@ -22,27 +21,19 @@ export default function ProductGrid({ products }: ProductGridProps) {
 
   const filteredProducts = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return products
-      .filter((p) => {
-        const productGender = p.gender || "unisex";
-        const genderMatch =
-          genderFilter === "all" ||
-          productGender === genderFilter ||
-          (genderFilter !== "unisex" && productGender === "unisex");
-        const stockMatch = !inStockOnly || (Number(p.stock) || 0) > 0;
-        const searchMatch =
-          !q ||
-          (p.title || "").toLowerCase().includes(q) ||
-          (p.title_ru || "").toLowerCase().includes(q);
-        return genderMatch && stockMatch && searchMatch;
-      })
-      // Omborda bor mahsulotlar oldinda (tez sotilar uchun)
-      .sort((a, b) => {
-        const sa = (Number(a.stock) || 0) > 0 ? 1 : 0;
-        const sb = (Number(b.stock) || 0) > 0 ? 1 : 0;
-        return sb - sa;
-      });
-  }, [products, genderFilter, inStockOnly, query]);
+    return products.filter((p) => {
+      const productGender = p.gender || "unisex";
+      const genderMatch =
+        genderFilter === "all" ||
+        productGender === genderFilter ||
+        (genderFilter !== "unisex" && productGender === "unisex");
+      const searchMatch =
+        !q ||
+        (p.title || "").toLowerCase().includes(q) ||
+        (p.title_ru || "").toLowerCase().includes(q);
+      return genderMatch && searchMatch;
+    });
+  }, [products, genderFilter, query]);
 
   const handleAddToCart = (product: Product) => {
     addItem(product);
@@ -124,23 +115,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
             {lang === "ru" ? genderLabels[g].ru : genderLabels[g].uz}
           </button>
         ))}
-
-        {/* In-stock toggle */}
-        <button
-          onClick={() => setInStockOnly((v) => !v)}
-          className={`px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300 border inline-flex items-center gap-1.5 ${
-            inStockOnly
-              ? "border-green-500 bg-green-500/15 text-green-400 shadow-md shadow-green-500/10"
-              : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
-          }`}
-        >
-          <span
-            className={`w-2 h-2 rounded-full ${
-              inStockOnly ? "bg-green-400 animate-pulse" : "bg-muted-foreground"
-            }`}
-          />
-          {t("filter_in_stock")}
-        </button>
       </div>
 
       {/* Grid */}
