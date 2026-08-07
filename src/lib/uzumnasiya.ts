@@ -1,79 +1,180 @@
-export const UZUM_API_URL = "https://checkout.uzumnasiya.uz"; // Assuming this is the production URL based on their docs
+/**
+ * Uzum Nasiya Partner API (v1.0.2) integratsiyasi
+ * Docs: https://developer.uzumbank.uz/nasiya/
+ *
+ * Oqim (4 bosqich):
+ *   1) POST /api/v1/buyers/check-status  — foydalanuvchi statusi + user_id + limit
+ *   2) POST /api/v1/orders/calculate     — savat bo'yicha tariflar ro'yxati
+ *   3) POST /api/v1/orders               — shartnoma yaratish -> contract_id + webview_path (OTP)
+ *   4) POST /api/v1/contracts/confirm | /cancel  — aktivlashtirish yoki bekor qilish
+ *   (+) POST /api/v1/contracts/check-status      — shartnoma holati
+ *
+ * Auth: Authorization: Bearer <UZUM_PARTNER_TOKEN>  (token Uzum menejeri beradi)
+ */
 
-interface UzumProduct {
+// Partner (MFO) API host. Env orqali override qilish mumkin (test/prod).
+export const UZUM_API_URL =
+  process.env.UZUM_API_URL || "https://merchants-api.uzumnasiya.uz";
+
+// ── Foydalanuvchi statuslari ────────────────────────────────────────────
+export const BUYER_STATUS = {
+  NOT_FOUND: 0, // Uzum Nasiya'da topilmadi
+  NEEDS_REGISTRATION: 1, // ro'yxatdan o'tib karta qo'shish kerak
+  DOC_CHECK: 2, // hujjatlar tekshirilmoqda
+  VERIFIED: 4, // ✅ tasdiqlangan — rassrochka mumkin
+  NEED_PASSPORT_PHOTO: 5,
+  BLACKLISTED: 8, // bloklangan / qarzdorlik 60+ kun
+  BLOCKED: 9,
+  NEED_SELFIE: 10,
+  NEED_PASSPORT_PAGE: 11,
+  NEED_CONTACT: 12,
+  CALL_CENTER: 13,
+  CALL_CENTER_VENDOR: 14,
+  HAS_DEBT: 403,
+} as const;
+
+// Ro'yxatdan o'tish WebView'ini ochish kerak bo'lgan statuslar
+export const NEEDS_REGISTRATION_STATUSES = [0, 1, 2, 5, 10, 11, 12];
+// Rasmiylashtirish MUMKIN EMAS statuslar
+export const REJECTED_STATUSES = [8, 9, 13, 14, 403];
+
+// ── Shartnoma statuslari ────────────────────────────────────────────────
+export const CONTRACT_STATUS = {
+  NOT_CONFIRMED: 0,
+  ACTIVE: 1,
+  MODERATION: 2,
+  OVERDUE_60: 3,
+  OVERDUE_30: 4,
+  CANCELLED: 5,
+  CLOSED: 9,
+} as const;
+
+// ── Tiplar ──────────────────────────────────────────────────────────────
+export interface UzumApiResponse<T> {
+  status: "success" | "error";
+  error: unknown[];
+  data: T;
+  response_code?: number;
+}
+
+export interface CalculateProduct {
+  product_id: number;
+  price: number; // UZS, Uzum naценkasiz
+  amount: number;
+}
+
+export interface CreateOrderProduct {
   amount: number;
   name: string;
-  price: number;
+  price: number; // UZS, Uzum наценkasiz
   category: number;
-  unit_id: number;
+  unit_id: number; // o'lchov birligi (dona=1)
   product_id?: number;
 }
 
-interface CreateOrderData {
+export interface CalculatedTariff {
+  tariff: string; // create-order 'period' ga uzatiladi (masalan "12 Default")
+  tariff_name: string; // masalan "Limit Max"
+  period_months: number;
+  total: number;
+  origin: number;
+  month: number; // oylik to'lov
+  is_available: boolean;
+  status: number;
+  is_promo: boolean;
+  is_mini_loan: boolean;
+  client_photo_upload: boolean;
+  first_payment_date: string;
+  deposit: number;
+  balance: number;
+}
+
+export interface PaymartClient {
+  fio: string;
+  phone: string;
+  order: number;
+  contract_id: number;
+  created_at: string;
+  price_month: number;
+  total: number;
+  available_balance: number;
+  mini_balance: number;
+}
+
+export interface CreateOrderResult {
+  paymart_client: PaymartClient;
+  cart: unknown;
+  client_act_pdf: string;
+  webview_path: string; // OTP/imzolash WebView URL
+}
+
+// ── Ichki fetch yordamchisi ─────────────────────────────────────────────
+async function uzumFetch<T>(path: string, body: unknown): Promise<UzumApiResponse<T>> {
+  const token = process.env.UZUM_PARTNER_TOKEN;
+  if (!token) throw new Error("UZUM_PARTNER_TOKEN yo'q (.env)");
+
+  const res = await fetch(`${UZUM_API_URL}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+
+  const json = (await res.json().catch(() => ({}))) as UzumApiResponse<T>;
+  if (res.status === 401) throw new Error("Uzum: avtorizatsiya xatosi (401)");
+  if (!res.ok || json.status === "error") {
+    throw new Error(
+      `Uzum ${path} xato: ${res.status} ${JSON.stringify(json.error || json)}`
+    );
+  }
+  return json;
+}
+
+// ── 1) Foydalanuvchi statusi ────────────────────────────────────────────
+// phone: 998XXXXXXXXX (12 raqam)
+export function checkBuyerStatus(phone: number) {
+  return uzumFetch<{ status?: number; user_id?: number; limit?: number } & Record<string, unknown>>(
+    "/api/v1/buyers/check-status",
+    { phone }
+  );
+}
+
+// ── 2) Tariflarni hisoblash ─────────────────────────────────────────────
+export function calculateTariffs(user_id: number, products: CalculateProduct[]) {
+  return uzumFetch<CalculatedTariff[]>("/api/v1/orders/calculate", {
+    user_id,
+    products,
+  });
+}
+
+// ── 3) Shartnoma yaratish ───────────────────────────────────────────────
+export function createOrder(params: {
   user_id: number;
-  period: string;
+  period: string; // tanlangan tarifning 'tariff' qiymati
+  products: CreateOrderProduct[];
   callback?: string;
   ext_order_id?: string;
-  products: UzumProduct[];
+}) {
+  return uzumFetch<CreateOrderResult>("/api/v1/orders", params);
 }
 
-export async function createUzumOrder(data: CreateOrderData) {
-  const token = process.env.UZUM_PARTNER_TOKEN;
-  if (!token) throw new Error("UZUM_PARTNER_TOKEN is missing");
-
-  const response = await fetch(`${UZUM_API_URL}/api/v1/orders`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(`Failed to create order: ${JSON.stringify(errorData)}`);
-  }
-
-  return response.json();
+// ── 4) Shartnomani boshqarish ───────────────────────────────────────────
+export function confirmContract(contract_id: number) {
+  return uzumFetch<{ act_pdf?: string } & Record<string, unknown>>(
+    "/api/v1/contracts/confirm",
+    { contract_id }
+  );
 }
 
-export async function checkContractStatus(contractId: string) {
-  const token = process.env.UZUM_PARTNER_TOKEN;
-  if (!token) throw new Error("UZUM_PARTNER_TOKEN is missing");
-
-  const response = await fetch(`${UZUM_API_URL}/api/v1/contracts/check-status`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify({ contract_id: contractId }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to check contract status");
-  }
-
-  return response.json();
+export function cancelContract(contract_id: number) {
+  return uzumFetch<unknown>("/api/v1/contracts/cancel", { contract_id });
 }
 
-export async function confirmContract(contractId: string) {
-  const token = process.env.UZUM_PARTNER_TOKEN;
-  if (!token) throw new Error("UZUM_PARTNER_TOKEN is missing");
-
-  const response = await fetch(`${UZUM_API_URL}/api/v1/contracts/confirm`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify({ contract_id: contractId }),
+export function checkContractStatus(contract_id: number) {
+  return uzumFetch<Record<string, unknown>>("/api/v1/contracts/check-status", {
+    contract_id,
   });
-
-  if (!response.ok) {
-    throw new Error("Failed to confirm contract");
-  }
-
-  return response.json();
 }

@@ -1,49 +1,49 @@
 import { NextResponse } from "next/server";
-import { createUzumOrder } from "@/lib/uzumnasiya";
+import { createOrder, type CreateOrderProduct } from "@/lib/uzumnasiya";
 
+/**
+ * Shartnoma yaratish (3-bosqich).
+ * Kutadi: { user_id, period, products:[{name, price, amount, category, unit_id, product_id?}], ext_order_id? }
+ * Qaytaradi: { webview_path, contract_id } — webview_path OTP/imzolash uchun ochiladi.
+ */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { products, period, clientPhone } = body;
+    const { user_id, period, products, ext_order_id } = body as {
+      user_id: number;
+      period: string;
+      products: CreateOrderProduct[];
+      ext_order_id?: string;
+    };
 
-    if (!products || !products.length || !period) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    if (!user_id || !period || !products?.length) {
+      return NextResponse.json(
+        { error: "user_id, period va products majburiy" },
+        { status: 400 }
+      );
     }
 
-    // Map your cart products to Uzum products format
-    const uzumProducts = products.map((item: any) => ({
-      amount: item.quantity || 1,
-      name: item.title,
-      price: item.price_usd, // Ensure this is converted to UZS if Uzum requires UZS
-      category: 1, // Placeholder category ID
-      unit_id: 1, // Placeholder unit ID (pieces)
-      product_id: item.id,
-    }));
+    const orderId = ext_order_id || crypto.randomUUID();
+    const base = process.env.NEXT_PUBLIC_SITE_URL || "https://parfumelux.uz";
 
-    const extOrderId = crypto.randomUUID();
-
-    // Call Uzum Nasiya API
-    const response = await createUzumOrder({
-      user_id: 1, // This should be the authenticated user's ID or fetched based on phone
-      period: period,
-      ext_order_id: extOrderId,
-      callback: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/success?order_id=${extOrderId}`,
-      products: uzumProducts,
+    const res = await createOrder({
+      user_id,
+      period,
+      products,
+      ext_order_id: orderId,
+      callback: `${base}/payment-success?order_id=${orderId}`,
     });
-
-    if (response.status === "error") {
-      throw new Error(response.message || "Uzum Nasiya API Error");
-    }
-
-    // TODO: Save the order in your database with status 'pending' and the returned contract_id
 
     return NextResponse.json({
       success: true,
-      webview_path: response.data.webview_path,
-      contract_id: response.data.paymart_client.contract_id,
+      webview_path: res.data.webview_path,
+      contract_id: res.data.paymart_client.contract_id,
+      client_act_pdf: res.data.client_act_pdf,
+      ext_order_id: orderId,
     });
-  } catch (error: any) {
-    console.error("Create Uzum Order Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "Unknown error";
+    console.error("Uzum create-order error:", msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
