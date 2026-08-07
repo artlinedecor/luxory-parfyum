@@ -51,7 +51,6 @@ export default function StockCarousel({ products }: StockCarouselProps) {
       <div className="marquee-mask group">
         <div className="flex gap-4 w-max animate-marquee group-hover:[animation-play-state:paused] px-4">
           {loop.map((p, i) => {
-            const stock = Number(p.stock) || 0;
             const title = lang === "ru" && p.title_ru ? p.title_ru : p.title;
             return (
               <Link
@@ -69,17 +68,9 @@ export default function StockCarousel({ products }: StockCarouselProps) {
                     sizes="176px"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                  {/* Stock badge */}
-                  <span
-                    className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold shadow-lg ${
-                      stock <= 3
-                        ? "bg-red-500/90 text-white"
-                        : "bg-green-500/90 text-black"
-                    }`}
-                  >
-                    {stock <= 3
-                      ? `🔥 ${stock} ${t("stock_left")}`
-                      : `${t("stock_in")}: ${stock}`}
+                  {/* Bo'lib to'lash belgisi */}
+                  <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold shadow-lg bg-green-500/90 text-black">
+                    💳 {t("installment_short")}
                   </span>
                 </div>
                 <div className="p-3">

@@ -24,7 +24,6 @@ export default function ProductCard({
 
   const displayTitle = lang === 'ru' && product.title_ru ? product.title_ru : product.title;
   const displayDesc = lang === 'ru' && product.description_ru ? product.description_ru : product.description;
-  const stock = Number(product.stock) || 0;
 
   return (
     <Link
@@ -72,22 +71,12 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Stock badge (astatka) */}
-        {stock > 0 && (
-          <div className="absolute top-3 right-3">
-            <span
-              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold shadow-lg backdrop-blur-md ${
-                stock <= 3
-                  ? "bg-red-500/90 text-white"
-                  : "bg-green-500/90 text-black"
-              }`}
-            >
-              {stock <= 3
-                ? `🔥 ${stock} ${t("stock_left")}`
-                : `${t("stock_in")}: ${stock}`}
-            </span>
-          </div>
-        )}
+        {/* Bo'lib to'lash belgisi */}
+        <div className="absolute top-3 right-3">
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold shadow-lg backdrop-blur-md bg-green-500/90 text-black">
+            💳 {t("installment_short")}
+          </span>
+        </div>
       </div>
 
       {/* Content */}
