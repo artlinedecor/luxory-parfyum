@@ -29,7 +29,7 @@ export default function ProductCard({
     <Link
       id={`product-${product.id}`}
       href={`/catalog/${product.id}`}
-      className="group relative glass-card rounded-2xl overflow-hidden transition-all duration-500 hover:border-gold/30 hover:shadow-lg hover:shadow-gold/5 cursor-pointer flex flex-col h-full w-full text-left"
+      className="group lux-card glass-card rounded-2xl overflow-hidden cursor-pointer flex flex-col h-full w-full text-left"
     >
       {/* Product Image */}
       <div className="relative aspect-[3/4] overflow-hidden bg-secondary flex-shrink-0">
@@ -81,22 +81,24 @@ export default function ProductCard({
 
       {/* Content */}
       <div className="p-4 flex flex-col flex-grow">
-        <h3 className="font-heading text-sm font-semibold text-foreground leading-tight line-clamp-2 group-hover:text-gold transition-colors duration-300">
+        <h3 className="font-heading text-[15px] font-semibold text-foreground leading-snug line-clamp-2 tracking-tight group-hover:text-gold transition-colors duration-300">
           {displayTitle}
         </h3>
-        
+
         {displayDesc && (
-          <p className="mt-1 text-[10px] text-muted-foreground line-clamp-2 leading-relaxed">
+          <p className="mt-1.5 text-[10px] text-muted-foreground/80 line-clamp-2 leading-relaxed">
             {displayDesc}
           </p>
         )}
 
-        <div className="mt-auto pt-3 flex flex-col gap-2">
-          <div className="flex items-baseline gap-1">
-            <span className="text-lg font-bold text-gradient-gold">
+        <div className="mt-auto pt-4 flex flex-col gap-3">
+          {/* Tilla hairline ajratkich */}
+          <div className="gold-hairline opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-xl font-bold text-gradient-gold tracking-tight">
               {formatUzs(isOriginal ? calculateOriginalPriceUzs(product.price_usd) : calculatePremiumPriceUzs(product.price_usd))}
             </span>
-            <span className="text-[10px] text-muted-foreground">so'm</span>
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">so'm</span>
           </div>
 
           <button

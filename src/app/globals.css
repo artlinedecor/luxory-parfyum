@@ -109,28 +109,79 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    /* Boy, ko'p qatlamli lyuks fon — tilla nur + chuqur vinetka */
+    background-color: #070707;
+    background-image:
+      radial-gradient(1200px 620px at 50% -12%, rgba(201, 168, 76, 0.12), transparent 62%),
+      radial-gradient(1000px 560px at 100% 108%, rgba(201, 168, 76, 0.06), transparent 60%),
+      radial-gradient(900px 520px at 0% 60%, rgba(201, 168, 76, 0.04), transparent 60%),
+      linear-gradient(180deg, #080808 0%, #0a0a0a 100%);
+    background-attachment: fixed;
+  }
+  /* Nafis don (grain) teksturasi — premium chuqurlik beradi */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
   }
   html {
     @apply font-sans;
+  }
+  /* Nafis serif sarlavhalar */
+  h1, h2, h3, .font-heading {
+    letter-spacing: -0.015em;
+  }
+  ::selection {
+    background: rgba(201, 168, 76, 0.28);
+    color: #fff;
   }
 }
 
 /* Custom utility classes */
 @layer utilities {
   .text-gradient-gold {
-    background: linear-gradient(135deg, #e0c97f 0%, #c9a84c 50%, #a68b3a 100%);
+    /* Harakatlanuvchi metalik tilla nur */
+    background: linear-gradient(
+      100deg,
+      #a68b3a 0%,
+      #e6c766 22%,
+      #f7e7a8 40%,
+      #ffffff 48%,
+      #f7e7a8 56%,
+      #e6c766 74%,
+      #a68b3a 100%
+    );
+    background-size: 220% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: goldSheen 7s linear infinite;
+  }
+  @keyframes goldSheen {
+    to { background-position: 220% center; }
   }
 
   .border-gradient-gold {
-    border-image: linear-gradient(135deg, #e0c97f 0%, #c9a84c 50%, #a68b3a 100%) 1;
+    border-image: linear-gradient(135deg, #f7e7a8 0%, #c9a84c 50%, #a68b3a 100%) 1;
   }
 
   .bg-gradient-gold {
-    background: linear-gradient(135deg, #e0c97f 0%, #c9a84c 50%, #a68b3a 100%);
+    /* Quyma metalik tilla — nur bandi bilan */
+    background: linear-gradient(
+      135deg,
+      #b4933f 0%,
+      #e6c766 22%,
+      #f7e7a8 42%,
+      #e2c268 60%,
+      #c9a84c 78%,
+      #a68b3a 100%
+    );
   }
 
   .bg-gradient-dark {
@@ -138,10 +189,44 @@
   }
 
   .glass-card {
-    background: rgba(20, 20, 20, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(201, 168, 76, 0.1);
+    background: linear-gradient(
+      180deg,
+      rgba(28, 28, 28, 0.72) 0%,
+      rgba(14, 14, 14, 0.62) 100%
+    );
+    backdrop-filter: blur(18px) saturate(120%);
+    -webkit-backdrop-filter: blur(18px) saturate(120%);
+    border: 1px solid rgba(201, 168, 76, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.01),
+      0 18px 40px -20px rgba(0, 0, 0, 0.8);
+  }
+
+  /* Tilla soch chizig'i (hairline) ajratkich */
+  .gold-hairline {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(201, 168, 76, 0.5) 50%,
+      transparent
+    );
+  }
+
+  /* Lyuks kartochka hover ramkasi */
+  .lux-card {
+    position: relative;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.5s ease, border-color 0.5s ease;
+  }
+  .lux-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(201, 168, 76, 0.45);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 30px 60px -24px rgba(0, 0, 0, 0.9),
+      0 0 30px -10px rgba(201, 168, 76, 0.28);
   }
 
   .shimmer {
