@@ -16,6 +16,19 @@
 export const UZUM_API_URL =
   process.env.UZUM_API_URL || "https://merchants-api.uzumnasiya.uz";
 
+// Mahsulot standart qiymatlari (Uzum bilan tasdiqlanishi kerak)
+export const UZUM_UNIT_PIECE = 1; // dona
+export const UZUM_DEFAULT_CATEGORY = Number(process.env.UZUM_CATEGORY || 1);
+
+// UUID (partner mahsulot id) -> barqaror musbat integer (Uzum integer kutadi)
+export function productIdToInt(uuid: string): number {
+  let h = 0;
+  for (let i = 0; i < uuid.length; i++) {
+    h = (Math.imul(h, 31) + uuid.charCodeAt(i)) >>> 0;
+  }
+  return h % 2147483647 || 1;
+}
+
 // ── Foydalanuvchi statuslari ────────────────────────────────────────────
 export const BUYER_STATUS = {
   NOT_FOUND: 0, // Uzum Nasiya'da topilmadi

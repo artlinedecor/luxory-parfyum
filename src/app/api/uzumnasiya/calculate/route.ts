@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
-import { calculateTariffs, type CalculateProduct } from "@/lib/uzumnasiya";
+import { calculateTariffs, productIdToInt } from "@/lib/uzumnasiya";
 
 /**
  * 2-bosqich: savat bo'yicha tariflarni hisoblash.
- * Kutadi: { user_id, products:[{product_id, price, amount}] }
+ * Kutadi: { user_id, products:[{product_id(uuid|int), price, amount}] }
  * Qaytaradi: tariflar ro'yxati (tariff, tariff_name, period_months, month, total, ...).
  */
 export async function POST(req: Request) {
   try {
     const { user_id, products } = (await req.json()) as {
       user_id: number;
-      products: CalculateProduct[];
+      products: { product_id: string | number; price: number; amount: number }[];
     };
     if (!user_id || !products?.length) {
       return NextResponse.json(
@@ -18,7 +18,13 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    const res = await calculateTariffs(user_id, products);
+    const mapped = products.map((p) => ({
+      product_id:
+        typeof p.product_id === "number" ? p.product_id : productIdToInt(String(p.product_id)),
+      price: Math.round(Number(p.price)),
+      amount: Number(p.amount),
+    }));
+    const res = await calculateTariffs(user_id, mapped);
     return NextResponse.json({ success: true, tariffs: res.data });
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Unknown error";

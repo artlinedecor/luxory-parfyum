@@ -11,6 +11,7 @@ import { useI18n } from "@/lib/i18n-context";
 import { createClient } from "@/utils/supabase/client";
 import { trackMetaEvent } from "@/lib/meta-tracker";
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
+import UzumCheckout from "@/components/UzumCheckout";
 
 const REGIONS = [
   "region_tashkent_city",
@@ -77,36 +78,19 @@ export default function CartPage() {
 
   const paymentAmount = totalPrice;
 
-  const handleUzumCheckout = async () => {
+  const [showUzum, setShowUzum] = useState(false);
+
+  const handleUzumCheckout = () => {
     if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion) return;
-    setLoading(true);
-    try {
-      const response = await fetch("/api/uzumnasiya/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          clientPhone,
-          period: "12", // Default 12 months, you can add a selector later
-          products: items.map(item => ({
-            id: item.product.id,
-            title: item.product.title,
-            price_usd: item.product.product_type === 'original' ? calculateOriginalPriceUzs(item.product.price_usd) : calculatePremiumPriceUzs(item.product.price_usd),
-            quantity: item.quantity
-          }))
-        })
-      });
-      const data = await response.json();
-      if (data.webview_path) {
-        window.location.href = data.webview_path; // Redirect to Uzum Nasiya
-      } else {
-        throw new Error(data.error || "Uzum Nasiya API error");
-      }
-    } catch (err: any) {
-      console.error(err);
-      alert("Muddatli to'lov tizimi (Uzum) bilan ulanishda xatolik yuz berdi. Iltimos kalit (token) to'g'riligini tekshiring.");
-    } finally {
-      setLoading(false);
-    }
+    // InitiateCheckout (Uzum) event
+    const eid = `ic_uzum_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    trackMetaEvent("InitiateCheckout", eid, {}, {
+      value: totalPrice,
+      currency: "UZS",
+      num_items: items.reduce((s, i) => s + i.quantity, 0),
+      content_ids: items.map((i) => i.product.id),
+    });
+    setShowUzum(true);
   };
 
   const handleCheckout = async () => {
@@ -427,6 +411,9 @@ export default function CartPage() {
       </main>
       <BottomNav />
       <div className="h-20 md:hidden" />
+      {showUzum && (
+        <UzumCheckout initialPhone={clientPhone} onClose={() => setShowUzum(false)} />
+      )}
     </>
   );
 }
