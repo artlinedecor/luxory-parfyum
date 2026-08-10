@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/client";
 
 interface Tariff {
   tariff: string;
@@ -19,6 +20,13 @@ interface Tariff {
 interface UzumCheckoutProps {
   initialPhone?: string;
   extOrderId?: string;
+  /** Buyurtmani bazaga yozish uchun mijoz ma'lumotlari */
+  client?: {
+    name: string;
+    phone: string;
+    address: string;
+    region: string;
+  };
   onClose: () => void;
 }
 
@@ -32,7 +40,7 @@ function normalizePhone(v: string): string {
   return d;
 }
 
-export default function UzumCheckout({ initialPhone = "", extOrderId, onClose }: UzumCheckoutProps) {
+export default function UzumCheckout({ initialPhone = "", extOrderId, client, onClose }: UzumCheckoutProps) {
   const { items } = useCart();
   const [step, setStep] = useState<Step>("phone");
   const [phone, setPhone] = useState(normalizePhone(initialPhone));
@@ -118,6 +126,59 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, onClose }:
     }
   };
 
+  /**
+   * Buyurtmani Supabase'ga yozadi.
+   * Uzum ustunlari (uzum_contract_id...) hali qo'shilmagan bo'lsa —
+   * ularsiz qayta urinadi (migratsiya shart emas).
+   */
+  const saveOrder = async (created: {
+    contract_id: number;
+    order: number;
+    total?: string;
+  }) => {
+    if (!client) return;
+    const supabase = createClient();
+    const orderItems = items.map((it) => ({
+      product_id: it.product.id,
+      title: it.product.title,
+      quantity: it.quantity,
+      price: priceOf(it.product),
+    }));
+    const total = Number(created.total) || items.reduce((s, it) => s + priceOf(it.product) * it.quantity, 0);
+    const base: Record<string, unknown> = {
+      items: orderItems,
+      client_name: client.name,
+      client_phone: client.phone,
+      region: `${client.region} — ${client.address}`,
+      status: "pending",
+      total_amount: total,
+    };
+
+    // 1-urinish: to'liq (migratsiya bajarilgan bo'lsa)
+    const full = {
+      ...base,
+      order_type: "uzum_nasiya",
+      uzum_contract_id: created.contract_id,
+      uzum_order_id: created.order,
+      uzum_period: selected,
+    };
+    let res = await supabase.from("orders").insert(full).select("id").single();
+    if (!res.error) return res.data;
+
+    // 2-urinish: eski sxema (Uzum ustunlarisiz)
+    res = await supabase
+      .from("orders")
+      .insert({
+        ...base,
+        order_type: "full_payment",
+        items: [...orderItems, { _uzum: { contract_id: created.contract_id, order: created.order, period: selected } }],
+      })
+      .select("id")
+      .single();
+    if (res.error) throw new Error(res.error.message);
+    return res.data;
+  };
+
   // 3) create-order -> webview_path ga yo'naltirish
   const handleCreate = async () => {
     if (!userId || !selected) return;
@@ -136,6 +197,10 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, onClose }:
       });
       const j = await r.json();
       if (!r.ok || !j.webview_path) throw new Error(j.error || "Shartnoma yaratilmadi");
+
+      // Buyurtmani bazaga yozamiz (xato bo'lsa ham rasmiylashtirish to'xtamaydi)
+      await saveOrder(j).catch((e) => console.error("Buyurtma saqlanmadi:", e));
+
       setStep("redirect");
       window.location.href = j.webview_path;
     } catch (e) {

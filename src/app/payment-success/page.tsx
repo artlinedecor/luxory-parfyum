@@ -1,10 +1,15 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
+import PaymentSuccessTracker from "@/components/PaymentSuccessTracker";
 
 export default function PaymentSuccessPage() {
   return (
     <>
+      <Suspense fallback={null}>
+        <PaymentSuccessTracker />
+      </Suspense>
       <Header />
       <main className="flex-1 pt-24 pb-24 md:pb-16 flex items-center justify-center">
         <div className="max-w-md mx-auto px-4 text-center space-y-6 animate-fade-in">

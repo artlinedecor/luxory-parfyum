@@ -380,7 +380,8 @@ export default function CartPage() {
               )}
             </button>
 
-            {/* Uzum Nasiya Checkout Button */}
+            {/* Uzum Nasiya Checkout Button — faqat kalit sozlanganda ko'rinadi */}
+            {process.env.NEXT_PUBLIC_UZUM_ENABLED === "true" && (
             <button
               id="uzum-checkout-btn"
               onClick={handleUzumCheckout}
@@ -399,6 +400,7 @@ export default function CartPage() {
                 </>
               )}
             </button>
+            )}
           </div>
 
           {/* Telegram Channel */}
@@ -412,7 +414,16 @@ export default function CartPage() {
       <BottomNav />
       <div className="h-20 md:hidden" />
       {showUzum && (
-        <UzumCheckout initialPhone={clientPhone} onClose={() => setShowUzum(false)} />
+        <UzumCheckout
+          initialPhone={clientPhone}
+          client={{
+            name: clientName,
+            phone: clientPhone,
+            address: clientAddress,
+            region: t(clientRegion),
+          }}
+          onClose={() => setShowUzum(false)}
+        />
       )}
     </>
   );
