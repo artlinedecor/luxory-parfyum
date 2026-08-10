@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { calculateTariffs, productIdToInt } from "@/lib/uzumnasiya";
+import { calculateTariffs, productIdToInt, uzumErrorPayload } from "@/lib/uzumnasiya";
 
 /**
  * 2-bosqich: savat bo'yicha tariflarni hisoblash.
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     const res = await calculateTariffs(user_id, mapped);
     return NextResponse.json({ success: true, tariffs: res.data });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    const { body, status } = uzumErrorPayload(error);
+    return NextResponse.json(body, { status });
   }
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkBuyerStatus } from "@/lib/uzumnasiya";
+import { checkBuyerStatus, uzumErrorPayload } from "@/lib/uzumnasiya";
 
 /**
  * 1-bosqich: foydalanuvchi statusi.
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const res = await checkBuyerStatus(digits);
     return NextResponse.json({ success: true, data: res.data });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    const { body, status } = uzumErrorPayload(error);
+    return NextResponse.json(body, { status });
   }
 }

@@ -85,33 +85,62 @@ export interface CreateOrderProduct {
   product_id?: number;
 }
 
-export interface CalculatedTariff {
-  tariff: string; // create-order 'period' ga uzatiladi (masalan "12 Default")
-  tariff_name: string; // masalan "Limit Max"
-  period_months: number;
-  total: number;
-  origin: number;
-  month: number; // oylik to'lov
-  is_available: boolean;
-  status: number;
-  is_promo: boolean;
-  is_mini_loan: boolean;
-  client_photo_upload: boolean;
-  first_payment_date: string;
-  deposit: number;
-  balance: number;
+/** check-status javobi (dev API'da jonli tekshirilgan) */
+export interface BuyerStatusData {
+  phone: string;
+  status: number; // 4 = tasdiqlangan
+  buyer_id: number; // ⚠️ 'user_id' EMAS — keyingi so'rovlarda user_id sifatida uzatiladi
+  has_limit: boolean;
+  balance: string; // "60932750.00"
+  is_in_black_list: boolean;
+  has_overdue_contracts: boolean;
+  risk_grade?: string;
+  verified_at?: string;
+  webview?: string; // ro'yxatdan o'tish/verifikatsiya WebView URL
+  custom_discount?: number | null;
+  available_periods?: {
+    period: string;
+    title_uz: string;
+    title_ru: string;
+    original_markup: number;
+    discount_markup: number;
+    available_balance: string;
+  }[];
 }
 
+/** calculate javobi (jonli tekshirilgan) */
+export interface CalculatedTariff {
+  tariff_id: number;
+  tariff: string; // create-order 'period' ga uzatiladi (masalan "6-standard", "003", "12 Default")
+  tariff_name: string; // masalan "Limit Max"
+  title_uz: string; // masalan "6 Oy 29%"
+  title_ru: string;
+  period_months: number;
+  total: number; // ustama bilan umumiy
+  origin: number; // ustamasiz asl narx
+  month: number; // oylik to'lov
+  first_payment_date: string;
+  deposit: number;
+  balance: string;
+  is_available: boolean;
+  status: number;
+  is_promo: number;
+  is_mini_loan: number;
+  client_photo_upload: number;
+  error_message?: string;
+}
+
+/** create-order javobidagi shartnoma ma'lumoti (jonli tekshirilgan) */
 export interface PaymartClient {
   fio: string;
   phone: string;
-  order: number;
-  contract_id: number;
+  order: number; // ⚠️ CANCEL uchun aynan SHU id ishlatiladi
+  contract_id: number; // ⚠️ CONFIRM va CHECK-STATUS uchun SHU id
   created_at: string;
-  price_month: number;
-  total: number;
-  available_balance: number;
-  mini_balance: number;
+  price_month: string; // "172000.00"
+  total: string; // "1032000.00"
+  available_balance: string;
+  mini_balance: string;
 }
 
 export interface CreateOrderResult {
@@ -121,10 +150,39 @@ export interface CreateOrderResult {
   webview_path: string; // OTP/imzolash WebView URL
 }
 
+/** Route'lar uchun: xatoni {error, response_code} + HTTP status ga aylantiradi */
+export function uzumErrorPayload(e: unknown): {
+  body: { error: string; response_code?: number };
+  status: number;
+} {
+  if (e instanceof UzumError) {
+    return {
+      body: { error: e.message, response_code: e.responseCode },
+      status: e.httpStatus >= 400 && e.httpStatus < 600 ? e.httpStatus : 500,
+    };
+  }
+  return {
+    body: { error: e instanceof Error ? e.message : "Noma'lum xatolik" },
+    status: 500,
+  };
+}
+
+/** Uzum biznes/HTTP xatosi — response_code va o'qiladigan matn bilan */
+export class UzumError extends Error {
+  httpStatus: number;
+  responseCode?: number;
+  constructor(message: string, httpStatus: number, responseCode?: number) {
+    super(message);
+    this.name = "UzumError";
+    this.httpStatus = httpStatus;
+    this.responseCode = responseCode;
+  }
+}
+
 // ── Ichki fetch yordamchisi ─────────────────────────────────────────────
 async function uzumFetch<T>(path: string, body: unknown): Promise<UzumApiResponse<T>> {
   const token = process.env.UZUM_PARTNER_TOKEN;
-  if (!token) throw new Error("UZUM_PARTNER_TOKEN yo'q (.env)");
+  if (!token) throw new UzumError("UZUM_PARTNER_TOKEN sozlanmagan", 500);
 
   const res = await fetch(`${UZUM_API_URL}${path}`, {
     method: "POST",
@@ -136,12 +194,24 @@ async function uzumFetch<T>(path: string, body: unknown): Promise<UzumApiRespons
     cache: "no-store",
   });
 
-  const json = (await res.json().catch(() => ({}))) as UzumApiResponse<T>;
-  if (res.status === 401) throw new Error("Uzum: avtorizatsiya xatosi (401)");
+  const raw = await res.text();
+  let json: UzumApiResponse<T> & { message?: string };
+  try {
+    json = JSON.parse(raw);
+  } catch {
+    throw new UzumError(`Uzum javobi o'qilmadi (${res.status})`, res.status);
+  }
+
+  if (res.status === 401) throw new UzumError("Avtorizatsiya xatosi (token)", 401);
+
   if (!res.ok || json.status === "error") {
-    throw new Error(
-      `Uzum ${path} xato: ${res.status} ${JSON.stringify(json.error || json)}`
-    );
+    // Uzum xatolari: [{type:'danger', text:'...'}] yoki {message:'...'}
+    const errArr = json.error as { text?: string }[] | undefined;
+    const text =
+      (Array.isArray(errArr) && errArr[0]?.text) ||
+      json.message ||
+      `Xatolik (${res.status})`;
+    throw new UzumError(text, res.status, json.response_code);
   }
   return json;
 }
@@ -149,10 +219,7 @@ async function uzumFetch<T>(path: string, body: unknown): Promise<UzumApiRespons
 // ── 1) Foydalanuvchi statusi ────────────────────────────────────────────
 // phone: 998XXXXXXXXX (12 raqam)
 export function checkBuyerStatus(phone: number) {
-  return uzumFetch<{ status?: number; user_id?: number; limit?: number } & Record<string, unknown>>(
-    "/api/v1/buyers/check-status",
-    { phone }
-  );
+  return uzumFetch<BuyerStatusData>("/api/v1/buyers/check-status", { phone });
 }
 
 // ── 2) Tariflarni hisoblash ─────────────────────────────────────────────
@@ -164,17 +231,20 @@ export function calculateTariffs(user_id: number, products: CalculateProduct[]) 
 }
 
 // ── 3) Shartnoma yaratish ───────────────────────────────────────────────
+// ⚠️ ext_order_id BUTUN SON bo'lishi shart (hujjatda 'string' deb yozilgan — noto'g'ri,
+//    API "Поле ext order id должно быть целым числом" xatosini qaytaradi).
 export function createOrder(params: {
-  user_id: number;
+  user_id: number; // check-status'dagi buyer_id
   period: string; // tanlangan tarifning 'tariff' qiymati
   products: CreateOrderProduct[];
   callback?: string;
-  ext_order_id?: string;
+  ext_order_id?: number;
 }) {
   return uzumFetch<CreateOrderResult>("/api/v1/orders", params);
 }
 
 // ── 4) Shartnomani boshqarish ───────────────────────────────────────────
+/** Tasdiqlash — `contract_id` (paymart_client.contract_id) bilan. */
 export function confirmContract(contract_id: number) {
   return uzumFetch<{ act_pdf?: string } & Record<string, unknown>>(
     "/api/v1/contracts/confirm",
@@ -182,12 +252,23 @@ export function confirmContract(contract_id: number) {
   );
 }
 
-export function cancelContract(contract_id: number) {
-  return uzumFetch<unknown>("/api/v1/contracts/cancel", { contract_id });
+/**
+ * Bekor qilish — ⚠️ bu yerda `paymart_client.order` uzatiladi (contract_id EMAS).
+ * contract_id bilan API 404 "Договор не найден" qaytaradi (jonli tekshirilgan).
+ */
+export function cancelContract(order: number) {
+  return uzumFetch<unknown>("/api/v1/contracts/cancel", { contract_id: order });
 }
 
+/** Holat tekshirish — `contract_id` bilan. */
 export function checkContractStatus(contract_id: number) {
-  return uzumFetch<Record<string, unknown>>("/api/v1/contracts/check-status", {
-    contract_id,
-  });
+  return uzumFetch<{
+    id: number;
+    status: number;
+    contract_id: number;
+    contract_status: number;
+    is_signed: boolean;
+    qr_status: number;
+    type: string;
+  }>("/api/v1/contracts/check-status", { contract_id });
 }

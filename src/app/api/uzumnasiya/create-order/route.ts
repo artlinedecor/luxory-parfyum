@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   createOrder,
   productIdToInt,
+  uzumErrorPayload,
   UZUM_DEFAULT_CATEGORY,
   UZUM_UNIT_PIECE,
 } from "@/lib/uzumnasiya";
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
       user_id: number;
       period: string;
       products: { product_id: string | number; name: string; price: number; amount: number }[];
-      ext_order_id?: string;
+      ext_order_id?: number | string;
     };
 
     if (!user_id || !period || !products?.length) {
@@ -38,7 +39,8 @@ export async function POST(req: Request) {
       unit_id: UZUM_UNIT_PIECE,
     }));
 
-    const orderId = ext_order_id || crypto.randomUUID();
+    // ⚠️ ext_order_id BUTUN SON bo'lishi shart (API string'ni rad etadi)
+    const orderId = Number(ext_order_id) || Date.now() % 2147483647;
     const base = process.env.NEXT_PUBLIC_SITE_URL || "https://parfumelux.uz";
 
     const res = await createOrder({
@@ -52,13 +54,16 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       webview_path: res.data.webview_path,
-      contract_id: res.data.paymart_client.contract_id,
+      contract_id: res.data.paymart_client.contract_id, // confirm / check-status uchun
+      order: res.data.paymart_client.order, // ⚠️ cancel uchun aynan shu
       client_act_pdf: res.data.client_act_pdf,
+      price_month: res.data.paymart_client.price_month,
+      total: res.data.paymart_client.total,
       ext_order_id: orderId,
     });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : "Unknown error";
-    console.error("Uzum create-order error:", msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    const { body, status } = uzumErrorPayload(error);
+    console.error("Uzum create-order error:", body.error);
+    return NextResponse.json(body, { status });
   }
 }

@@ -7,9 +7,12 @@ import { calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 interface Tariff {
   tariff: string;
   tariff_name: string;
+  title_uz?: string;
+  title_ru?: string;
   period_months: number;
   month: number;
   total: number;
+  origin?: number;
   is_available: boolean;
 }
 
@@ -60,7 +63,8 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, onClose }:
       if (!r.ok) throw new Error(j.error || "Xatolik");
 
       const status = Number(j.data?.status);
-      const uid = Number(j.data?.user_id ?? j.data?.id);
+      // ⚠️ Uzum 'buyer_id' qaytaradi (user_id emas)
+      const uid = Number(j.data?.buyer_id ?? j.data?.user_id ?? j.data?.id);
 
       if (status === 4 && uid) {
         setUserId(uid);
@@ -72,7 +76,12 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, onClose }:
         setInfo("Afsuski, bu raqam bo'yicha bo'lib to'lash hozircha mumkin emas. Uzum Nasiya qo'llab-quvvatlash markaziga murojaat qiling.");
         return;
       }
-      // Registratsiya kerak
+      // Registratsiya kerak — Uzum bergan webview'ga yo'naltiramiz
+      if (j.data?.webview) {
+        setInfo("Ro'yxatdan o'tish sahifasiga yo'naltirilmoqda...");
+        setTimeout(() => { window.location.href = j.data.webview; }, 1200);
+        return;
+      }
       setInfo("Bo'lib to'lash uchun avval Uzum Nasiya ilovasida ro'yxatdan o'ting va kartangizni qo'shing, so'ng qayta urinib ko'ring.");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Ulanishda xatolik");
@@ -198,11 +207,17 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, onClose }:
                   }`}
                 >
                   <div className="text-left">
-                    <div className="text-sm font-bold text-foreground">{t.period_months} oy</div>
-                    <div className="text-[11px] text-muted-foreground">{t.tariff_name}</div>
+                    <div className="text-sm font-bold text-foreground">
+                      {t.title_uz || `${t.period_months} oy`}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Jami: {formatUzs(Math.round(t.total))} so'm
+                    </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-bold text-gradient-gold">{formatUzs(t.month)} so'm</div>
+                    <div className="text-sm font-bold text-gradient-gold">
+                      {formatUzs(Math.round(t.month))} so'm
+                    </div>
                     <div className="text-[10px] text-muted-foreground">oyiga</div>
                   </div>
                 </button>
