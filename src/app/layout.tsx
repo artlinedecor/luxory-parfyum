@@ -5,6 +5,7 @@ import { CartProvider } from "@/lib/cart-context";
 import { I18nProvider } from "@/lib/i18n-context";
 import FloatingCart from "@/components/FloatingCart";
 import MetaPixel from "@/components/MetaPixel";
+import ChunkErrorRecovery from "@/components/ChunkErrorRecovery";
 import YandexMetrica from "@/components/YandexMetrica";
 import "./globals.css";
 
@@ -58,6 +59,7 @@ export default function RootLayout({
         <SettingsProvider>
           <I18nProvider>
             <CartProvider>
+            <ChunkErrorRecovery />
             <MetaPixel />
             <YandexMetrica />
             {children}
