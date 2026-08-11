@@ -165,14 +165,17 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
     let res = await supabase.from("orders").insert(full).select("id").single();
     if (!res.error) return res.data;
 
-    // 2-urinish: eski sxema (Uzum ustunlarisiz)
+    // 2-urinish: eski sxema (Uzum ustunlarisiz) — shartnoma ma'lumotini
+    // BIRINCHI mahsulot ichiga yozamiz (alohida element qilsak dashboard'da
+    // soxta "mahsulot" qatori paydo bo'lardi)
+    const itemsWithMeta = orderItems.map((it, i) =>
+      i === 0
+        ? { ...it, _uzum: { contract_id: created.contract_id, order: created.order, period: selected } }
+        : it
+    );
     res = await supabase
       .from("orders")
-      .insert({
-        ...base,
-        order_type: "full_payment",
-        items: [...orderItems, { _uzum: { contract_id: created.contract_id, order: created.order, period: selected } }],
-      })
+      .insert({ ...base, order_type: "full_payment", items: itemsWithMeta })
       .select("id")
       .single();
     if (res.error) throw new Error(res.error.message);
