@@ -32,6 +32,20 @@ interface UzumCheckoutProps {
 
 type Step = "phone" | "tariffs" | "redirect";
 
+/** Uzum'ning texnik xatolarini mijozga tushunarli o'zbekchaga o'giradi */
+function friendlyError(raw: string): string {
+  const t = (raw || "").toLowerCase();
+  if (/внешний сервис|не отвеча|попробуйте позже|ulanib bo'lmadi|javob bermadi|timeout/i.test(raw))
+    return "Uzum tizimi hozir javob bermayapti. Iltimos, bir necha soniyadan keyin qayta urinib ko'ring.";
+  if (/лимит|limit|balance|баланс/i.test(t))
+    return "Bo'lib to'lash limitingiz yetarli emas. Boshqa muddatni tanlang yoki Uzum ilovasidan limitni tekshiring.";
+  if (/не найден|not found/i.test(t))
+    return "Ma'lumot topilmadi. Telefon raqamni tekshirib, qayta urinib ko'ring.";
+  if (/авторизац|token/i.test(t))
+    return "Ulanishda texnik nosozlik. Iltimos, do'kon bilan bog'laning.";
+  return raw || "Xatolik yuz berdi. Qayta urinib ko'ring.";
+}
+
 // 998XXXXXXXXX (12 raqam) ga normalizatsiya
 function normalizePhone(v: string): string {
   const d = v.replace(/\D/g, "");
@@ -92,7 +106,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
       }
       setInfo("Bo'lib to'lash uchun avval Uzum Nasiya ilovasida ro'yxatdan o'ting va kartangizni qo'shing, so'ng qayta urinib ko'ring.");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Ulanishda xatolik");
+      setError(friendlyError(e instanceof Error ? e.message : ""));
     } finally {
       setLoading(false);
     }
@@ -120,7 +134,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
       setSelected(avail[0].tariff);
       setStep("tariffs");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Xatolik");
+      setError(friendlyError(e instanceof Error ? e.message : ""));
     } finally {
       setLoading(false);
     }
@@ -207,7 +221,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
       setStep("redirect");
       window.location.href = j.webview_path;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Xatolik");
+      setError(friendlyError(e instanceof Error ? e.message : ""));
       setLoading(false);
     }
   };

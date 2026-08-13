@@ -181,54 +181,92 @@ export class UzumError extends Error {
 }
 
 // ── Ichki fetch yordamchisi ─────────────────────────────────────────────
-async function uzumFetch<T>(path: string, body: unknown): Promise<UzumApiResponse<T>> {
+
+/** Vaqtinchalik (qayta urinsa o'tadigan) xatolar */
+function isTransient(status: number, text: string): boolean {
+  if (status >= 500) return true;
+  return /Внешний сервис|не отвеча|timeout|timed out|попробуйте позже|Service Unavailable/i.test(text || "");
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * @param retries — faqat IDEMPOTENT (hech narsa yaratmaydigan) metodlar uchun.
+ *   ⚠️ create-order / confirm / cancel da 0 bo'lishi SHART — aks holda
+ *   takroriy shartnoma yoki ikki marta tasdiqlash xavfi bor.
+ */
+async function uzumFetch<T>(
+  path: string,
+  body: unknown,
+  retries = 0
+): Promise<UzumApiResponse<T>> {
   const token = process.env.UZUM_PARTNER_TOKEN;
   if (!token) throw new UzumError("UZUM_PARTNER_TOKEN sozlanmagan", 500);
 
-  const res = await fetch(`${UZUM_API_URL}${path}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(body),
-    cache: "no-store",
-  });
+  let lastErr: UzumError | null = null;
 
-  const raw = await res.text();
-  let json: UzumApiResponse<T> & { message?: string };
-  try {
-    json = JSON.parse(raw);
-  } catch {
-    throw new UzumError(`Uzum javobi o'qilmadi (${res.status})`, res.status);
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    if (attempt > 0) await sleep(700 * attempt); // qisqa kutish
+
+    let res: Response;
+    try {
+      res = await fetch(`${UZUM_API_URL}${path}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+        cache: "no-store",
+        signal: AbortSignal.timeout(20000),
+      });
+    } catch {
+      lastErr = new UzumError("Uzum tizimiga ulanib bo'lmadi", 503);
+      continue; // tarmoq xatosi — qayta urinamiz
+    }
+
+    const raw = await res.text();
+    let json: UzumApiResponse<T> & { message?: string };
+    try {
+      json = JSON.parse(raw);
+    } catch {
+      lastErr = new UzumError(`Uzum javobi o'qilmadi (${res.status})`, res.status);
+      if (isTransient(res.status, raw)) continue;
+      throw lastErr;
+    }
+
+    if (res.status === 401) throw new UzumError("Avtorizatsiya xatosi (token)", 401);
+
+    if (!res.ok || json.status === "error") {
+      // Uzum xatolari: [{type:'danger', text:'...'}] yoki {message:'...'}
+      const errArr = json.error as { text?: string }[] | undefined;
+      const text =
+        (Array.isArray(errArr) && errArr[0]?.text) ||
+        json.message ||
+        `Xatolik (${res.status})`;
+      lastErr = new UzumError(text, res.status, json.response_code);
+      if (isTransient(res.status, text)) continue; // vaqtinchalik — qayta urinamiz
+      throw lastErr;
+    }
+    return json;
   }
 
-  if (res.status === 401) throw new UzumError("Avtorizatsiya xatosi (token)", 401);
-
-  if (!res.ok || json.status === "error") {
-    // Uzum xatolari: [{type:'danger', text:'...'}] yoki {message:'...'}
-    const errArr = json.error as { text?: string }[] | undefined;
-    const text =
-      (Array.isArray(errArr) && errArr[0]?.text) ||
-      json.message ||
-      `Xatolik (${res.status})`;
-    throw new UzumError(text, res.status, json.response_code);
-  }
-  return json;
+  throw lastErr ?? new UzumError("Uzum tizimi javob bermadi", 503);
 }
 
 // ── 1) Foydalanuvchi statusi ────────────────────────────────────────────
 // phone: 998XXXXXXXXX (12 raqam)
 export function checkBuyerStatus(phone: number) {
-  return uzumFetch<BuyerStatusData>("/api/v1/buyers/check-status", { phone });
+  return uzumFetch<BuyerStatusData>("/api/v1/buyers/check-status", { phone }, 2);
 }
 
 // ── 2) Tariflarni hisoblash ─────────────────────────────────────────────
 export function calculateTariffs(user_id: number, products: CalculateProduct[]) {
-  return uzumFetch<CalculatedTariff[]>("/api/v1/orders/calculate", {
-    user_id,
-    products,
-  });
+  return uzumFetch<CalculatedTariff[]>(
+    "/api/v1/orders/calculate",
+    { user_id, products },
+    2
+  );
 }
 
 // ── 3) Shartnoma yaratish ───────────────────────────────────────────────
@@ -271,5 +309,5 @@ export function checkContractStatus(contract_id: number) {
     is_signed: boolean;
     qr_status: number;
     type: string;
-  }>("/api/v1/contracts/check-status", { contract_id });
+  }>("/api/v1/contracts/check-status", { contract_id }, 2);
 }
