@@ -1,17 +1,19 @@
 export interface Product {
   id: string;
-  merchant_id: string;
   title: string;
   title_ru?: string;
-  description: string | null;
-  description_ru?: string | null;
   price_usd: number;
   product_type: "lux_copy" | "original";
   image_url: string | null;
-  is_available: boolean;
+  created_at: string;
+  // Quyidagilar faqat detal sahifada (to'liq qator) keladi —
+  // ro'yxat so'rovi tezlik uchun ularni olmaydi.
+  merchant_id?: string;
+  description?: string | null;
+  description_ru?: string | null;
+  is_available?: boolean;
   stock?: number;
   gender?: "male" | "female" | "unisex";
-  created_at: string;
 }
 
 export interface Order {

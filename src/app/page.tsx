@@ -27,7 +27,10 @@ export default function Home() {
         const supabase = createClient();
         const { data, error } = await supabase
           .from("products")
-          .select("*")
+          .select(
+            // faqat ro'yxat uchun kerakli ustunlar (tavsiflar 140KB edi — detal sahifada olinadi)
+            "id,title,title_ru,price_usd,image_url,product_type,gender,stock,created_at"
+          )
           .eq("is_available", true)
           .order("created_at", { ascending: false });
 

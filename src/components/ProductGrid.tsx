@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
 import ProductCard from "./ProductCard";
+
+const PAGE = 24; // bir "sahifa"da nechta mahsulot chiziladi
 
 interface ProductGridProps {
   products: Product[];
@@ -16,6 +18,8 @@ export default function ProductGrid({ products }: ProductGridProps) {
   >("all");
   const [query, setQuery] = useState("");
   const [addedId, setAddedId] = useState<string | null>(null);
+  // Bir vaqtda chizilayotgan kartochkalar soni (198 tasini birdan chizish telefonni qotirardi)
+  const [visible, setVisible] = useState(PAGE);
   const { addItem } = useCart();
   const { t, lang } = useI18n();
 
@@ -34,6 +38,28 @@ export default function ProductGrid({ products }: ProductGridProps) {
       return genderMatch && searchMatch;
     });
   }, [products, genderFilter, query]);
+
+  // Filtr/qidiruv o'zgarsa — boshidan ko'rsatamiz
+  useEffect(() => {
+    setVisible(PAGE);
+  }, [genderFilter, query]);
+
+  // Pastga yetganda keyingi qismini avtomatik yuklaymiz
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setVisible((v) => (v < filteredProducts.length ? v + PAGE : v));
+        }
+      },
+      { rootMargin: "600px" } // oldindan yuklaymiz — uzluksiz his qilinadi
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [filteredProducts.length]);
 
   const handleAddToCart = (product: Product) => {
     addItem(product);
@@ -119,7 +145,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
 
       {/* Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
-        {filteredProducts.map((product) => (
+        {filteredProducts.slice(0, visible).map((product) => (
           <div key={product.id} className="animate-fade-in relative flex">
             <ProductCard product={product} onAddToCart={handleAddToCart} />
             {addedId === product.id && (
@@ -130,6 +156,21 @@ export default function ProductGrid({ products }: ProductGridProps) {
           </div>
         ))}
       </div>
+
+      {/* Avtomatik yuklash nuqtasi + zaxira tugma */}
+      {visible < filteredProducts.length && (
+        <div ref={sentinelRef} className="flex justify-center pt-2">
+          <button
+            onClick={() => setVisible((v) => v + PAGE)}
+            className="px-6 py-3 rounded-full border border-gold/30 text-gold text-xs font-bold uppercase tracking-widest hover:bg-gold/10 transition-all duration-300"
+          >
+            {lang === "ru" ? "Показать ещё" : "Yana ko'rsatish"}
+            <span className="ml-2 text-muted-foreground font-normal normal-case">
+              ({visible}/{filteredProducts.length})
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* Empty state */}
       {filteredProducts.length === 0 && (

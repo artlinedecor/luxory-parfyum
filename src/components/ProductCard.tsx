@@ -23,7 +23,6 @@ export default function ProductCard({
   const { t, lang } = useI18n();
 
   const displayTitle = lang === 'ru' && product.title_ru ? product.title_ru : product.title;
-  const displayDesc = lang === 'ru' && product.description_ru ? product.description_ru : product.description;
 
   return (
     <Link
@@ -84,12 +83,6 @@ export default function ProductCard({
         <h3 className="font-heading text-[15px] font-semibold text-foreground leading-snug line-clamp-2 tracking-tight group-hover:text-gold transition-colors duration-300">
           {displayTitle}
         </h3>
-
-        {displayDesc && (
-          <p className="mt-1.5 text-[10px] text-muted-foreground/80 line-clamp-2 leading-relaxed">
-            {displayDesc}
-          </p>
-        )}
 
         <div className="mt-auto pt-4 flex flex-col gap-3">
           {/* Tilla hairline ajratkich */}
