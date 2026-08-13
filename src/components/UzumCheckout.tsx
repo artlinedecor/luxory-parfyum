@@ -46,12 +46,28 @@ function friendlyError(raw: string): string {
   return raw || "Xatolik yuz berdi. Qayta urinib ko'ring.";
 }
 
-// 998XXXXXXXXX (12 raqam) ga normalizatsiya
+/**
+ * 998XXXXXXXXX (12 raqam) ga keltiradi.
+ * ⚠️ HECH QACHON kesmaydi — avval `.slice(0,12)` qilardi va noto'g'ri
+ * kiritilgan 13 raqamli son BOSHQA ODAMNING raqamiga aylanib, SMS
+ * o'shanga ketardi. Endi noto'g'ri uzunlik "yaroqsiz" deb belgilanadi.
+ */
 function normalizePhone(v: string): string {
-  const d = v.replace(/\D/g, "");
-  if (d.startsWith("998")) return d.slice(0, 12);
-  if (d.length === 9) return "998" + d;
+  let d = (v || "").replace(/\D/g, "");
+  if (d.startsWith("00")) d = d.slice(2);
+  if (d.length === 9) d = "998" + d; // 90 123 45 67 ko'rinishida kiritilgan
   return d;
+}
+
+/** Faqat 998 + 9 raqam qabul qilinadi */
+function isValidUzPhone(d: string): boolean {
+  return /^998\d{9}$/.test(d);
+}
+
+/** +998 99 102 02 00 ko'rinishida chiroyli ko'rsatish */
+function prettyPhone(d: string): string {
+  if (!isValidUzPhone(d)) return d;
+  return `+${d.slice(0, 3)} ${d.slice(3, 5)} ${d.slice(5, 8)} ${d.slice(8, 10)} ${d.slice(10, 12)}`;
 }
 
 export default function UzumCheckout({ initialPhone = "", extOrderId, client, onClose }: UzumCheckoutProps) {
@@ -70,8 +86,10 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
   // 1) check-status -> agar status=4 bo'lsa 2) calculate
   const handlePhone = async () => {
     const ph = normalizePhone(phone);
-    if (ph.length !== 12) {
-      setError("Telefon raqamini to'liq kiriting (998 XX XXX XX XX)");
+    if (!isValidUzPhone(ph)) {
+      setError(
+        "Telefon raqam noto'g'ri. To'g'ri format: 998 XX XXX XX XX (jami 12 raqam)."
+      );
       return;
     }
     setError(""); setInfo(""); setLoading(true);
@@ -218,6 +236,20 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
       // Buyurtmani bazaga yozamiz (xato bo'lsa ham rasmiylashtirish to'xtamaydi)
       await saveOrder(j).catch((e) => console.error("Buyurtma saqlanmadi:", e));
 
+      // Qaytib kelganda shartnoma HAQIQATAN imzolanganini tekshirish uchun
+      // ma'lumotni saqlab qo'yamiz (Uzum callback'ga bekor qilganda ham qaytaradi)
+      try {
+        localStorage.setItem(
+          "uzum_pending",
+          JSON.stringify({
+            contract_id: j.contract_id,
+            order: j.order,
+            total: Number(j.total) || 0,
+            ts: Date.now(),
+          })
+        );
+      } catch {}
+
       setStep("redirect");
       window.location.href = j.webview_path;
     } catch (e) {
@@ -263,6 +295,21 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
               placeholder="998 90 123 45 67"
               className="w-full px-4 py-3.5 rounded-xl bg-secondary/60 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50 focus:ring-2 focus:ring-gold/20"
             />
+            {/* Mijoz xato raqamni oldindan ko'rsin — SMS aynan shu raqamga ketadi */}
+            {isValidUzPhone(normalizePhone(phone)) ? (
+              <p className="text-[11px] text-muted-foreground">
+                SMS-kod shu raqamga yuboriladi:{" "}
+                <span className="text-gold font-semibold">
+                  {prettyPhone(normalizePhone(phone))}
+                </span>
+              </p>
+            ) : (
+              normalizePhone(phone).length > 3 && (
+                <p className="text-[11px] text-amber-400">
+                  Raqam to&apos;liq emas yoki ortiqcha raqam bor (998 + 9 ta raqam bo&apos;lishi kerak)
+                </p>
+              )
+            )}
             <button
               onClick={handlePhone}
               disabled={loading}
@@ -276,7 +323,15 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         {/* Step: tariffs */}
         {step === "tariffs" && (
           <div className="space-y-3">
-            <p className="text-xs text-muted-foreground">Bo'lib to'lash muddatini tanlang:</p>
+            <p className="text-xs text-muted-foreground">
+              Bo&apos;lib to&apos;lash muddatini tanlang:
+            </p>
+            <p className="text-[11px] text-muted-foreground -mt-1">
+              Raqam:{" "}
+              <span className="text-gold font-semibold">
+                {prettyPhone(normalizePhone(phone))}
+              </span>
+            </p>
             <div className="space-y-2">
               {tariffs.map((t) => (
                 <button
