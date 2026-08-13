@@ -321,3 +321,65 @@
     display: none;
   }
 }
+
+/* ────────────────────────────────────────────────────────────────
+   SKROLL TEZLIGI
+   Ro'yxatdagi kartochkalar ekrandan tashqarida bo'lsa — brauzer ularni
+   umuman chizmaydi (uzun katalogda skroll sezilarli yengillashadi).
+   ──────────────────────────────────────────────────────────────── */
+@layer utilities {
+  .lux-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 340px;
+  }
+
+  /* ── TELEFON / SENSORLI QURILMALAR ──
+     backdrop-filter, fixed fon, doimiy animatsiyalar mobil GPU uchun
+     juda qimmat — skroll "qotib" qolardi. Ko'rinish deyarli bir xil
+     qoladi, lekin skroll silliq bo'ladi. */
+  @media (max-width: 1024px) {
+    body {
+      background-attachment: scroll; /* fixed => har kadrda qayta chizish */
+    }
+    body::before {
+      display: none; /* grain + mix-blend-mode overlay */
+    }
+    .glass-card {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: linear-gradient(
+        180deg,
+        rgba(26, 26, 26, 0.94) 0%,
+        rgba(13, 13, 13, 0.94) 100%
+      );
+    }
+    /* Tilla matn — statik gradient (harakatlanuvchi nur o'chiriladi) */
+    .text-gradient-gold {
+      animation: none;
+      background: linear-gradient(135deg, #f7e7a8 0%, #e6c766 45%, #c9a84c 100%);
+      background-size: auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .animate-glow-shimmer {
+      animation: none;
+    }
+    .shimmer::after {
+      animation: none;
+    }
+    .lux-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+
+  /* Foydalanuvchi animatsiyani kamaytirishni so'ragan bo'lsa */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-marquee,
+    .text-gradient-gold,
+    .animate-glow-shimmer,
+    .shimmer::after {
+      animation: none !important;
+    }
+  }
+}

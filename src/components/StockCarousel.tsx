@@ -17,7 +17,8 @@ export default function StockCarousel({ products }: StockCarouselProps) {
   const { t, lang } = useI18n();
 
   // Rasmi bor mahsulotlardan tanlangan to'plam
-  const featured = products.filter((p) => p.image_url).slice(0, 24);
+  // 24 ta emas 12 ta — takrorlangani bilan 24 element bo'ladi (mobil skroll uchun yengil)
+  const featured = products.filter((p) => p.image_url).slice(0, 12);
 
   if (featured.length < 4) return null;
 
