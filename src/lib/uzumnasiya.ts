@@ -13,8 +13,9 @@
  */
 
 // Partner (MFO) API host. Env orqali override qilish mumkin (test/prod).
-export const UZUM_API_URL =
-  process.env.UZUM_API_URL || "https://merchants-api.uzumnasiya.uz";
+export const UZUM_API_URL = (
+  process.env.UZUM_API_URL || "https://merchants-api.uzumnasiya.uz"
+).replace(/\/+$/, ""); // oxiridagi slash olib tashlanadi (// oldini olish)
 
 // Mahsulot standart qiymatlari (Uzum bilan tasdiqlanishi kerak)
 export const UZUM_UNIT_PIECE = 1; // dona
