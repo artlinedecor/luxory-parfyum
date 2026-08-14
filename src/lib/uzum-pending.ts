@@ -112,6 +112,20 @@ export async function resolvePending(): Promise<PendingResult> {
       await insertOrder(p);
       localStorage.setItem(savedKey, "1");
 
+      // Telegram botga tasdiqlash tugmalari bilan yuboramiz
+      fetch("/api/uzumnasiya/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contract_id: p.contract_id,
+          order: p.order,
+          period: p.period,
+          total: p.total,
+          client: p.client,
+          items: p.items,
+        }),
+      }).catch(() => {});
+
       const eid = `pur_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
       trackMetaEvent("Purchase", eid, {}, {
         value: p.total,
