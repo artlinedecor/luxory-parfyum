@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { trackMetaEvent } from "@/lib/meta-tracker";
 import { useCart } from "@/lib/cart-context";
+import { readPending, resolvePending } from "@/lib/uzum-pending";
 
 type State = "checking" | "signed" | "not_completed" | "generic" | "error";
 
@@ -18,52 +18,23 @@ export default function UzumPaymentResult() {
   const { clearCart, items } = useCart();
 
   useEffect(() => {
-    let pending: { contract_id?: number; total?: number } | null = null;
-    try {
-      const raw = localStorage.getItem("uzum_pending");
-      if (raw) pending = JSON.parse(raw);
-    } catch {}
-
     // Uzum oqimi emas (masalan Click to'lovi) — eski xatti-harakat saqlanadi
-    if (!pending?.contract_id) {
+    if (!readPending()) {
       setState("generic");
       return;
     }
-
     (async () => {
-      try {
-        const r = await fetch("/api/uzumnasiya/contracts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "status", contract_id: pending!.contract_id }),
-        });
-        const j = await r.json();
-        if (!r.ok) throw new Error(j.error || "Xatolik");
-
-        const st = Number(j.data?.contract_status);
-        // 2 = moderatsiyada (mijoz imzolagan), 1 = aktiv
-        if (st === 1 || st === 2) {
-          setState("signed");
-          localStorage.removeItem("uzum_pending");
-
-          // Purchase FAQAT shu yerda — haqiqatan imzolangani tasdiqlangach
-          const key = `purchase_sent_${pending!.contract_id}`;
-          if (!localStorage.getItem(key)) {
-            const eid = `pur_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-            trackMetaEvent("Purchase", eid, {}, {
-              value: Number(pending!.total) || 0,
-              currency: "UZS",
-              content_type: "product",
-              order_id: String(pending!.contract_id),
-            });
-            localStorage.setItem(key, "1");
-          }
-          if (items.length > 0) clearCart();
-        } else {
-          // 0 = imzolanmagan (SMS kelmadi / mijoz bekor qildi)
-          setState("not_completed");
-        }
-      } catch {
+      // Shartnoma imzolangan bo'lsa — buyurtma AYNAN SHU YERDA bazaga
+      // yoziladi va Purchase yuboriladi. Imzolanmagan bo'lsa — hech narsa.
+      const res = await resolvePending();
+      if (res === "signed") {
+        setState("signed");
+        if (items.length > 0) clearCart();
+      } else if (res === "not_signed") {
+        setState("not_completed");
+      } else if (res === "none") {
+        setState("generic");
+      } else {
         setState("error");
       }
     })();

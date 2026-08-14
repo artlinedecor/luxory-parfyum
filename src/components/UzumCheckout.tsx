@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
-import { createClient } from "@/utils/supabase/client";
+import { savePending } from "@/lib/uzum-pending";
 
 interface Tariff {
   tariff: string;
@@ -158,62 +158,6 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
     }
   };
 
-  /**
-   * Buyurtmani Supabase'ga yozadi.
-   * Uzum ustunlari (uzum_contract_id...) hali qo'shilmagan bo'lsa —
-   * ularsiz qayta urinadi (migratsiya shart emas).
-   */
-  const saveOrder = async (created: {
-    contract_id: number;
-    order: number;
-    total?: string;
-  }) => {
-    if (!client) return;
-    const supabase = createClient();
-    const orderItems = items.map((it) => ({
-      product_id: it.product.id,
-      title: it.product.title,
-      quantity: it.quantity,
-      price: priceOf(it.product),
-    }));
-    const total = Number(created.total) || items.reduce((s, it) => s + priceOf(it.product) * it.quantity, 0);
-    const base: Record<string, unknown> = {
-      items: orderItems,
-      client_name: client.name,
-      client_phone: client.phone,
-      region: `${client.region} — ${client.address}`,
-      status: "pending",
-      total_amount: total,
-    };
-
-    // 1-urinish: to'liq (migratsiya bajarilgan bo'lsa)
-    const full = {
-      ...base,
-      order_type: "uzum_nasiya",
-      uzum_contract_id: created.contract_id,
-      uzum_order_id: created.order,
-      uzum_period: selected,
-    };
-    let res = await supabase.from("orders").insert(full).select("id").single();
-    if (!res.error) return res.data;
-
-    // 2-urinish: eski sxema (Uzum ustunlarisiz) — shartnoma ma'lumotini
-    // BIRINCHI mahsulot ichiga yozamiz (alohida element qilsak dashboard'da
-    // soxta "mahsulot" qatori paydo bo'lardi)
-    const itemsWithMeta = orderItems.map((it, i) =>
-      i === 0
-        ? { ...it, _uzum: { contract_id: created.contract_id, order: created.order, period: selected } }
-        : it
-    );
-    res = await supabase
-      .from("orders")
-      .insert({ ...base, order_type: "full_payment", items: itemsWithMeta })
-      .select("id")
-      .single();
-    if (res.error) throw new Error(res.error.message);
-    return res.data;
-  };
-
   // 3) create-order -> webview_path ga yo'naltirish
   const handleCreate = async () => {
     if (!userId || !selected) return;
@@ -233,22 +177,23 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
       const j = await r.json();
       if (!r.ok || !j.webview_path) throw new Error(j.error || "Shartnoma yaratilmadi");
 
-      // Buyurtmani bazaga yozamiz (xato bo'lsa ham rasmiylashtirish to'xtamaydi)
-      await saveOrder(j).catch((e) => console.error("Buyurtma saqlanmadi:", e));
-
-      // Qaytib kelganda shartnoma HAQIQATAN imzolanganini tekshirish uchun
-      // ma'lumotni saqlab qo'yamiz (Uzum callback'ga bekor qilganda ham qaytaradi)
-      try {
-        localStorage.setItem(
-          "uzum_pending",
-          JSON.stringify({
-            contract_id: j.contract_id,
-            order: j.order,
-            total: Number(j.total) || 0,
-            ts: Date.now(),
-          })
-        );
-      } catch {}
+      // ⚠️ Buyurtma bazaga HOZIR yozilmaydi — mijoz OTP kiritmasdan chiqib
+      // ketsa dashboard'da soxta buyurtma qolardi. Faqat brauzerda saqlaymiz;
+      // shartnoma imzolangani tasdiqlangach (resolvePending) yoziladi.
+      savePending({
+        contract_id: j.contract_id,
+        order: j.order,
+        period: selected,
+        total: Number(j.total) || items.reduce((s, it) => s + priceOf(it.product) * it.quantity, 0),
+        client: client ?? { name: "", phone: normalizePhone(phone), address: "", region: "" },
+        items: items.map((it) => ({
+          product_id: it.product.id,
+          title: it.product.title,
+          quantity: it.quantity,
+          price: priceOf(it.product),
+        })),
+        ts: Date.now(),
+      });
 
       setStep("redirect");
       window.location.href = j.webview_path;
