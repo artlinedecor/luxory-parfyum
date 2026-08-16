@@ -205,12 +205,12 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-[#1a1a1a]/45 backdrop-blur-[2px]" onClick={onClose} />
       <div className="relative w-full sm:max-w-md glass-card rounded-t-3xl sm:rounded-3xl border border-gold/20 p-6 space-y-5 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#6100FF] text-white text-sm font-bold">U</span>
+            <span className="inline-flex items-center justify-center w-9 h-9 bg-[#6100FF] text-white text-sm font-semibold">U</span>
             <div>
               <h3 className="font-heading text-base font-bold text-foreground">Uzum Nasiya</h3>
               <p className="text-[11px] text-muted-foreground">Bo'lib to'lash</p>
@@ -222,10 +222,10 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         <div className="gold-hairline" />
 
         {info && (
-          <div className="p-3 rounded-xl bg-gold/10 border border-gold/25 text-xs text-gold-light leading-relaxed">{info}</div>
+          <div className="p-3.5 bg-gold-muted border border-gold/30 text-xs text-gold-deep leading-relaxed">{info}</div>
         )}
         {error && (
-          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/25 text-xs text-red-400 leading-relaxed">{error}</div>
+          <div className="p-3.5 bg-destructive/8 border border-destructive/25 text-xs text-destructive leading-relaxed">{error}</div>
         )}
 
         {/* Step: phone */}
@@ -238,7 +238,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="998 90 123 45 67"
-              className="w-full px-4 py-3.5 rounded-xl bg-secondary/60 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50 focus:ring-2 focus:ring-gold/20"
+              className="w-full px-4 min-h-[50px] py-3.5 bg-transparent border border-input text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-gold transition-colors"
             />
             {/* Mijoz xato raqamni oldindan ko'rsin — SMS aynan shu raqamga ketadi */}
             {isValidUzPhone(normalizePhone(phone)) ? (
@@ -258,7 +258,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
             <button
               onClick={handlePhone}
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-[#6100FF] text-white font-bold text-sm tracking-wide hover:bg-[#5000E0] active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center"
+              className="w-full min-h-[50px] py-3.5 bg-[#6100FF] text-white text-[11px] uppercase tracking-[0.16em] font-semibold hover:bg-[#5000E0] active:scale-[0.99] transition-colors disabled:opacity-50 flex items-center justify-center"
             >
               {loading ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Davom etish"}
             </button>
@@ -282,7 +282,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
                 <button
                   key={t.tariff}
                   onClick={() => setSelected(t.tariff)}
-                  className={`w-full flex items-center justify-between p-3.5 rounded-xl border transition-all ${
+                  className={`w-full flex items-center justify-between p-3.5  border transition-all ${
                     selected === t.tariff
                       ? "border-gold bg-gold/10 shadow-md shadow-gold/10"
                       : "border-border hover:border-foreground/30"
@@ -297,7 +297,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-bold text-gradient-gold">
+                    <div className="text-sm font-bold text-foreground">
                       {formatUzs(Math.round(t.month))} so'm
                     </div>
                     <div className="text-[10px] text-muted-foreground">oyiga</div>
@@ -308,7 +308,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
             <button
               onClick={handleCreate}
               disabled={loading || !selected}
-              className="w-full py-3.5 rounded-xl bg-[#6100FF] text-white font-bold text-sm tracking-wide hover:bg-[#5000E0] active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center"
+              className="w-full min-h-[50px] py-3.5 bg-[#6100FF] text-white text-[11px] uppercase tracking-[0.16em] font-semibold hover:bg-[#5000E0] active:scale-[0.99] transition-colors disabled:opacity-50 flex items-center justify-center"
             >
               {loading ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Rasmiylashtirish"}
             </button>

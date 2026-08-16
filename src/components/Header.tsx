@@ -68,39 +68,35 @@ export default function Header() {
           {/* O'ng tomon — har doim ko'rinadi */}
           <div className="flex items-center gap-3 sm:gap-4">
             {/* Til almashtirish */}
-            <div className="flex items-center gap-1.5 text-[11px] tracking-[0.12em]">
-              <button
-                onClick={() => setLang("uz")}
-                className={`transition-colors ${
-                  lang === "uz"
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                UZ
-              </button>
-              <span className="text-muted-foreground/40">/</span>
-              <button
-                onClick={() => setLang("ru")}
-                className={`transition-colors ${
-                  lang === "ru"
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                RU
-              </button>
+            <div className="flex items-center text-[11px] tracking-[0.12em]">
+              {(["uz", "ru"] as const).map((code, i) => (
+                <span key={code} className="flex items-center">
+                  {i > 0 && <span className="text-muted-foreground/40">/</span>}
+                  <button
+                    onClick={() => setLang(code)}
+                    aria-pressed={lang === code}
+                    /* px/py — barmoq uchun 44px nishon (ko'rinishi o'zgarmaydi) */
+                    className={`px-1.5 py-3.5 -my-3.5 transition-colors ${
+                      lang === code
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {code.toUpperCase()}
+                  </button>
+                </span>
+              ))}
             </div>
 
             {/* Savatcha */}
             <Link
               href="/cart"
-              className="relative p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors duration-300"
+              className="relative flex items-center justify-center w-11 h-11 -mr-2.5 text-muted-foreground hover:text-foreground transition-colors duration-300"
               title={t("cart")}
             >
               <ShoppingBag className="w-5 h-5" strokeWidth={1.25} />
               {totalItems > 0 && (
-                <span className="absolute top-0.5 right-0 min-w-[16px] h-4 px-1 rounded-full bg-foreground text-background text-[9px] font-semibold flex items-center justify-center animate-scale-in">
+                <span className="absolute top-1.5 right-1 min-w-[16px] h-4 px-1 rounded-full bg-foreground text-background text-[9px] font-semibold flex items-center justify-center animate-scale-in">
                   {totalItems}
                 </span>
               )}
@@ -109,7 +105,7 @@ export default function Header() {
             {/* Admin kirish */}
             <Link
               href="/login"
-              className="p-2 -mr-2 text-muted-foreground/60 hover:text-foreground transition-colors duration-300"
+              className="flex items-center justify-center w-11 h-11 -mr-3 text-muted-foreground/60 hover:text-foreground transition-colors duration-300"
               title="Admin Panel"
             >
               <Lock className="w-4 h-4" strokeWidth={1.25} />
