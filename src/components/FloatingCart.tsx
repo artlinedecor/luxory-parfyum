@@ -27,7 +27,7 @@ export default function FloatingCart() {
         </svg>
 
         {/* Counter Badge */}
-        <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center shadow-lg border-2 border-[#0a0a0a]">
+        <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center shadow-lg border-2 border-background">
           {totalItems}
         </div>
       </div>

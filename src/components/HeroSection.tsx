@@ -5,16 +5,24 @@ import Link from "next/link";
 import { useI18n } from "@/lib/i18n-context";
 import { useShopSettings } from "@/lib/settings-context";
 
+/**
+ * Hero — qorong'i fotosurat ustidagi editorial blok.
+ * Sahifaning qolgan qismi yorug' (alabastr), shu bois pastki gradient
+ * aynan fon rangiga (#faf8f5) ulanadi — chegara sezilmaydi.
+ */
 export default function HeroSection() {
   const { t } = useI18n();
   const { shopPhone, telegramAdminUsername, telegramChannel } = useShopSettings();
 
+  const socialLink =
+    "w-11 h-11 flex items-center justify-center border border-white/25 text-white/75 hover:text-white hover:border-white/60 transition-colors duration-300";
+
   return (
     <section
       id="hero"
-      className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-[88vh] flex items-center justify-center overflow-hidden"
     >
-      {/* Background image */}
+      {/* Fon rasmi */}
       <div className="absolute inset-0">
         <Image
           src="/hero.webp"
@@ -22,61 +30,43 @@ export default function HeroSection() {
           fill
           className="object-cover"
           priority
-          quality={70}
           sizes="100vw"
         />
-        {/* Dark overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-[#0a0a0a]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60" />
+        {/* Matn o'qilishi uchun quyuqlashtirish + pastda alabastrga o'tish */}
+        <div className="absolute inset-0 bg-[#1a1a1a]/55" />
+        <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-b from-transparent to-[#faf8f5]" />
       </div>
 
-      {/* Decorative elements */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-gold/5 blur-[100px]" />
-      <div className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full bg-gold/5 blur-[80px]" />
+      {/* Matn */}
+      <div className="relative z-10 max-w-3xl mx-auto px-4 pb-24 text-center">
+        <p className="eyebrow text-[#ded0b8]">{t("hero_badge")}</p>
 
-      {/* Content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-4 text-center space-y-8">
-        {/* Subtle label */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gold/20 bg-gold/5 backdrop-blur-sm">
-          <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
-          <span className="text-gold text-xs font-medium tracking-widest uppercase">
-            {t("hero_badge")}
-          </span>
-        </div>
-
-        {/* Heading */}
-        <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl font-bold leading-tight tracking-tight">
-          <span className="text-foreground">{t("hero_title_1")} </span>
-          <span className="text-gradient-gold">{t("hero_title_2")}</span>
+        <h1 className="font-heading mt-6 text-[2.75rem] sm:text-6xl md:text-7xl leading-[1.08] text-white">
+          {t("hero_title_1")} <span className="italic">{t("hero_title_2")}</span>
           <br />
-          <span className="text-foreground">{t("hero_title_3")}</span>
+          {t("hero_title_3")}
         </h1>
 
-        {/* Description */}
-        <p className="max-w-xl mx-auto text-muted-foreground text-sm sm:text-base leading-relaxed">
+        <div className="gold-hairline w-20 mx-auto mt-8" />
+
+        <p className="mt-8 max-w-lg mx-auto text-sm sm:text-[15px] text-white/70 leading-relaxed">
           {t("hero_desc")}
         </p>
 
-        {/* Delivery Badge */}
-        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-green-500/10 border border-green-500/20 backdrop-blur-sm">
-          <span className="text-green-400 text-xs sm:text-sm font-medium">
-            {t("hero_delivery_badge")}
-          </span>
-        </div>
+        <p className="mt-5 eyebrow text-[#ded0b8]">
+          {t("hero_delivery_badge")}
+        </p>
 
         {/* CTA */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/catalog"
             id="hero-cta-catalog"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-gold text-black font-bold text-sm uppercase tracking-wider
-                       hover:opacity-90 active:scale-[0.98] transition-all duration-300
-                       shadow-xl shadow-gold/25 hover:shadow-gold/40"
+            className="w-full sm:w-auto min-h-[52px] inline-flex items-center justify-center gap-3 px-10
+                       bg-[#faf8f5] text-[#1a1a1a] eyebrow
+                       hover:bg-[#ded0b8] transition-colors duration-300"
           >
             {t("btn_catalog")}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-              <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
-            </svg>
           </Link>
 
           <a
@@ -84,54 +74,77 @@ export default function HeroSection() {
             target="_blank"
             rel="noopener noreferrer"
             id="hero-cta-instagram"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-gold/30 text-gold font-semibold text-sm uppercase tracking-wider
-                       hover:bg-gold/10 transition-all duration-300"
+            className="w-full sm:w-auto min-h-[52px] inline-flex items-center justify-center gap-2 px-10
+                       border border-white/35 text-white eyebrow
+                       hover:border-white transition-colors duration-300"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
             Instagram
           </a>
         </div>
 
-        {/* Social Links / Contacts */}
-        <div className="flex justify-center items-center gap-4 pt-6">
-          <a href="https://www.instagram.com/elore_parfumes?igsh=a2xrMmp1ZmpleGpm" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-white/80 hover:text-pink-500 hover:border-pink-500/50 hover:bg-pink-500/10 transition-all shadow-lg hover:scale-110" title="Instagram">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        {/* Aloqa */}
+        <div className="mt-12 flex justify-center items-center gap-2.5">
+          <a
+            href="https://www.instagram.com/elore_parfumes?igsh=a2xrMmp1ZmpleGpm"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={socialLink}
+            title="Instagram"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+            </svg>
           </a>
-          <a href={`tel:${shopPhone.replace(/\s/g, '')}`} className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-white/80 hover:text-green-500 hover:border-green-500/50 hover:bg-green-500/10 transition-all shadow-lg hover:scale-110" title="Telefon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          <a
+            href={`tel:${shopPhone.replace(/\s/g, "")}`}
+            className={socialLink}
+            title="Telefon"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
           </a>
-          <a href={telegramAdminUsername} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-white/80 hover:text-[#0088cc] hover:border-[#0088cc]/50 hover:bg-[#0088cc]/10 transition-all shadow-lg hover:scale-110" title="Telegram Lichka">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M21.198 2.433a2.242 2.242 0 0 0-1.022.215l-18 8a2.25 2.25 0 0 0 .122 4.108l4.49 1.49 2.112 6.538a1.5 1.5 0 0 0 2.813.111l2.584-4.838 5.766 4.316a2.25 2.25 0 0 0 3.593-1.63L23.454 3.73a2.25 2.25 0 0 0-2.256-1.297zM8.835 15.6l-1.39-4.254 11.233-7.534-8.835 11.161v.627zm-3.056-2.582l-2.92-.973L19.467 4.6l-13.688 8.418zm13.18 7.078l-5.328-3.988L16.4 12.22l-1.898-2.4 4.457 6.276z"/></svg>
+          <a
+            href={telegramAdminUsername}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={socialLink}
+            title="Telegram"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.96 6.504-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+            </svg>
           </a>
-          <a href={telegramChannel} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-white/80 hover:text-[#0088cc] hover:border-[#0088cc]/50 hover:bg-[#0088cc]/10 transition-all shadow-lg hover:scale-110" title="Telegram Kanal">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <a
+            href={telegramChannel}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={socialLink}
+            title="Telegram kanal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
           </a>
         </div>
 
-        {/* Stats */}
-        <div className="flex items-center justify-center gap-8 sm:gap-12 pt-8">
-          <div className="text-center">
-            <div className="text-2xl sm:text-3xl font-bold text-gradient-gold">200+</div>
-            <div className="text-xs text-muted-foreground mt-1">{t("stats_products")}</div>
-          </div>
-          <div className="w-px h-10 bg-border" />
-          <div className="text-center">
-            <div className="text-2xl sm:text-3xl font-bold text-gradient-gold">50+</div>
-            <div className="text-xs text-muted-foreground mt-1">{t("stats_brands")}</div>
-          </div>
-          <div className="w-px h-10 bg-border" />
-          <div className="text-center">
-            <div className="text-2xl sm:text-3xl font-bold text-gradient-gold">24/7</div>
-            <div className="text-xs text-muted-foreground mt-1">{t("stats_support")}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
-        <span className="text-[10px] text-muted-foreground tracking-widest uppercase">{t("hero_scroll")}</span>
-        <div className="w-5 h-8 rounded-full border border-gold/30 flex items-start justify-center p-1.5">
-          <div className="w-1 h-2 rounded-full bg-gold animate-bounce" />
+        {/* Statistika */}
+        <div className="mt-14 flex items-center justify-center gap-10 sm:gap-16">
+          {[
+            { v: "200+", l: t("stats_products") },
+            { v: "50+", l: t("stats_brands") },
+            { v: "24/7", l: t("stats_support") },
+          ].map((s) => (
+            <div key={s.v} className="text-center">
+              <div className="font-heading text-3xl text-white">{s.v}</div>
+              <div className="mt-1.5 eyebrow text-white/50">{s.l}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

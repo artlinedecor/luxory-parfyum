@@ -11,11 +11,17 @@
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-heading);
 
-  /* Gold / Tilla palette */
+  /* Gold / Bronze palette */
   --color-gold: var(--gold);
   --color-gold-light: var(--gold-light);
   --color-gold-dark: var(--gold-dark);
   --color-gold-muted: var(--gold-muted);
+  --color-gold-bright: var(--gold-bright);
+  --color-gold-deep: var(--gold-deep);
+
+  /* Mahsulot rasmi konteyneri foni */
+  --color-surface-image: var(--surface-image);
+  --color-surface-raised: var(--surface-raised);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -55,8 +61,73 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Luxury Dark Theme - default  */
+/* ================================================================
+   LYUKS YORUG MAVZU (Warm Alabaster) — do'kon uchun asosiy.
+   Fon issiq alabastr, matn chuqur ko'mir, aksent — bronza/tilla.
+   Og'ir soyalar YO'Q: 1px nozik chegara + keng bo'sh joy.
+   ================================================================ */
 :root {
+  --background: #faf8f5;          /* Warm Alabaster */
+  --foreground: #1a1a1a;          /* Deep Carbon Charcoal */
+  --card: #fdfcfb;                /* Porcelain */
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  --primary: #1a1a1a;             /* asosiy CTA — ko'mir */
+  --primary-foreground: #faf8f5;
+  --secondary: #f2efe9;
+  --secondary-foreground: #1a1a1a;
+  --muted: #f2efe9;
+  --muted-foreground: #6e6d7a;    /* meta matn */
+  --accent: #f6f2ec;
+  --accent-foreground: #1a1a1a;
+  --destructive: #b3261e;
+  --border: rgba(0, 0, 0, 0.06);  /* nozik hairline */
+  --input: rgba(0, 0, 0, 0.12);
+  --ring: #c5a880;
+  --radius: 0.25rem;              /* lyuks = deyarli to'g'ri burchak */
+
+  /* Gold / Bronze */
+  --gold: #c5a880;                /* asosiy bronza aksent */
+  --gold-bright: #d4af37;         /* yorqin tilla — faqat belgilar uchun */
+  --gold-light: #ded0b8;
+  --gold-dark: #b39268;           /* hover */
+  --gold-deep: #8a6d3b;           /* matn uchun — kontrast yetarli */
+  --gold-muted: rgba(197, 168, 128, 0.14);
+
+  /* Sirtlar */
+  --surface-image: #f8f6f2;       /* mahsulot rasmi konteyneri */
+  --surface-raised: #ffffff;
+
+  /* Charts */
+  --chart-1: #c5a880;
+  --chart-2: #8a6d3b;
+  --chart-3: #6e6d7a;
+  --chart-4: #b39268;
+  --chart-5: #1a1a1a;
+
+  /* Sidebar */
+  --sidebar: #fdfcfb;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #1a1a1a;
+  --sidebar-primary-foreground: #faf8f5;
+  --sidebar-accent: #f2efe9;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: rgba(0, 0, 0, 0.06);
+  --sidebar-ring: #c5a880;
+
+  /* Shriftlar — next/font hashlangan nom beradi, shuning uchun o'zgaruvchi.
+     Jakarta da kirill yo'q, shu bois Inter zaxira sifatida ketma-ket turadi. */
+  --font-sans: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui,
+    sans-serif;
+  --font-heading: var(--font-cormorant), Georgia, "Times New Roman", serif;
+}
+
+/* ================================================================
+   QORONG'I SIRT (.theme-dark) — admin panel / login uchun saqlanadi.
+   Do'kon yorug' bo'ldi, dashboard eski qora ko'rinishda qoladi.
+   ================================================================ */
+.theme-dark {
   --background: #0a0a0a;
   --foreground: #f5f5f5;
   --card: #141414;
@@ -77,20 +148,16 @@
   --ring: #c9a84c;
   --radius: 0.75rem;
 
-  /* Gold variants */
   --gold: #c9a84c;
+  --gold-bright: #e0c97f;
   --gold-light: #e0c97f;
   --gold-dark: #a68b3a;
+  --gold-deep: #e0c97f;
   --gold-muted: rgba(201, 168, 76, 0.15);
 
-  /* Charts */
-  --chart-1: #c9a84c;
-  --chart-2: #e0c97f;
-  --chart-3: #a68b3a;
-  --chart-4: #8a7230;
-  --chart-5: #6b5825;
+  --surface-image: #1a1a1a;
+  --surface-raised: #141414;
 
-  /* Sidebar */
   --sidebar: #0f0f0f;
   --sidebar-foreground: #f5f5f5;
   --sidebar-primary: #c9a84c;
@@ -100,8 +167,8 @@
   --sidebar-border: #2a2a2a;
   --sidebar-ring: #c9a84c;
 
-  /* Font */
-  --font-heading: "Playfair Display", serif;
+  background-color: #0a0a0a;
+  color: #f5f5f5;
 }
 
 @layer base {
@@ -110,85 +177,87 @@
   }
   body {
     @apply text-foreground;
-    /* Boy, ko'p qatlamli lyuks fon — tilla nur + chuqur vinetka */
-    background-color: #070707;
-    background-image:
-      radial-gradient(1200px 620px at 50% -12%, rgba(201, 168, 76, 0.12), transparent 62%),
-      radial-gradient(1000px 560px at 100% 108%, rgba(201, 168, 76, 0.06), transparent 60%),
-      radial-gradient(900px 520px at 0% 60%, rgba(201, 168, 76, 0.04), transparent 60%),
-      linear-gradient(180deg, #080808 0%, #0a0a0a 100%);
-    background-attachment: fixed;
+    background-color: var(--background);
   }
-  /* Nafis don (grain) teksturasi — premium chuqurlik beradi */
+  /* Juda nozik issiq don — qog'ozdek chuqurlik (faqat kompyuterda) */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.045;
+    opacity: 0.025;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    mix-blend-mode: overlay;
+    mix-blend-mode: multiply;
   }
   html {
     @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
-  /* Nafis serif sarlavhalar */
+  /* Serif sarlavhalar — keng harf oralig'i (lyuks tipografika) */
   h1, h2, h3, .font-heading {
-    letter-spacing: -0.015em;
+    font-family: var(--font-heading);
+    letter-spacing: 0.05em;
+    font-weight: 500;
   }
   ::selection {
-    background: rgba(201, 168, 76, 0.28);
-    color: #fff;
+    background: rgba(197, 168, 128, 0.3);
+    color: #1a1a1a;
   }
 }
 
-/* Custom utility classes */
+/* ---- Yordamchi klasslar --------------------------------------- */
 @layer utilities {
+  /* Bronza matn — yorug' fonda kontrasti yetarli */
   .text-gradient-gold {
-    /* Harakatlanuvchi metalik tilla nur */
     background: linear-gradient(
       100deg,
-      #a68b3a 0%,
-      #e6c766 22%,
-      #f7e7a8 40%,
-      #ffffff 48%,
-      #f7e7a8 56%,
-      #e6c766 74%,
-      #a68b3a 100%
+      #8a6d3b 0%,
+      #b39268 40%,
+      #c5a880 55%,
+      #8a6d3b 100%
     );
-    background-size: 220% auto;
+    background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: goldSheen 7s linear infinite;
   }
-  @keyframes goldSheen {
-    to { background-position: 220% center; }
+  .theme-dark .text-gradient-gold {
+    background: linear-gradient(135deg, #f7e7a8 0%, #e6c766 45%, #c9a84c 100%);
+    background-size: auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .border-gradient-gold {
-    border-image: linear-gradient(135deg, #f7e7a8 0%, #c9a84c 50%, #a68b3a 100%) 1;
+    border-image: linear-gradient(135deg, #ded0b8 0%, #c5a880 50%, #b39268 100%) 1;
   }
 
+  /* Quyma metalik tilla — belgilar (badge) uchun */
   .bg-gradient-gold {
-    /* Quyma metalik tilla — nur bandi bilan */
     background: linear-gradient(
       135deg,
-      #b4933f 0%,
-      #e6c766 22%,
-      #f7e7a8 42%,
-      #e2c268 60%,
-      #c9a84c 78%,
-      #a68b3a 100%
+      #b39268 0%,
+      #d4af37 30%,
+      #e8d49a 48%,
+      #d4af37 66%,
+      #b39268 100%
     );
   }
 
   .bg-gradient-dark {
-    background: linear-gradient(180deg, #0a0a0a 0%, #141414 100%);
+    background: linear-gradient(180deg, #1a1a1a 0%, #262626 100%);
   }
 
+  /* Kartochka sirti — soya emas, nozik chegara */
   .glass-card {
+    background: var(--card);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: none;
+  }
+  .theme-dark .glass-card {
     background: linear-gradient(
       180deg,
       rgba(28, 28, 28, 0.72) 0%,
@@ -199,39 +268,39 @@
     border: 1px solid rgba(201, 168, 76, 0.12);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.04),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.01),
       0 18px 40px -20px rgba(0, 0, 0, 0.8);
   }
 
-  /* Tilla soch chizig'i (hairline) ajratkich */
+  /* Bronza soch chizig'i (hairline) ajratkich */
   .gold-hairline {
     height: 1px;
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(201, 168, 76, 0.5) 50%,
+      rgba(197, 168, 128, 0.55) 50%,
       transparent
     );
   }
 
-  /* Lyuks kartochka hover ramkasi */
+  /* Mahsulot kartochkasi — juda nozik ko'tarilish */
   .lux-card {
     position: relative;
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.5s ease, border-color 0.5s ease;
+    transition: border-color 0.5s ease, box-shadow 0.5s ease;
   }
   .lux-card:hover {
-    transform: translateY(-6px);
+    border-color: rgba(197, 168, 128, 0.55);
+    box-shadow: 0 12px 32px -20px rgba(26, 26, 26, 0.28);
+  }
+  .theme-dark .lux-card:hover {
     border-color: rgba(201, 168, 76, 0.45);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      0 30px 60px -24px rgba(0, 0, 0, 0.9),
-      0 0 30px -10px rgba(201, 168, 76, 0.28);
+    box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.9);
   }
 
+  /* Rasm yuklanayotgandagi skelet */
   .shimmer {
     position: relative;
     overflow: hidden;
+    background: var(--surface-image);
   }
   .shimmer::after {
     content: "";
@@ -243,10 +312,18 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
+      rgba(255, 255, 255, 0.7) 50%,
+      transparent 100%
+    );
+    animation: shimmer 1.8s infinite;
+  }
+  .theme-dark .shimmer::after {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
       rgba(201, 168, 76, 0.08) 50%,
       transparent 100%
     );
-    animation: shimmer 3s infinite;
   }
 
   @keyframes shimmer {
@@ -259,7 +336,7 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
@@ -272,22 +349,12 @@
     to { opacity: 1; transform: scale(1); }
   }
 
+  /* Eski "porlash" — yorug' mavzuda shovqin qilardi, o'chirildi */
   .animate-glow-shimmer {
-    animation: goldGlow 3s ease-in-out infinite alternate;
+    animation: none;
   }
 
-  @keyframes goldGlow {
-    0% {
-      text-shadow: 0 0 4px rgba(201, 168, 76, 0.15), 0 0 8px rgba(201, 168, 76, 0.05);
-      opacity: 0.9;
-    }
-    100% {
-      text-shadow: 0 0 16px rgba(224, 201, 127, 0.6), 0 0 28px rgba(201, 168, 76, 0.35);
-      opacity: 1;
-    }
-  }
-
-  /* Marquee (astatka banner) */
+  /* Marquee (tanlangan atirlar banneri) */
   .animate-marquee {
     animation: marquee 45s linear infinite;
   }
@@ -312,7 +379,7 @@
     );
   }
 
-  /* Hide scrollbar but allow scrolling */
+  /* Skrollbarni yashirish */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -320,31 +387,34 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Mayda bosh harfli meta yozuv (brend nomi, konsentratsiya) */
+  .eyebrow {
+    font-size: 0.625rem;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+  }
 }
 
-/* ────────────────────────────────────────────────────────────────
+/* ----------------------------------------------------------------
    SKROLL TEZLIGI
-   Ro'yxatdagi kartochkalar ekrandan tashqarida bo'lsa — brauzer ularni
-   umuman chizmaydi (uzun katalogda skroll sezilarli yengillashadi).
-   ──────────────────────────────────────────────────────────────── */
+   Ekrandan tashqaridagi kartochkalar chizilmaydi.
+   ---------------------------------------------------------------- */
 @layer utilities {
   .lux-card {
     content-visibility: auto;
-    contain-intrinsic-size: 340px;
+    contain-intrinsic-size: 420px;
   }
 
-  /* ── TELEFON / SENSORLI QURILMALAR ──
-     backdrop-filter, fixed fon, doimiy animatsiyalar mobil GPU uchun
-     juda qimmat — skroll "qotib" qolardi. Ko'rinish deyarli bir xil
-     qoladi, lekin skroll silliq bo'ladi. */
+  /* -- TELEFON / SENSORLI QURILMALAR --
+     backdrop-filter va doimiy animatsiyalar mobil GPU uchun qimmat. */
   @media (max-width: 1024px) {
-    body {
-      background-attachment: scroll; /* fixed => har kadrda qayta chizish */
-    }
     body::before {
-      display: none; /* grain + mix-blend-mode overlay */
+      display: none;
     }
-    .glass-card {
+    .theme-dark .glass-card {
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
       background: linear-gradient(
@@ -353,31 +423,22 @@
         rgba(13, 13, 13, 0.94) 100%
       );
     }
-    /* Tilla matn — statik gradient (harakatlanuvchi nur o'chiriladi) */
     .text-gradient-gold {
-      animation: none;
-      background: linear-gradient(135deg, #f7e7a8 0%, #e6c766 45%, #c9a84c 100%);
+      background: linear-gradient(135deg, #8a6d3b 0%, #b39268 100%);
       background-size: auto;
       -webkit-background-clip: text;
       background-clip: text;
-    }
-    .animate-glow-shimmer {
-      animation: none;
     }
     .shimmer::after {
       animation: none;
     }
     .lux-card:hover {
-      transform: none;
       box-shadow: none;
     }
   }
 
-  /* Foydalanuvchi animatsiyani kamaytirishni so'ragan bo'lsa */
   @media (prefers-reduced-motion: reduce) {
     .animate-marquee,
-    .text-gradient-gold,
-    .animate-glow-shimmer,
     .shimmer::after {
       animation: none !important;
     }

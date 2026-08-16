@@ -4,7 +4,20 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
+import { useWishlist } from "@/lib/wishlist-context";
+import {
+  getFragranceView,
+  CONCENTRATION_LABEL,
+  NOTE_FAMILY_LABEL,
+  SEASON_LABEL,
+  TIME_LABEL,
+  type Concentration,
+  type NoteFamily,
+  type Season,
+  type TimeOfDay,
+} from "@/lib/fragrance";
 import ProductCard from "./ProductCard";
+import QuickViewDialog from "./QuickViewDialog";
 
 const PAGE = 24; // bir "sahifa"da nechta mahsulot chiziladi
 
@@ -12,37 +25,146 @@ interface ProductGridProps {
   products: Product[];
 }
 
+type Gender = "all" | "male" | "female" | "unisex";
+
+/** Bitta mahsulotning saralash uchun kerakli belgilari. */
+interface Facets {
+  brand: string | null;
+  concentration: Concentration | null;
+  families: NoteFamily[];
+  seasons: Season[];
+  times: TimeOfDay[];
+  haystack: string;
+}
+
 export default function ProductGrid({ products }: ProductGridProps) {
-  const [genderFilter, setGenderFilter] = useState<
-    "all" | "male" | "female" | "unisex"
-  >("all");
+  const [genderFilter, setGenderFilter] = useState<Gender>("all");
   const [query, setQuery] = useState("");
+  const [brandFilter, setBrandFilter] = useState<string | null>(null);
+  const [concFilter, setConcFilter] = useState<Concentration | null>(null);
+  const [familyFilter, setFamilyFilter] = useState<NoteFamily | null>(null);
+  const [seasonFilter, setSeasonFilter] = useState<Season | null>(null);
+  const [timeFilter, setTimeFilter] = useState<TimeOfDay | null>(null);
+  const [onlySaved, setOnlySaved] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
   const [addedId, setAddedId] = useState<string | null>(null);
-  // Bir vaqtda chizilayotgan kartochkalar soni (198 tasini birdan chizish telefonni qotirardi)
+  const [quickView, setQuickView] = useState<Product | null>(null);
+  // Bir vaqtda chizilayotgan kartochkalar soni (hammasini birdan chizish telefonni qotirardi)
   const [visible, setVisible] = useState(PAGE);
+
   const { addItem } = useCart();
   const { t, lang } = useI18n();
+  const wishlist = useWishlist();
+
+  // Har bir mahsulot uchun belgilar bir marta hisoblanadi
+  const facets = useMemo(() => {
+    const map = new Map<string, Facets>();
+    for (const p of products) {
+      const f = getFragranceView(p);
+      map.set(p.id, {
+        brand: f.brand,
+        concentration: f.concentration,
+        families: f.families,
+        seasons: f.seasons,
+        times: f.times,
+        haystack: `${p.title || ""} ${p.title_ru || ""} ${f.brand || ""} ${f.name}`.toLowerCase(),
+      });
+    }
+    return map;
+  }, [products]);
+
+  // Faqat ma'lumotda haqiqatan uchraydigan variantlar ko'rsatiladi
+  const options = useMemo(() => {
+    const brands = new Map<string, number>();
+    const concs = new Set<Concentration>();
+    const families = new Set<NoteFamily>();
+    const seasons = new Set<Season>();
+    const times = new Set<TimeOfDay>();
+
+    for (const f of facets.values()) {
+      if (f.brand) brands.set(f.brand, (brands.get(f.brand) ?? 0) + 1);
+      if (f.concentration) concs.add(f.concentration);
+      f.families.forEach((x) => families.add(x));
+      f.seasons.forEach((x) => seasons.add(x));
+      f.times.forEach((x) => times.add(x));
+    }
+
+    return {
+      // eng ko'p uchraydigan brendlar oldinda
+      brands: [...brands.entries()]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .map(([name, count]) => ({ name, count })),
+      concentrations: [...concs],
+      families: [...families],
+      seasons: [...seasons],
+      times: [...times],
+    };
+  }, [facets]);
+
+  const activeCount =
+    (brandFilter ? 1 : 0) +
+    (concFilter ? 1 : 0) +
+    (familyFilter ? 1 : 0) +
+    (seasonFilter ? 1 : 0) +
+    (timeFilter ? 1 : 0) +
+    (onlySaved ? 1 : 0);
 
   const filteredProducts = useMemo(() => {
     const q = query.trim().toLowerCase();
     return products.filter((p) => {
+      const f = facets.get(p.id);
+      if (!f) return false;
+
       const productGender = p.gender || "unisex";
       const genderMatch =
         genderFilter === "all" ||
         productGender === genderFilter ||
         (genderFilter !== "unisex" && productGender === "unisex");
-      const searchMatch =
-        !q ||
-        (p.title || "").toLowerCase().includes(q) ||
-        (p.title_ru || "").toLowerCase().includes(q);
-      return genderMatch && searchMatch;
-    });
-  }, [products, genderFilter, query]);
+      if (!genderMatch) return false;
 
-  // Filtr/qidiruv o'zgarsa — boshidan ko'rsatamiz
-  useEffect(() => {
+      if (q && !f.haystack.includes(q)) return false;
+      if (brandFilter && f.brand !== brandFilter) return false;
+      if (concFilter && f.concentration !== concFilter) return false;
+      if (familyFilter && !f.families.includes(familyFilter)) return false;
+      if (seasonFilter && !f.seasons.includes(seasonFilter)) return false;
+      if (timeFilter && !f.times.includes(timeFilter)) return false;
+      if (onlySaved && !wishlist.has(p.id)) return false;
+
+      return true;
+    });
+  }, [
+    products,
+    facets,
+    genderFilter,
+    query,
+    brandFilter,
+    concFilter,
+    familyFilter,
+    seasonFilter,
+    timeFilter,
+    onlySaved,
+    wishlist,
+  ]);
+
+  // Filtr/qidiruv o'zgarsa — boshidan ko'rsatamiz.
+  // Effekt emas, chizish paytida tiklaymiz: effekt ishlaguncha eski uzun
+  // ro'yxat bir kadr chizilib, telefonda sakrash sezilardi.
+  const filterKey = [
+    genderFilter,
+    query,
+    brandFilter,
+    concFilter,
+    familyFilter,
+    seasonFilter,
+    timeFilter,
+    onlySaved,
+  ].join("|\u0000|"); // ajratkich - qidiruvdagi bosh joy chalkashtirmasin
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (prevFilterKey !== filterKey) {
+    setPrevFilterKey(filterKey);
     setVisible(PAGE);
-  }, [genderFilter, query]);
+  }
 
   // Pastga yetganda keyingi qismini avtomatik yuklaymiz
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -67,26 +189,42 @@ export default function ProductGrid({ products }: ProductGridProps) {
     setTimeout(() => setAddedId(null), 1200);
   };
 
-  const genderLabels: Record<string, { uz: string; ru: string }> = {
+  const resetFilters = () => {
+    setBrandFilter(null);
+    setConcFilter(null);
+    setFamilyFilter(null);
+    setSeasonFilter(null);
+    setTimeFilter(null);
+    setOnlySaved(false);
+  };
+
+  const genderLabels: Record<Gender, { uz: string; ru: string }> = {
     all: { uz: "Barchasi", ru: "Все" },
     male: { uz: "Erkaklar", ru: "Мужские" },
     female: { uz: "Ayollar", ru: "Женские" },
     unisex: { uz: "Unisex", ru: "Унисекс" },
   };
 
+  const chip = (active: boolean) =>
+    `px-3.5 py-2 text-[11px] uppercase tracking-[0.14em] font-medium border transition-colors duration-300 min-h-[38px] whitespace-nowrap ${
+      active
+        ? "border-foreground bg-foreground text-background"
+        : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
+    }`;
+
   return (
-    <div className="space-y-6 sm:space-y-8">
-      {/* Search bar */}
+    <div className="space-y-8">
+      {/* ── Qidiruv ────────────────────────────────────────────── */}
       <div className="max-w-xl mx-auto w-full">
         <div className="relative group">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-gold transition-colors">
+          <span className="absolute left-0 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-gold-dark transition-colors">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
-              className="w-5 h-5"
+              strokeWidth="1.5"
+              className="w-4 h-4"
             >
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.3-4.3" />
@@ -97,15 +235,14 @@ export default function ProductGrid({ products }: ProductGridProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("search_placeholder")}
-            className="w-full pl-12 pr-11 py-3.5 rounded-2xl bg-secondary/60 backdrop-blur-sm border border-border
+            className="w-full pl-7 pr-8 py-3 bg-transparent border-0 border-b border-input
                        text-sm text-foreground placeholder:text-muted-foreground
-                       focus:outline-none focus:border-gold/50 focus:ring-2 focus:ring-gold/20
-                       transition-all duration-300 shadow-inner"
+                       focus:outline-none focus:border-gold transition-colors duration-300"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              className="absolute right-0 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
               aria-label="clear"
             >
               <svg
@@ -113,7 +250,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="1.5"
                 className="w-4 h-4"
               >
                 <path d="M18 6 6 18M6 6l12 12" />
@@ -123,33 +260,135 @@ export default function ProductGrid({ products }: ProductGridProps) {
         </div>
       </div>
 
-      {/* Filters row */}
-      <div className="flex gap-2 justify-center flex-wrap">
+      {/* ── Jins + filtrlarni ochish ──────────────────────────── */}
+      <div className="flex flex-wrap items-center justify-center gap-2">
         {(["all", "male", "female", "unisex"] as const).map((g) => (
           <button
             key={g}
             onClick={() => setGenderFilter(g)}
-            className={`px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300 border ${
-              genderFilter === g
-                ? "border-gold bg-gold/15 text-gold shadow-md shadow-gold/10"
-                : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
-            }`}
+            className={chip(genderFilter === g)}
           >
-            {g === "male" && "👨 "}
-            {g === "female" && "👩 "}
-            {g === "unisex" && "⚡ "}
             {lang === "ru" ? genderLabels[g].ru : genderLabels[g].uz}
           </button>
         ))}
+
+        <button
+          onClick={() => setFiltersOpen((v) => !v)}
+          aria-expanded={filtersOpen}
+          className={chip(filtersOpen || activeCount > 0)}
+        >
+          {lang === "ru" ? "Фильтры" : "Filtrlar"}
+          {activeCount > 0 && ` (${activeCount})`}
+        </button>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+      {/* ── Aqlli filtrlar ────────────────────────────────────── */}
+      {filtersOpen && (
+        <div className="border-y border-border py-7 space-y-7 animate-fade-in">
+          {options.families.length > 0 && (
+            <FilterRow
+              label={lang === "ru" ? "Семейство нот" : "Notalar oilasi"}
+              items={options.families.map((f) => ({
+                key: f,
+                label: NOTE_FAMILY_LABEL[f][lang === "ru" ? "ru" : "uz"],
+              }))}
+              value={familyFilter}
+              onChange={(v) => setFamilyFilter(v as NoteFamily | null)}
+              chip={chip}
+            />
+          )}
+
+          {options.concentrations.length > 0 && (
+            <FilterRow
+              label={lang === "ru" ? "Концентрация" : "Konsentratsiya"}
+              items={options.concentrations.map((c) => ({
+                key: c,
+                label: CONCENTRATION_LABEL[c],
+              }))}
+              value={concFilter}
+              onChange={(v) => setConcFilter(v as Concentration | null)}
+              chip={chip}
+            />
+          )}
+
+          {options.seasons.length > 0 && (
+            <FilterRow
+              label={lang === "ru" ? "Сезон" : "Mavsum"}
+              items={options.seasons.map((s) => ({
+                key: s,
+                label: SEASON_LABEL[s][lang === "ru" ? "ru" : "uz"],
+              }))}
+              value={seasonFilter}
+              onChange={(v) => setSeasonFilter(v as Season | null)}
+              chip={chip}
+            />
+          )}
+
+          {options.times.length > 0 && (
+            <FilterRow
+              label={lang === "ru" ? "Время суток" : "Kun vaqti"}
+              items={options.times.map((x) => ({
+                key: x,
+                label: TIME_LABEL[x][lang === "ru" ? "ru" : "uz"],
+              }))}
+              value={timeFilter}
+              onChange={(v) => setTimeFilter(v as TimeOfDay | null)}
+              chip={chip}
+            />
+          )}
+
+          {options.brands.length > 0 && (
+            <FilterRow
+              label={lang === "ru" ? "Бренд" : "Brend"}
+              items={options.brands.map((b) => ({
+                key: b.name,
+                label: `${b.name} (${b.count})`,
+              }))}
+              value={brandFilter}
+              onChange={setBrandFilter}
+              chip={chip}
+            />
+          )}
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setOnlySaved((v) => !v)}
+              className={chip(onlySaved)}
+            >
+              {lang === "ru" ? "Избранное" : "Sevimlilar"}
+              {wishlist.count > 0 && ` (${wishlist.count})`}
+            </button>
+
+            {activeCount > 0 && (
+              <button
+                onClick={resetFilters}
+                className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
+              >
+                {lang === "ru" ? "Сбросить" : "Tozalash"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Natija soni ───────────────────────────────────────── */}
+      {(activeCount > 0 || query) && filteredProducts.length > 0 && (
+        <p className="text-center text-xs text-muted-foreground">
+          {filteredProducts.length} {lang === "ru" ? "аромата" : "ta atir"}
+        </p>
+      )}
+
+      {/* ── Ro'yxat ───────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10">
         {filteredProducts.slice(0, visible).map((product) => (
           <div key={product.id} className="animate-fade-in relative flex">
-            <ProductCard product={product} onAddToCart={handleAddToCart} />
+            <ProductCard
+              product={product}
+              onAddToCart={handleAddToCart}
+              onQuickView={setQuickView}
+            />
             {addedId === product.id && (
-              <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-lg bg-gold text-black text-[10px] font-bold uppercase tracking-wider animate-scale-in shadow-lg">
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 bg-foreground text-background eyebrow animate-scale-in">
                 {t("btn_added")}
               </div>
             )}
@@ -159,47 +398,83 @@ export default function ProductGrid({ products }: ProductGridProps) {
 
       {/* Avtomatik yuklash nuqtasi + zaxira tugma */}
       {visible < filteredProducts.length && (
-        <div ref={sentinelRef} className="flex justify-center pt-2">
+        <div ref={sentinelRef} className="flex justify-center pt-4">
           <button
             onClick={() => setVisible((v) => v + PAGE)}
-            className="px-6 py-3 rounded-full border border-gold/30 text-gold text-xs font-bold uppercase tracking-widest hover:bg-gold/10 transition-all duration-300"
+            className="px-8 py-3.5 border border-foreground/15 text-foreground eyebrow
+                       hover:border-foreground hover:bg-foreground hover:text-background transition-colors duration-300"
           >
             {lang === "ru" ? "Показать ещё" : "Yana ko'rsatish"}
-            <span className="ml-2 text-muted-foreground font-normal normal-case">
-              ({visible}/{filteredProducts.length})
+            <span className="ml-2 opacity-60 normal-case tracking-normal">
+              {visible}/{filteredProducts.length}
             </span>
           </button>
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Bo'sh holat */}
       {filteredProducts.length === 0 && (
-        <div className="py-24 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-secondary/50 flex items-center justify-center mx-auto mb-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="w-8 h-8 text-muted-foreground"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.3-4.3" />
-            </svg>
-          </div>
-          <p className="text-sm font-medium text-muted-foreground">
+        <div className="py-24 text-center space-y-4">
+          <p className="font-heading text-xl text-foreground">
             {query ? (
               <>
-                &ldquo;<span className="text-gold">{query}</span>&rdquo;{" "}
-                {t("search_no_results")}
+                &ldquo;{query}&rdquo; {t("search_no_results")}
               </>
             ) : (
               t("empty_catalog")
             )}
           </p>
+          {activeCount > 0 && (
+            <button
+              onClick={resetFilters}
+              className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              {lang === "ru" ? "Сбросить фильтры" : "Filtrlarni tozalash"}
+            </button>
+          )}
         </div>
       )}
+
+      <QuickViewDialog
+        product={quickView}
+        onClose={() => setQuickView(null)}
+        onAddToCart={(p) => {
+          handleAddToCart(p);
+          setQuickView(null);
+        }}
+      />
+    </div>
+  );
+}
+
+/** Bitta filtr qatori — gorizontal skroll bilan (telefonda joy tejaydi). */
+function FilterRow({
+  label,
+  items,
+  value,
+  onChange,
+  chip,
+}: {
+  label: string;
+  items: { key: string; label: string }[];
+  value: string | null;
+  onChange: (v: string | null) => void;
+  chip: (active: boolean) => string;
+}) {
+  return (
+    <div className="space-y-3">
+      <h3 className="eyebrow text-muted-foreground">{label}</h3>
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
+        {items.map((it) => (
+          <button
+            key={it.key}
+            onClick={() => onChange(value === it.key ? null : it.key)}
+            className={chip(value === it.key)}
+          >
+            {it.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

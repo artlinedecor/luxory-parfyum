@@ -26,12 +26,12 @@ export default function StockCarousel({ products }: StockCarouselProps) {
   const loop = [...featured, ...featured];
 
   return (
-    <section className="relative py-9 overflow-hidden border-y border-gold/15 bg-gradient-to-r from-gold/[0.02] via-gold/[0.07] to-gold/[0.02]">
+    <section className="relative py-9 overflow-hidden border-y border-border bg-secondary/40">
       {/* Heading */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 flex items-center gap-3">
         <span className="text-xl">💎</span>
         <div>
-          <h3 className="font-heading text-lg sm:text-xl font-bold text-gradient-gold leading-tight tracking-tight">
+          <h3 className="font-heading text-xl sm:text-2xl text-foreground leading-tight">
             {t("hotstock_title")}
           </h3>
           <p className="text-[11px] sm:text-xs text-muted-foreground">
@@ -49,9 +49,9 @@ export default function StockCarousel({ products }: StockCarouselProps) {
               <Link
                 key={`${p.id}-${i}`}
                 href={`/catalog/${p.id}`}
-                className="group/card relative flex-shrink-0 w-44 rounded-2xl overflow-hidden glass-card border border-gold/10 hover:border-gold/40 transition-all duration-300 hover:-translate-y-1"
+                className="group/card relative flex-shrink-0 w-44 overflow-hidden glass-card hover:border-gold/50 transition-colors duration-300"
               >
-                <div className="relative aspect-square bg-secondary overflow-hidden">
+                <div className="relative aspect-square bg-surface-image overflow-hidden">
                   <Image
                     src={p.image_url || "/products/default.png"}
                     alt={title}
@@ -60,17 +60,17 @@ export default function StockCarousel({ products }: StockCarouselProps) {
                     className="object-cover transition-transform duration-500 group-hover/card:scale-110"
                     sizes="176px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  
                   {/* Bo'lib to'lash belgisi */}
-                  <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold shadow-lg bg-green-500/90 text-black">
+                  <span className="absolute top-2 right-2 px-2 py-1 eyebrow bg-white/85 text-foreground/75">
                     💳 {t("installment_short")}
                   </span>
                 </div>
                 <div className="p-3">
-                  <p className="text-xs font-semibold text-foreground line-clamp-2 leading-tight min-h-[2rem] group-hover/card:text-gold transition-colors">
+                  <p className="font-heading text-sm text-foreground line-clamp-2 leading-tight min-h-[2.2rem] group-hover/card:text-gold-dark transition-colors">
                     {title}
                   </p>
-                  <p className="mt-1.5 text-sm font-bold text-gradient-gold">
+                  <p className="mt-1.5 text-sm font-semibold text-foreground tabular-nums">
                     {formatUzs(calculatePremiumPriceUzs(p.price_usd))}{" "}
                     <span className="text-[10px] text-muted-foreground font-normal">
                       {lang === "ru" ? "сум" : "so'm"}

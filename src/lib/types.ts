@@ -14,6 +14,21 @@ export interface Product {
   is_available?: boolean;
   stock?: number;
   gender?: "male" | "female" | "unisex";
+
+  // ── Parfyumeriya maydonlari (migrations/002_fragrance_fields.sql) ──
+  // Hammasi ixtiyoriy: bo'sh bo'lsa UI o'sha blokni chizmaydi.
+  brand?: string | null;
+  fragrance_name?: string | null;
+  volume_ml?: number | null;
+  concentration?: string | null;
+  image_url_2?: string | null;
+  notes_top?: string[] | null;
+  notes_heart?: string[] | null;
+  notes_base?: string[] | null;
+  accords?: { name: string; strength: number }[] | null;
+  note_families?: string[] | null;
+  seasons?: string[] | null;
+  time_of_day?: string[] | null;
 }
 
 export interface Order {
