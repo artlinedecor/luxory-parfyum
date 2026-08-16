@@ -15,6 +15,7 @@ import { trackMetaEvent } from "@/lib/meta-tracker";
 
 import { useShopSettings } from "@/lib/settings-context";
 import Link from "next/link";
+import Reveal from "@/components/motion/Reveal";
 
 export default function Home() {
   const { t, lang } = useI18n();
@@ -73,7 +74,7 @@ export default function Home() {
         {/* Featured Products */}
         <section id="featured-products" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           {/* Section header */}
-          <div className="text-center mb-14 space-y-5">
+          <Reveal className="text-center mb-14 space-y-5 block">
             <h2 className="font-heading text-4xl sm:text-5xl text-foreground">
               {t("collection_title_1")}
               <span className="text-gold-dark">{t("collection_title_2")}</span>
@@ -82,16 +83,16 @@ export default function Home() {
               {t("collection_desc")}
             </p>
             <div className="gold-hairline w-24 mx-auto" />
-          </div>
+          </Reveal>
 
           {/* Products with Tabs */}
           <ProductGrid products={products} />
         </section>
 
         {/* Features section */}
-        <section id="features" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 border-t border-border">
+        <section id="features" className="py-20 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-border">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8">
               {/* Feature 1 */}
               <div className="text-center space-y-3 group">
                 <div className="w-12 h-12 border border-border flex items-center justify-center mx-auto group-hover:border-gold transition-colors duration-300">

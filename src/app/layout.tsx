@@ -10,6 +10,7 @@ import ChunkErrorRecovery from "@/components/ChunkErrorRecovery";
 import UzumPendingRecovery from "@/components/UzumPendingRecovery";
 import YandexMetrica from "@/components/YandexMetrica";
 import SmoothScroll from "@/components/SmoothScroll";
+import LuxToaster from "@/components/LuxToaster";
 import "./globals.css";
 
 // Asosiy matn shrifti — narx, hajm, filtr, tugma, tavsif.
@@ -82,6 +83,7 @@ export default function RootLayout({
             <YandexMetrica />
             {children}
             <FloatingCart />
+            <LuxToaster />
             </WishlistProvider>
           </CartProvider>
           </I18nProvider>

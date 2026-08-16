@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { useI18n } from "@/lib/i18n-context";
 import { useShopSettings } from "@/lib/settings-context";
 
@@ -13,6 +14,13 @@ import { useShopSettings } from "@/lib/settings-context";
 export default function HeroSection() {
   const { t } = useI18n();
   const { shopPhone, telegramAdminUsername, telegramChannel } = useShopSettings();
+  const reduce = useReducedMotion();
+
+  // Bosqichma-bosqich ochilish — CSS orqali (globals.css: .hero-rise).
+  // JS'ga bog'lanmaydi: framer-motion kech yuklansa ham matn ko'rinadi.
+  const rise = (delay: number) => ({
+    style: { animationDelay: `${delay}s` },
+  });
 
   const socialLink =
     "w-11 h-11 flex items-center justify-center border border-white/25 text-white/75 hover:text-white hover:border-white/60 transition-colors duration-300";
@@ -23,7 +31,12 @@ export default function HeroSection() {
       className="relative min-h-[88vh] flex items-center justify-center overflow-hidden"
     >
       {/* Fon rasmi */}
-      <div className="absolute inset-0">
+      <motion.div
+        className="absolute inset-0"
+        initial={reduce ? false : { scale: 1.06 }}
+        animate={reduce ? undefined : { scale: 1 }}
+        transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
+      >
         <Image
           src="/hero.webp"
           alt="Lux Atir — Toshkentda original atirlar va super klon parfyumeriya do'koni"
@@ -35,30 +48,41 @@ export default function HeroSection() {
         {/* Matn o'qilishi uchun quyuqlashtirish + pastda alabastrga o'tish */}
         <div className="absolute inset-0 bg-[#1a1a1a]/55" />
         <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-b from-transparent to-[#faf8f5]" />
-      </div>
+      </motion.div>
 
       {/* Matn */}
       <div className="relative z-10 max-w-3xl mx-auto px-4 pb-24 text-center">
-        <p className="eyebrow text-[#ded0b8]">{t("hero_badge")}</p>
+        <p {...rise(0.05)} className="hero-rise eyebrow text-[#ded0b8]">
+          {t("hero_badge")}
+        </p>
 
-        <h1 className="font-heading mt-6 text-[2.75rem] sm:text-6xl md:text-7xl leading-[1.08] text-white">
+        <h1
+          {...rise(0.15)}
+          className="hero-rise font-heading mt-6 text-[2.75rem] sm:text-6xl md:text-7xl leading-[1.08] text-white"
+        >
           {t("hero_title_1")} <span className="italic">{t("hero_title_2")}</span>
           <br />
           {t("hero_title_3")}
         </h1>
 
-        <div className="gold-hairline w-20 mx-auto mt-8" />
+        <div {...rise(0.3)} className="hero-rise gold-hairline w-20 mx-auto mt-8" />
 
-        <p className="mt-8 max-w-lg mx-auto text-sm sm:text-[15px] text-white/70 leading-relaxed">
+        <p
+          {...rise(0.38)}
+          className="hero-rise mt-8 max-w-lg mx-auto text-sm sm:text-[15px] text-white/70 leading-relaxed"
+        >
           {t("hero_desc")}
         </p>
 
-        <p className="mt-5 eyebrow text-[#ded0b8]">
+        <p {...rise(0.46)} className="hero-rise mt-5 eyebrow text-[#ded0b8]">
           {t("hero_delivery_badge")}
         </p>
 
         {/* CTA */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <div
+          {...rise(0.54)}
+          className="hero-rise mt-10 flex flex-col sm:flex-row items-center justify-center gap-3"
+        >
           <Link
             href="/catalog"
             id="hero-cta-catalog"

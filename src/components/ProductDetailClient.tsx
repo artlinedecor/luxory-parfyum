@@ -3,6 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import * as Tabs from "@radix-ui/react-tabs";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { ChevronLeft, Heart, Truck, ShieldCheck, CreditCard } from "lucide-react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
@@ -32,9 +36,9 @@ interface ProductDetailClientProps {
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [added, setAdded] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
 
+  const router = useRouter();
   const { addItem } = useCart();
   const { t, lang } = useI18n();
   const wishlist = useWishlist();
@@ -83,7 +87,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   const handleAddToCart = () => {
     addItem(product);
-    setAdded(true);
+    // Meta hodisasi uchun bir martalik id. Bu chizish emas, bosish
+    // ishlovchisi — tasodifiy qiymat bu yerda xavfsiz.
+    // eslint-disable-next-line react-hooks/purity
     const eid = `atc_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
     trackMetaEvent(
       "AddToCart",
@@ -97,7 +103,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         currency: "UZS",
       }
     );
-    setTimeout(() => setAdded(false), 2000);
+    toast(frag.brand ? `${frag.brand} — ${frag.name}` : frag.name, {
+      description: lang === "ru" ? "Добавлено в корзину" : "Savatchaga qo'shildi",
+      action: {
+        label: lang === "ru" ? "Корзина" : "Savatcha",
+        onClick: () => router.push("/cart"),
+      },
+    });
   };
 
   // Mavsum / kun vaqti / oila teglari — faqat bazada bo'lsa
@@ -107,6 +119,20 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     ...frag.times.map((x) => TIME_LABEL[x][lang === "ru" ? "ru" : "uz"]),
   ];
 
+  const hasNotes = !!(frag.notes || frag.accords);
+  const tabList = [
+    hasNotes && { id: "notes", label: lang === "ru" ? "Аромат" : "Ifor" },
+    displayDesc && { id: "about", label: lang === "ru" ? "Описание" : "Tavsif" },
+    { id: "delivery", label: lang === "ru" ? "Доставка" : "Yetkazib berish" },
+  ].filter(Boolean) as { id: string; label: string }[];
+
+  const tabTrigger =
+    "relative py-4 eyebrow text-muted-foreground transition-colors " +
+    "hover:text-foreground data-[state=active]:text-foreground " +
+    "after:absolute after:left-0 after:right-0 after:-bottom-px after:h-px " +
+    "after:bg-gold after:scale-x-0 after:transition-transform after:duration-300 " +
+    "data-[state=active]:after:scale-x-100";
+
   return (
     <>
       <Header />
@@ -114,18 +140,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         {/* Orqaga */}
         <Link
           href="/catalog"
-          className="inline-flex items-center gap-2 eyebrow text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1.5 eyebrow text-muted-foreground hover:text-foreground transition-colors"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="w-3.5 h-3.5"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
+          <ChevronLeft className="w-3.5 h-3.5" strokeWidth={1.5} />
           {lang === "ru" ? "Каталог" : "Katalog"}
         </Link>
 
@@ -179,7 +196,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       setImageLoaded(true);
                     }}
                     className={`relative w-16 aspect-[3/4] overflow-hidden border transition-colors ${
-                      i === activeImage ? "border-gold" : "border-border hover:border-foreground/25"
+                      i === activeImage
+                        ? "border-gold"
+                        : "border-border hover:border-foreground/25"
                     }`}
                     aria-label={`${i + 1}-rasm`}
                   >
@@ -229,7 +248,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 className="flex-1 min-h-[52px] py-4 bg-foreground text-background eyebrow
                            hover:bg-gold-dark active:scale-[0.99] transition-colors duration-300"
               >
-                {added ? t("btn_added") : t("btn_add_cart")}
+                {t("btn_add_cart")}
               </button>
 
               <button
@@ -242,16 +261,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
                 }`}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill={saved ? "currentColor" : "none"}
-                  stroke="currentColor"
-                  strokeWidth="1.5"
+                <Heart
                   className="w-5 h-5"
-                >
-                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                </svg>
+                  strokeWidth={1.5}
+                  fill={saved ? "currentColor" : "none"}
+                />
               </button>
             </div>
 
@@ -268,54 +282,73 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             )}
 
-            {/* Akkord balansi — faqat haqiqiy ma'lumot bo'lsa */}
-            {frag.accords && (
-              <div className="pt-2 border-t border-border">
-                <div className="pt-8">
-                  <AccordBars accords={frag.accords} />
-                </div>
-              </div>
-            )}
+            {/* ── Ma'lumot bo'limlari ─────────────────────────── */}
+            <Tabs.Root defaultValue={tabList[0].id} className="pt-2">
+              <Tabs.List className="flex gap-8 border-b border-border">
+                {tabList.map((tab) => (
+                  <Tabs.Trigger key={tab.id} value={tab.id} className={tabTrigger}>
+                    {tab.label}
+                  </Tabs.Trigger>
+                ))}
+              </Tabs.List>
 
-            {/* Notalar piramidasi */}
-            {frag.notes && (
-              <div className="pt-2 border-t border-border">
-                <div className="pt-8">
-                  <FragrancePyramid notes={frag.notes} />
-                </div>
-              </div>
-            )}
+              {hasNotes && (
+                <Tabs.Content
+                  value="notes"
+                  className="pt-8 space-y-10 focus:outline-none animate-fade-in"
+                >
+                  {frag.accords && <AccordBars accords={frag.accords} />}
+                  {frag.notes && <FragrancePyramid notes={frag.notes} />}
+                </Tabs.Content>
+              )}
 
-            {/* Tavsif */}
-            {displayDesc && (
-              <div className="pt-2 border-t border-border">
-                <div className="pt-8 space-y-3">
-                  <h2 className="font-heading text-2xl text-foreground">
-                    {lang === "ru" ? "Об аромате" : "Atir haqida"}
-                  </h2>
+              {displayDesc && (
+                <Tabs.Content
+                  value="about"
+                  className="pt-8 focus:outline-none animate-fade-in"
+                >
                   <p className="text-sm text-foreground/75 leading-[1.9] whitespace-pre-line">
                     {displayDesc}
                   </p>
-                </div>
-              </div>
-            )}
+                </Tabs.Content>
+              )}
 
-            {/* Kafolatlar */}
-            <div className="pt-2 border-t border-border">
-              <div className="pt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <Tabs.Content
+                value="delivery"
+                className="pt-8 space-y-6 focus:outline-none animate-fade-in"
+              >
                 {[
-                  { title: t("features_fast_title"), desc: t("features_fast_desc") },
-                  { title: t("features_quality_title"), desc: t("features_quality_desc") },
-                ].map((f) => (
-                  <div key={f.title} className="space-y-1.5">
-                    <p className="eyebrow text-foreground">{f.title}</p>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {f.desc}
-                    </p>
+                  {
+                    Icon: Truck,
+                    title: t("features_fast_title"),
+                    desc: t("features_fast_desc"),
+                  },
+                  {
+                    Icon: ShieldCheck,
+                    title: t("features_quality_title"),
+                    desc: t("features_quality_desc"),
+                  },
+                  {
+                    Icon: CreditCard,
+                    title: t("installment_short"),
+                    desc: t("features_price_desc"),
+                  },
+                ].map(({ Icon, title, desc }) => (
+                  <div key={title} className="flex gap-4">
+                    <Icon
+                      className="w-5 h-5 shrink-0 mt-0.5 text-gold-dark"
+                      strokeWidth={1.25}
+                    />
+                    <div className="space-y-1.5">
+                      <p className="eyebrow text-foreground">{title}</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {desc}
+                      </p>
+                    </div>
                   </div>
                 ))}
-              </div>
-            </div>
+              </Tabs.Content>
+            </Tabs.Root>
           </div>
         </div>
       </main>

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Eye, Heart } from "lucide-react";
 import { Product } from "@/lib/types";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n-context";
@@ -185,17 +186,7 @@ export default function ProductCard({
             className="w-11 h-11 flex items-center justify-center border border-border text-muted-foreground
                        hover:text-foreground hover:border-foreground/30 transition-colors duration-300"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="w-4 h-4"
-            >
-              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
+            <Eye className="w-4 h-4" strokeWidth={1.5} />
           </button>
         )}
 
@@ -210,16 +201,11 @@ export default function ProductCard({
               : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
           }`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill={saved ? "currentColor" : "none"}
-            stroke="currentColor"
-            strokeWidth="1.5"
+          <Heart
             className="w-4 h-4"
-          >
-            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-          </svg>
+            strokeWidth={1.5}
+            fill={saved ? "currentColor" : "none"}
+          />
         </button>
       </div>
     </article>
