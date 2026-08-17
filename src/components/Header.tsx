@@ -39,7 +39,7 @@ export default function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 group"
+            className="flex min-h-[44px] items-center gap-2.5 group"
             aria-label={shopName}
           >
             <BrandLogo />

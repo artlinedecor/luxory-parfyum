@@ -483,10 +483,10 @@
 
   /* Mayda bosh harfli meta yozuv (brend nomi, konsentratsiya) */
   .eyebrow {
-    font-size: 0.625rem;
-    line-height: 1.1;
+    font-size: 0.6875rem;   /* 11px — 10px da 0.18em oraliq bilan o'qilmasdi */
+    line-height: 1.25;
     text-transform: uppercase;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.16em;
     font-weight: 600;
   }
 }
@@ -609,6 +609,14 @@
   }
   .btn-block {
     width: 100%;
+  }
+  /* Uzun yozuvli tugma uchun — satrga bo'linsin.
+     .btn da nowrap turibdi va u hero'ni ekrandan chiqarib yuborgan edi. */
+  .btn-wrap {
+    white-space: normal;
+    text-wrap: balance;
+    line-height: 1.5;
+    padding-block: 0.75rem;
   }
 
   /* ── Asosiy: ko'mir ─────────────────────────────────────────── */

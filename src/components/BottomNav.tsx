@@ -81,7 +81,7 @@ export default function BottomNav() {
                   <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-gold-dark" />
                 )}
               </div>
-              <span className="text-[10px] tracking-[0.1em] uppercase">
+              <span className="text-[11px] tracking-[0.08em] uppercase">
                 {item.label}
               </span>
             </Link>

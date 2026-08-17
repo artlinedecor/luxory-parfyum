@@ -140,7 +140,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         {/* Orqaga */}
         <Link
           href="/catalog"
-          className="inline-flex items-center gap-1.5 eyebrow text-muted-foreground hover:text-foreground transition-colors"
+          className="-ml-2 inline-flex min-h-[44px] items-center gap-1.5 px-2 eyebrow text-muted-foreground hover:text-foreground transition-colors"
         >
           <ChevronLeft className="w-3.5 h-3.5" strokeWidth={1.5} />
           {lang === "ru" ? "Каталог" : "Katalog"}

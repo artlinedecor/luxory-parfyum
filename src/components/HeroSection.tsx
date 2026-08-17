@@ -65,14 +65,14 @@ export default function HeroSection() {
       />
 
       {/* Matn */}
-      <div className="relative z-10 mx-auto max-w-3xl px-4 pt-28 pb-32 text-center sm:pb-36">
+      <div className="relative z-10 mx-auto w-full max-w-3xl px-5 pt-28 pb-32 text-center sm:pb-36">
         <p {...rise(0.05)} className="hero-rise eyebrow text-[#ded0b8]">
           {t("hero_badge")}
         </p>
 
         <h1
           {...rise(0.15)}
-          className="hero-rise mt-6 font-heading text-[2.6rem] leading-[1.06] text-white sm:text-6xl md:text-[4.25rem]"
+          className="hero-rise mt-6 font-heading text-[2.15rem] leading-[1.08] text-white sm:text-6xl md:text-[4.25rem]"
           style={{ textShadow: "0 2px 28px rgba(0,0,0,0.55)" }}
         >
           {t("hero_title_1")} <span className="italic">{t("hero_title_2")}</span>
@@ -94,8 +94,8 @@ export default function HeroSection() {
         <div {...rise(0.46)} className="hero-rise mt-8 flex justify-center">
           <Link
             href="#nasiya"
-            className="btn btn-glass btn-sm max-w-full rounded-full border-[#ded0b8]/45
-                       text-[#ded0b8] hover:border-[#ded0b8]"
+            className="btn btn-glass btn-sm btn-wrap max-w-full rounded-2xl border-[#ded0b8]/45
+                       px-4 text-[#ded0b8] hover:border-[#ded0b8] sm:rounded-full sm:px-5"
           >
             <CreditCard
               className="h-4 w-4 shrink-0 text-[#e8d49a]"
