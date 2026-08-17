@@ -18,7 +18,7 @@ const defaultSettings: ShopSettings = {
   shopName: siteConfig.siteName,
   shopPhone: siteConfig.phone,
   shopAddress: siteConfig.location,
-  logoUrl: "",
+  logoUrl: siteConfig.logoMark,
   paymentCard: siteConfig.paymentCard,
   paymentCardHolder: siteConfig.paymentCardHolder,
   telegramAdminUsername: siteConfig.telegramAdminUsername,

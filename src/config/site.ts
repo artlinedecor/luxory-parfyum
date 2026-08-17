@@ -9,8 +9,12 @@ export const siteConfig = {
   siteName: "Elore Parfume",
   siteDescription: "Premium parfyumeriya — Original va Super Klon atirlar",
   siteUrl: "https://parfumelux.uz",
-  logoInitial: "E",        // Logo ichidagi harf
-  // logoUrl: "/logo.png",  // Kelajakda rasm logo qo'shish mumkin
+  logoInitial: "E",        // Rasm yuklanmasa ko'rinadigan harf
+  // Logotip loyiha ichida — sozlamalardagi havola faqat qo'shimcha.
+  // Ilgari u faqat admin brauzerining localStorage'ida turardi va
+  // mijozlarga umuman ko'rinmasdi.
+  logoMark: "/logo-mark.webp",  // Header uchun emblema
+  logoFull: "/logo.webp",       // To'liq lockup (footer, ulashish)
 
   // ── Kontakt ──────────────────────────────────────
   phone: "+998 99 262 01 01",

@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Lock, ShoppingBag } from "lucide-react";
-import { siteConfig } from "@/config/site";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
 import { useShopSettings } from "@/lib/settings-context";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function Header() {
   const pathname = usePathname();
   const { totalItems } = useCart();
   const { t, lang, setLang } = useI18n();
-  const { shopName, logoUrl } = useShopSettings();
+  const { shopName } = useShopSettings();
 
   // Dashboard sahifalarida ko'rsatilmaydi
   if (pathname.startsWith("/dashboard")) return null;
@@ -37,28 +37,12 @@ export default function Header() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            {logoUrl ? (
-              <span className="w-8 h-8 overflow-hidden flex-shrink-0">
-                <img
-                  src={logoUrl}
-                  alt={`${shopName} — Toshkentda original atirlar do'koni`}
-                  className="w-full h-full object-cover"
-                />
-              </span>
-            ) : (
-              <span className="w-8 h-8 border border-gold flex items-center justify-center flex-shrink-0">
-                <span className="font-heading text-sm text-gold-dark">
-                  {siteConfig.logoInitial}
-                </span>
-              </span>
-            )}
-            {/* "Elore Parfume" "Lux Atir" dan uzunroq — telefonda kichikroq
-                o'lchamda, harf oralig'i ham torroq, aks holda UZ/RU va
-                ikonkalarga tiqilib qolardi */}
-            <span className="font-heading text-[17px] sm:text-xl text-foreground tracking-[0.05em] sm:tracking-[0.08em] whitespace-nowrap">
-              {shopName}
-            </span>
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 group"
+            aria-label={shopName}
+          >
+            <BrandLogo />
           </Link>
 
           {/* Kompyuterdagi menyu (telefonda BottomNav ishlaydi) */}

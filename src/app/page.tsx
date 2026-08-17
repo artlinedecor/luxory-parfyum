@@ -16,11 +16,12 @@ import { trackMetaEvent } from "@/lib/meta-tracker";
 
 import { useShopSettings } from "@/lib/settings-context";
 import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 import Reveal from "@/components/motion/Reveal";
 
 export default function Home() {
   const { t, lang } = useI18n();
-  const { shopName, logoUrl, shopAddress, telegramAdminUsername, telegramChannel, shopPhone } = useShopSettings();
+  const { shopName, shopAddress, telegramAdminUsername, telegramChannel, shopPhone } = useShopSettings();
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -142,17 +143,8 @@ export default function Home() {
         {/* Footer */}
         <footer id="footer" className="py-14 px-4 sm:px-6 lg:px-8 border-t border-border bg-secondary/30">
           <div className="max-w-7xl mx-auto text-center space-y-4">
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-6 h-6 border border-gold flex items-center justify-center overflow-hidden">
-                {logoUrl ? (
-                  <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="font-heading text-gold-dark text-[11px]">{siteConfig.logoInitial}</span>
-                )}
-              </div>
-              <span className="font-heading text-lg text-foreground tracking-[0.08em]">
-                {shopName}
-              </span>
+            <div className="flex items-center justify-center gap-2.5">
+              <BrandLogo size="sm" />
             </div>
             <p className="text-xs text-muted-foreground">
               {siteConfig.siteDescription} — {shopAddress}
