@@ -129,8 +129,8 @@ export default function QuickViewDialog({
                     <div className="mt-auto pt-8 space-y-2.5">
                       <button
                         onClick={() => onAddToCart?.(product)}
-                        className="w-full min-h-[48px] py-3 bg-foreground text-background eyebrow
-                                   hover:bg-gold-dark transition-colors duration-300"
+                        className="shadow-deep w-full min-h-[50px] py-3 bg-foreground text-background eyebrow
+                                   hover:bg-gold-dark"
                       >
                         {t("btn_add_cart")}
                       </button>

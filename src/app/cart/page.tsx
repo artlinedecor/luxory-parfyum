@@ -255,7 +255,7 @@ export default function CartPage() {
                 <h2 className="text-lg font-semibold text-foreground">{t("cart_empty_title")}</h2>
                 <p className="text-sm text-muted-foreground max-w-xs mx-auto">{t("cart_empty_desc")}</p>
               </div>
-              <Link href="/catalog" className="inline-flex items-center justify-center gap-2 px-8 min-h-[48px] bg-foreground text-background eyebrow hover:bg-gold-dark transition-colors duration-300">
+              <Link href="/catalog" className="shadow-deep inline-flex items-center justify-center gap-2 px-8 min-h-[50px] bg-foreground text-background eyebrow hover:bg-gold-dark">
                 {t("cart_go_catalog")}
               </Link>
             </div>
@@ -364,7 +364,7 @@ export default function CartPage() {
               id="checkout-btn"
               onClick={handleCheckout}
               disabled={loading || !clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion}
-              className="w-full min-h-[52px] py-4 bg-foreground text-background eyebrow
+              className="shadow-deep w-full min-h-[54px] py-4 bg-foreground text-background eyebrow
                          hover:opacity-90 active:scale-[0.98] transition-all duration-300
                          shadow-xl shadow-gold/25 hover:shadow-gold/40
                          disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
@@ -386,7 +386,7 @@ export default function CartPage() {
               id="uzum-checkout-btn"
               onClick={handleUzumCheckout}
               disabled={loading || !clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion}
-              className="w-full min-h-[52px] py-4 bg-[#6100FF] text-white text-[11px] uppercase tracking-[0.16em] font-semibold
+              className="shadow-deep w-full min-h-[54px] py-4 bg-[#6100FF] text-white text-[11px] uppercase tracking-[0.16em] font-semibold
                          hover:bg-[#5000E0] active:scale-[0.98] transition-all duration-300
                          shadow-lg shadow-[#6100FF]/25
                          disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none

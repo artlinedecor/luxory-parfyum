@@ -115,8 +115,8 @@ export default function PwaInstallHelper() {
         <div className="space-y-4">
           <p className="text-xs text-muted-foreground leading-relaxed px-1">
             {isUz 
-              ? "Lux Atir boshqaruv panelini telefoningizga yuklab oling va brauzersiz tezkor ishlating."
-              : "Скачайте панель управления Lux Atir на свой телефон для быстрой работы без браузера."}
+              ? "Elore Parfume boshqaruv panelini telefoningizga yuklab oling va brauzersiz tezkor ishlating."
+              : "Скачайте панель управления Elore Parfume на свой телефон для быстрой работы без браузера."}
           </p>
           <button
             onClick={handleInstallClick}

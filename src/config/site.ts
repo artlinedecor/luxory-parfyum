@@ -6,10 +6,10 @@
  */
 export const siteConfig = {
   // ── Brend ────────────────────────────────────────
-  siteName: "Lux Atir",
+  siteName: "Elore Parfume",
   siteDescription: "Premium parfyumeriya — Original va Super Klon atirlar",
   siteUrl: "https://parfumelux.uz",
-  logoInitial: "L",        // Logo ichidagi harf
+  logoInitial: "E",        // Logo ichidagi harf
   // logoUrl: "/logo.png",  // Kelajakda rasm logo qo'shish mumkin
 
   // ── Kontakt ──────────────────────────────────────
@@ -27,10 +27,13 @@ export const siteConfig = {
   depositAmount: 605000, // Original atirlar uchun zaklad summasi (UZS)
 
   // ── SEO ──────────────────────────────────────────
-  seoTitle: "Lux Atir — Toshkentda Original Atirlar va Super Klon Parfyumeriya Do'koni",
+  seoTitle: "Elore Parfume — Toshkentda Original Atirlar va Super Klon Parfyumeriya Do'koni",
   seoDescription:
     "Premium original va eng sifatli super klon atirlarni hamyonbop narxlarda sotib oling. Toshkent va O'zbekiston bo'ylab tez yetkazib berish. Dior, Chanel, Tom Ford va boshqa brendlar.",
   seoKeywords: [
+    "Elore Parfume",
+    "elore parfume",
+    "элор парфюм",
     "atir",
     "atirlar",
     "parfyumeriya",

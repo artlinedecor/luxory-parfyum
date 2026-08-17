@@ -245,8 +245,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             <div className="flex gap-2.5">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 min-h-[52px] py-4 bg-foreground text-background eyebrow
-                           hover:bg-gold-dark active:scale-[0.99] transition-colors duration-300"
+                className="shadow-deep flex-1 min-h-[54px] py-4 bg-foreground text-background eyebrow
+                           hover:bg-gold-dark"
               >
                 {t("btn_add_cart")}
               </button>

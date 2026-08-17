@@ -258,7 +258,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
             <button
               onClick={handlePhone}
               disabled={loading}
-              className="w-full min-h-[50px] py-3.5 bg-[#6100FF] text-white text-[11px] uppercase tracking-[0.16em] font-semibold hover:bg-[#5000E0] active:scale-[0.99] transition-colors disabled:opacity-50 flex items-center justify-center"
+              className="shadow-deep w-full min-h-[52px] py-3.5 bg-[#6100FF] text-white text-[11px] uppercase tracking-[0.16em] font-semibold hover:bg-[#5000E0] disabled:opacity-50 flex items-center justify-center"
             >
               {loading ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Davom etish"}
             </button>
@@ -308,7 +308,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
             <button
               onClick={handleCreate}
               disabled={loading || !selected}
-              className="w-full min-h-[50px] py-3.5 bg-[#6100FF] text-white text-[11px] uppercase tracking-[0.16em] font-semibold hover:bg-[#5000E0] active:scale-[0.99] transition-colors disabled:opacity-50 flex items-center justify-center"
+              className="shadow-deep w-full min-h-[52px] py-3.5 bg-[#6100FF] text-white text-[11px] uppercase tracking-[0.16em] font-semibold hover:bg-[#5000E0] disabled:opacity-50 flex items-center justify-center"
             >
               {loading ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Rasmiylashtirish"}
             </button>

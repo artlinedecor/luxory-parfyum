@@ -5,6 +5,7 @@ import BottomNav from "@/components/BottomNav";
 import HeroSection from "@/components/HeroSection";
 import ProductGrid from "@/components/ProductGrid";
 import StockCarousel from "@/components/StockCarousel";
+import InstallmentBanner from "@/components/InstallmentBanner";
 import { MOCK_PRODUCTS } from "@/lib/mock-data";
 import { siteConfig } from "@/config/site";
 import { useI18n } from "@/lib/i18n-context";
@@ -29,7 +30,7 @@ export default function Home() {
   const localBusinessJsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "Lux Atir",
+    "name": siteConfig.siteName,
     "image": "https://parfumelux.uz/hero.png",
     "@id": "https://parfumelux.uz/#store",
     "url": "https://parfumelux.uz",
@@ -68,7 +69,10 @@ export default function Home() {
         {/* Hero Section */}
         <HeroSection />
 
-        {/* Astatka (omborda bor) — aylanuvchi banner */}
+        {/* Bo'lib to'lash taklifi — hero'dan keyingi asosiy blok */}
+        <InstallmentBanner products={products} />
+
+        {/* Tanlangan atirlar — suriladigan lenta */}
         <StockCarousel products={products} />
 
         {/* Featured Products */}

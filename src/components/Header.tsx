@@ -53,7 +53,10 @@ export default function Header() {
                 </span>
               </span>
             )}
-            <span className="font-heading text-xl text-foreground tracking-[0.08em]">
+            {/* "Elore Parfume" "Lux Atir" dan uzunroq — telefonda kichikroq
+                o'lchamda, harf oralig'i ham torroq, aks holda UZ/RU va
+                ikonkalarga tiqilib qolardi */}
+            <span className="font-heading text-[17px] sm:text-xl text-foreground tracking-[0.05em] sm:tracking-[0.08em] whitespace-nowrap">
               {shopName}
             </span>
           </Link>

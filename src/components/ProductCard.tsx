@@ -171,9 +171,9 @@ export default function ProductCard({
               );
             });
           }}
-          className="flex-1 py-2.5 px-3 border border-foreground/15 text-foreground eyebrow
+          className="shadow-deep flex-1 py-2.5 px-3 border border-foreground/15 text-foreground eyebrow
                      hover:border-foreground hover:bg-foreground hover:text-background
-                     active:scale-[0.99] transition-colors duration-300 min-h-[44px]"
+                     min-h-[44px]"
         >
           {t("btn_add_cart")}
         </button>
