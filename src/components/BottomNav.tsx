@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Home, LayoutGrid, ShoppingBag, User } from "lucide-react";
 
 import { useCart } from "@/lib/cart-context";
 
@@ -10,43 +11,28 @@ const navItems = [
     label: "Asosiy",
     href: "/",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-        <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
-        <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      </svg>
+      <Home className="w-5 h-5" strokeWidth={1.25} />
     ),
   },
   {
     label: "Katalog",
     href: "/catalog",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-        <rect width="7" height="7" x="3" y="3" rx="1" />
-        <rect width="7" height="7" x="14" y="3" rx="1" />
-        <rect width="7" height="7" x="14" y="14" rx="1" />
-        <rect width="7" height="7" x="3" y="14" rx="1" />
-      </svg>
+      <LayoutGrid className="w-5 h-5" strokeWidth={1.25} />
     ),
   },
   {
     label: "Savatcha",
     href: "/cart",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-        <circle cx="8" cy="21" r="1" />
-        <circle cx="19" cy="21" r="1" />
-        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-      </svg>
+      <ShoppingBag className="w-5 h-5" strokeWidth={1.25} />
     ),
   },
   {
     label: "Kirish",
     href: "/login",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
+      <User className="w-5 h-5" strokeWidth={1.25} />
     ),
   },
 ];
@@ -64,7 +50,7 @@ export default function BottomNav() {
       className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
     >
       {/* Glassmorphism background */}
-      <div className="absolute inset-0 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-gold/10" />
+      <div className="absolute inset-0 bg-background/92 backdrop-blur-xl border-t border-border" />
 
       <div className="relative flex items-center justify-around px-2 py-2 safe-area-bottom">
         {navItems.map((item) => {
@@ -79,7 +65,7 @@ export default function BottomNav() {
                 transition-all duration-300 min-w-[60px]
                 ${
                   isActive
-                    ? "text-gold scale-105"
+                    ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }
               `}
@@ -87,15 +73,15 @@ export default function BottomNav() {
               <div className={`relative ${isActive ? "animate-scale-in" : ""}`}>
                 {item.icon}
                 {item.label === "Savatcha" && totalItems > 0 && (
-                  <span className="absolute -top-1.5 -right-2 w-4.5 h-4.5 rounded-full bg-gradient-gold text-black text-[9px] font-extrabold flex items-center justify-center animate-scale-in shadow-md shadow-gold/20 border border-black/30">
+                  <span className="absolute -top-1.5 -right-2 min-w-[17px] h-[17px] px-1 rounded-full bg-foreground text-background text-[9px] font-semibold flex items-center justify-center animate-scale-in">
                     {totalItems}
                   </span>
                 )}
                 {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-gold" />
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-gold-dark" />
                 )}
               </div>
-              <span className="text-[10px] font-medium tracking-wide">
+              <span className="text-[10px] tracking-[0.1em] uppercase">
                 {item.label}
               </span>
             </Link>

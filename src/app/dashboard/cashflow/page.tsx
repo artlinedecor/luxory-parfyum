@@ -152,7 +152,7 @@ export default function CashflowPage() {
 
     // Header
     let csv = "\uFEFF"; // BOM for Excel UTF-8
-    csv += `Lux Atir — Oylik Hisob-kitob (${monthName})\n\n`;
+    csv += `Elore Parfume — Oylik Hisob-kitob (${monthName})\n\n`;
 
     // Summary
     csv += "XULOSA\n";

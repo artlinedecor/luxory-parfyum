@@ -2,122 +2,212 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Eye, Heart } from "lucide-react";
 import { Product } from "@/lib/types";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n-context";
-import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
-import { siteConfig } from "@/config/site";
+import { useWishlist } from "@/lib/wishlist-context";
+import { getFragranceView, formatVolume } from "@/lib/fragrance";
+import {
+  calculateOriginalPriceUzs,
+  calculatePremiumPriceUzs,
+  formatUzs,
+} from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
   onAddToCart?: (product: Product) => void;
+  onQuickView?: (product: Product) => void;
 }
 
 export default function ProductCard({
   product,
   onAddToCart,
+  onQuickView,
 }: ProductCardProps) {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const isOriginal = product.product_type === "original";
   const { t, lang } = useI18n();
+  const wishlist = useWishlist();
 
-  const displayTitle = lang === 'ru' && product.title_ru ? product.title_ru : product.title;
+  const frag = getFragranceView(product);
+  const saved = wishlist.has(product.id);
+
+  // Ruscha nom bo'lsa — o'shani ko'rsatamiz, aks holda ajratilgan atir nomi
+  const displayName =
+    lang === "ru" && product.title_ru ? product.title_ru : frag.name;
+
+  const priceUzs = isOriginal
+    ? calculateOriginalPriceUzs(product.price_usd)
+    : calculatePremiumPriceUzs(product.price_usd);
+
+  const primarySrc = imageError
+    ? "/products/default.png"
+    : product.image_url || "/products/default.png";
+  // Ikkinchi rakurs faqat bazada bo'lsa chiziladi (soxta rasm yo'q)
+  const secondSrc = !imageError ? product.image_url_2 : null;
 
   return (
-    <Link
-      id={`product-${product.id}`}
-      href={`/catalog/${product.id}`}
-      className="group lux-card glass-card rounded-2xl overflow-hidden cursor-pointer flex flex-col h-full w-full text-left"
-    >
-      {/* Product Image */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-secondary flex-shrink-0">
-        {/* Shimmer skeleton while image loads */}
-        {!imageLoaded && (
-          <div className="absolute inset-0 z-[1] shimmer bg-secondary" />
-        )}
-        <Image
-          src={imageError ? "/products/default.png" : (product.image_url || "/products/default.png")}
-          alt={`${displayTitle} — Original va Super Klon atir do'koni`}
-          fill
-          loading="lazy"
-          quality={65}
-          className={`object-cover transition-transform duration-300 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          onError={() => { 
-            if (!imageError) setImageError(true); 
-            setImageLoaded(true); 
-          }}
-          onLoad={() => setImageLoaded(true)}
-        />
+    <article className="group lux-card glass-card overflow-hidden flex flex-col h-full w-full">
+      <Link
+        id={`product-${product.id}`}
+        href={`/catalog/${product.id}`}
+        className="flex flex-col h-full text-left"
+      >
+        {/* ── Rasm: 3:4 vertikal, issiq oq fon ────────────────────── */}
+        <div className="relative aspect-[3/4] overflow-hidden bg-surface-image flex-shrink-0">
+          {!imageLoaded && <div className="absolute inset-0 z-[1] shimmer" />}
 
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+          <Image
+            src={primarySrc}
+            alt={`${frag.brand ? frag.brand + " " : ""}${displayName} — atir`}
+            fill
+            loading="lazy"
+            className={`object-cover transition-[transform,opacity] duration-500 ease-out
+                        group-hover:scale-[1.03]
+                        ${secondSrc ? "group-hover:opacity-0" : ""}
+                        ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            onError={() => {
+              if (!imageError) setImageError(true);
+              setImageLoaded(true);
+            }}
+            onLoad={() => setImageLoaded(true)}
+          />
 
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
-          {isOriginal ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-gold text-black text-[10px] font-bold uppercase tracking-wider shadow-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
-                <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clipRule="evenodd" />
-              </svg>
-              Original
+          {/* Ikkinchi rakurs — sichqoncha kelganda silliq almashadi */}
+          {secondSrc && (
+            <Image
+              src={secondSrc}
+              alt=""
+              aria-hidden
+              fill
+              loading="lazy"
+              className="object-cover opacity-0 scale-[1.03] transition-opacity duration-500 ease-out group-hover:opacity-100"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            />
+          )}
+
+          {/* Yuqori chapda — konsentratsiya */}
+          {frag.concentrationLabel && (
+            <span className="absolute top-3 left-3 z-[2] eyebrow px-2 py-1 bg-white/85 text-foreground/80 backdrop-blur-[2px]">
+              {frag.concentrationLabel}
             </span>
-          ) : (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md text-white text-[10px] font-semibold uppercase tracking-wider">
-              {lang === 'ru' ? 'Люкс Премиум' : 'Lyuks Premium'}
+          )}
+
+          {/* Yuqori o'ngda — hajm */}
+          {frag.volumeMl && (
+            <span className="absolute top-3 right-3 z-[2] eyebrow px-2 py-1 bg-white/85 text-muted-foreground backdrop-blur-[2px]">
+              {formatVolume(frag.volumeMl)}
+            </span>
+          )}
+
+          {/* Original belgisi — pastki chapda, halaqit bermaydi */}
+          {isOriginal && (
+            <span className="absolute bottom-3 left-3 z-[2] eyebrow px-2 py-1 bg-gradient-gold text-[#1a1a1a]">
+              Original
             </span>
           )}
         </div>
 
-        {/* Bo'lib to'lash belgisi */}
-        <div className="absolute top-3 right-3">
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold shadow-lg backdrop-blur-md bg-green-500/90 text-black">
-            💳 {t("installment_short")}
-          </span>
-        </div>
-      </div>
+        {/* ── Matn qismi ──────────────────────────────────────────── */}
+        <div className="px-4 pt-4 pb-3 flex flex-col flex-grow">
+          {frag.brand && (
+            <p className="eyebrow text-muted-foreground">{frag.brand}</p>
+          )}
 
-      {/* Content */}
-      <div className="p-4 flex flex-col flex-grow">
-        <h3 className="font-heading text-[15px] font-semibold text-foreground leading-snug line-clamp-2 tracking-tight group-hover:text-gold transition-colors duration-300">
-          {displayTitle}
-        </h3>
+          <h3 className="font-heading mt-1.5 text-[17px] leading-snug text-foreground line-clamp-2 group-hover:text-gold-dark transition-colors duration-300">
+            {displayName}
+          </h3>
 
-        <div className="mt-auto pt-4 flex flex-col gap-3">
-          {/* Tilla hairline ajratkich */}
-          <div className="gold-hairline opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-xl font-bold text-gradient-gold tracking-tight">
-              {formatUzs(isOriginal ? calculateOriginalPriceUzs(product.price_usd) : calculatePremiumPriceUzs(product.price_usd))}
-            </span>
-            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">so'm</span>
+          {/* Asosiy akkordlar — faqat haqiqiy ma'lumot bo'lsa */}
+          {frag.accords && (
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              {frag.accords.slice(0, 3).map((a) => (
+                <span
+                  key={a.name}
+                  className="text-[10px] leading-none px-2 py-1 border border-border text-muted-foreground"
+                >
+                  {a.name}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-auto pt-4">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[17px] font-semibold text-foreground tracking-tight tabular-nums">
+                {formatUzs(priceUzs)}
+              </span>
+              <span className="eyebrow text-muted-foreground">
+                {lang === "ru" ? "сум" : "so'm"}
+              </span>
+            </div>
           </div>
+        </div>
+      </Link>
 
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onAddToCart?.(product);
-              // AddToCart pixel event
-              const eid = `atc_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-              import("@/lib/meta-tracker").then(({ trackMetaEvent }) => {
-                trackMetaEvent("AddToCart", eid, {}, {
+      {/* ── Harakatlar ──────────────────────────────────────────── */}
+      <div className="px-4 pb-4 flex items-center gap-2">
+        <button
+          onClick={() => {
+            onAddToCart?.(product);
+            const eid = `atc_${Date.now()}_${Math.random()
+              .toString(36)
+              .slice(2, 9)}`;
+            import("@/lib/meta-tracker").then(({ trackMetaEvent }) => {
+              trackMetaEvent(
+                "AddToCart",
+                eid,
+                {},
+                {
                   content_ids: [product.id],
                   content_name: product.title,
                   content_type: "product",
-                  value: isOriginal ? calculateOriginalPriceUzs(product.price_usd) : calculatePremiumPriceUzs(product.price_usd),
+                  value: priceUzs,
                   currency: "UZS",
-                });
-              });
-            }}
-            className="w-full py-2.5 px-4 rounded-xl border border-gold/30 text-gold text-xs font-bold uppercase tracking-wider
-                       hover:bg-gold/10 active:scale-[0.98] transition-all duration-300"
+                }
+              );
+            });
+          }}
+          className="shadow-deep flex-1 py-2.5 px-3 border border-foreground/15 text-foreground eyebrow
+                     hover:border-foreground hover:bg-foreground hover:text-background
+                     min-h-[44px]"
+        >
+          {t("btn_add_cart")}
+        </button>
+
+        {onQuickView && (
+          <button
+            onClick={() => onQuickView(product)}
+            aria-label={lang === "ru" ? "Быстрый просмотр" : "Tezkor ko'rish"}
+            title={lang === "ru" ? "Быстрый просмотр" : "Tezkor ko'rish"}
+            className="w-11 h-11 flex items-center justify-center border border-border text-muted-foreground
+                       hover:text-foreground hover:border-foreground/30 transition-colors duration-300"
           >
-            {t("btn_add_cart")}
+            <Eye className="w-4 h-4" strokeWidth={1.5} />
           </button>
-        </div>
+        )}
+
+        <button
+          onClick={() => wishlist.toggle(product.id)}
+          aria-label={lang === "ru" ? "В избранное" : "Sevimlilarga"}
+          aria-pressed={saved}
+          title={lang === "ru" ? "В избранное" : "Sevimlilarga"}
+          className={`w-11 h-11 flex items-center justify-center border transition-colors duration-300 ${
+            saved
+              ? "border-gold text-gold-dark"
+              : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
+          }`}
+        >
+          <Heart
+            className="w-4 h-4"
+            strokeWidth={1.5}
+            fill={saved ? "currentColor" : "none"}
+          />
+        </button>
       </div>
-    </Link>
+    </article>
   );
 }

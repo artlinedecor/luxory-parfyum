@@ -2,8 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Product } from "@/lib/types";
 import { useI18n } from "@/lib/i18n-context";
+import { getFragranceView } from "@/lib/fragrance";
 import { calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 
 interface StockCarouselProps {
@@ -11,68 +15,118 @@ interface StockCarouselProps {
 }
 
 /**
- * Tanlangan atirlar — doimiy aylanuvchi lyuks banner (diqqatni tortadi).
+ * Tanlangan atirlar — surib ko'riladigan gorizontal lenta (Embla).
+ *
+ * Ilgari bu cheksiz CSS marquee edi: doim harakatlanib turardi va
+ * kartochkani o'qish uchun sichqonchani ushlab turish kerak edi.
+ * Endi foydalanuvchi o'zi suradi — bosim yo'q, lyuks uslubga mos.
  */
 export default function StockCarousel({ products }: StockCarouselProps) {
   const { t, lang } = useI18n();
 
-  // Rasmi bor mahsulotlardan tanlangan to'plam
-  // 24 ta emas 12 ta — takrorlangani bilan 24 element bo'ladi (mobil skroll uchun yengil)
-  const featured = products.filter((p) => p.image_url).slice(0, 12);
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    dragFree: true,
+    containScroll: "trimSnaps",
+    loop: false,
+  });
 
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(false);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanPrev(emblaApi.canScrollPrev());
+    setCanNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    // Embla — tashqi tizim; strelkalarning holatini undan o'qiymiz.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    onSelect();
+    emblaApi.on("select", onSelect).on("reInit", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect).off("reInit", onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  // Rasmi bor mahsulotlardan tanlangan to'plam
+  const featured = products.filter((p) => p.image_url).slice(0, 14);
   if (featured.length < 4) return null;
 
-  // Uzluksiz aylanma uchun ro'yxatni ikki marta takrorlaymiz
-  const loop = [...featured, ...featured];
+  const arrow =
+    "w-10 h-10 flex items-center justify-center border border-border text-muted-foreground " +
+    "hover:text-foreground hover:border-foreground/30 disabled:opacity-30 " +
+    "disabled:hover:text-muted-foreground disabled:hover:border-border transition-colors duration-300";
 
   return (
-    <section className="relative py-9 overflow-hidden border-y border-gold/15 bg-gradient-to-r from-gold/[0.02] via-gold/[0.07] to-gold/[0.02]">
-      {/* Heading */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 flex items-center gap-3">
-        <span className="text-xl">💎</span>
+    <section className="relative py-14 border-y border-border bg-secondary/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 flex items-end justify-between gap-6">
         <div>
-          <h3 className="font-heading text-lg sm:text-xl font-bold text-gradient-gold leading-tight tracking-tight">
+          <p className="eyebrow text-muted-foreground">{t("hotstock_subtitle")}</p>
+          <h2 className="font-heading mt-2 text-3xl sm:text-4xl text-foreground">
             {t("hotstock_title")}
-          </h3>
-          <p className="text-[11px] sm:text-xs text-muted-foreground">
-            {t("hotstock_subtitle")}
-          </p>
+          </h2>
+        </div>
+
+        {/* Strelkalar — faqat kompyuterda, telefonda barmoq bilan suriladi */}
+        <div className="hidden md:flex gap-2 shrink-0">
+          <button
+            onClick={() => emblaApi?.scrollPrev()}
+            disabled={!canPrev}
+            aria-label={lang === "ru" ? "Назад" : "Orqaga"}
+            className={arrow}
+          >
+            <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
+          </button>
+          <button
+            onClick={() => emblaApi?.scrollNext()}
+            disabled={!canNext}
+            aria-label={lang === "ru" ? "Вперёд" : "Oldinga"}
+            className={arrow}
+          >
+            <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+          </button>
         </div>
       </div>
 
-      {/* Marquee track */}
-      <div className="marquee-mask group">
-        <div className="flex gap-4 w-max animate-marquee group-hover:[animation-play-state:paused] px-4">
-          {loop.map((p, i) => {
-            const title = lang === "ru" && p.title_ru ? p.title_ru : p.title;
+      <div className="overflow-hidden px-4 sm:px-6 lg:px-8" ref={emblaRef}>
+        <div className="flex gap-5 max-w-7xl mx-auto">
+          {featured.map((p) => {
+            const frag = getFragranceView(p);
+            const name =
+              lang === "ru" && p.title_ru ? p.title_ru : frag.name;
+
             return (
               <Link
-                key={`${p.id}-${i}`}
+                key={p.id}
                 href={`/catalog/${p.id}`}
-                className="group/card relative flex-shrink-0 w-44 rounded-2xl overflow-hidden glass-card border border-gold/10 hover:border-gold/40 transition-all duration-300 hover:-translate-y-1"
+                className="group/card shrink-0 w-[10.5rem] sm:w-48"
               >
-                <div className="relative aspect-square bg-secondary overflow-hidden">
+                <div className="relative aspect-[3/4] bg-surface-image overflow-hidden border border-border group-hover/card:border-gold/50 transition-colors duration-500">
                   <Image
                     src={p.image_url || "/products/default.png"}
-                    alt={title}
+                    alt={name}
                     fill
-                    quality={60}
-                    className="object-cover transition-transform duration-500 group-hover/card:scale-110"
-                    sizes="176px"
+                    loading="lazy"
+                    className="object-cover transition-transform duration-[600ms] ease-out group-hover/card:scale-[1.04]"
+                    sizes="(max-width: 640px) 168px, 192px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                  {/* Bo'lib to'lash belgisi */}
-                  <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold shadow-lg bg-green-500/90 text-black">
-                    💳 {t("installment_short")}
-                  </span>
                 </div>
-                <div className="p-3">
-                  <p className="text-xs font-semibold text-foreground line-clamp-2 leading-tight min-h-[2rem] group-hover/card:text-gold transition-colors">
-                    {title}
+
+                <div className="pt-3.5">
+                  {frag.brand && (
+                    <p className="eyebrow text-muted-foreground truncate">
+                      {frag.brand}
+                    </p>
+                  )}
+                  <p className="font-heading mt-1 text-[15px] leading-tight text-foreground line-clamp-2 min-h-[2.4rem] group-hover/card:text-gold-dark transition-colors duration-300">
+                    {name}
                   </p>
-                  <p className="mt-1.5 text-sm font-bold text-gradient-gold">
+                  <p className="mt-1.5 text-sm font-semibold text-foreground tabular-nums">
                     {formatUzs(calculatePremiumPriceUzs(p.price_usd))}{" "}
-                    <span className="text-[10px] text-muted-foreground font-normal">
+                    <span className="eyebrow text-muted-foreground font-normal">
                       {lang === "ru" ? "сум" : "so'm"}
                     </span>
                   </p>

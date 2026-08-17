@@ -2,81 +2,125 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, CreditCard } from "lucide-react";
 import { useI18n } from "@/lib/i18n-context";
-import { useShopSettings } from "@/lib/settings-context";
 
+/**
+ * Hero — qorong'i fotosurat ustidagi editorial blok.
+ *
+ * Uchta muhim tuzatish:
+ *  1. pt-28 — sarlavha fiksatsiyalangan header ostida qolib ketmasin
+ *     (avval "Atirning" so'zi kesilib turardi).
+ *  2. Fon rasmining o'rtasi yorqin (tilla flakon), shu bois matn ortiga
+ *     radial quyuqlashtirish qo'yildi — aks holda oq matn o'qilmasdi.
+ *  3. Aloqa ikonkalari olib tashlandi — ular footer'da bor, bu yerda esa
+ *     ekranni to'ldirib sarlavhani pastga siqib chiqarardi.
+ */
 export default function HeroSection() {
   const { t } = useI18n();
-  const { shopPhone, telegramAdminUsername, telegramChannel } = useShopSettings();
+  const reduce = useReducedMotion();
+
+  // Bosqichma-bosqich ochilish — CSS orqali (globals.css: .hero-rise).
+  // JS'ga bog'lanmaydi: framer-motion kech yuklansa ham matn ko'rinadi.
+  const rise = (delay: number) => ({
+    style: { animationDelay: `${delay}s` },
+  });
 
   return (
     <section
       id="hero"
-      className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative flex min-h-[92vh] items-center justify-center overflow-hidden"
     >
-      {/* Background image */}
-      <div className="absolute inset-0">
+      {/* Fon rasmi */}
+      <motion.div
+        className="absolute inset-0"
+        initial={reduce ? false : { scale: 1.06 }}
+        animate={reduce ? undefined : { scale: 1 }}
+        transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
+      >
         <Image
           src="/hero.webp"
-          alt="Lux Atir — Toshkentda original atirlar va super klon parfyumeriya do'koni"
+          alt="Elore Parfume — Toshkentda original atirlar va super klon parfyumeriya do'koni"
           fill
           className="object-cover"
           priority
-          quality={70}
           sizes="100vw"
         />
-        {/* Dark overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-[#0a0a0a]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60" />
-      </div>
+      </motion.div>
 
-      {/* Decorative elements */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-gold/5 blur-[100px]" />
-      <div className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full bg-gold/5 blur-[80px]" />
+      {/* Matn o'qilishi uchun qatlamlar (rasm ustida, matn ostida) */}
+      <div aria-hidden className="absolute inset-0 bg-[#141210]/62" />
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 85% at 50% 42%, rgba(10,9,8,0.72) 0%, rgba(10,9,8,0.42) 45%, transparent 78%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-b from-transparent via-[#faf8f5]/55 to-[#faf8f5]"
+      />
 
-      {/* Content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-4 text-center space-y-8">
-        {/* Subtle label */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gold/20 bg-gold/5 backdrop-blur-sm">
-          <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
-          <span className="text-gold text-xs font-medium tracking-widest uppercase">
-            {t("hero_badge")}
-          </span>
-        </div>
+      {/* Matn */}
+      <div className="relative z-10 mx-auto max-w-3xl px-4 pt-28 pb-32 text-center sm:pb-36">
+        <p {...rise(0.05)} className="hero-rise eyebrow text-[#ded0b8]">
+          {t("hero_badge")}
+        </p>
 
-        {/* Heading */}
-        <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl font-bold leading-tight tracking-tight">
-          <span className="text-foreground">{t("hero_title_1")} </span>
-          <span className="text-gradient-gold">{t("hero_title_2")}</span>
+        <h1
+          {...rise(0.15)}
+          className="hero-rise mt-6 font-heading text-[2.6rem] leading-[1.06] text-white sm:text-6xl md:text-[4.25rem]"
+          style={{ textShadow: "0 2px 28px rgba(0,0,0,0.55)" }}
+        >
+          {t("hero_title_1")} <span className="italic">{t("hero_title_2")}</span>
           <br />
-          <span className="text-foreground">{t("hero_title_3")}</span>
+          {t("hero_title_3")}
         </h1>
 
-        {/* Description */}
-        <p className="max-w-xl mx-auto text-muted-foreground text-sm sm:text-base leading-relaxed">
+        <div {...rise(0.3)} className="hero-rise gold-hairline mx-auto mt-7 w-20" />
+
+        <p
+          {...rise(0.38)}
+          className="hero-rise mx-auto mt-7 max-w-lg text-sm leading-relaxed text-white/80 sm:text-[15px]"
+          style={{ textShadow: "0 1px 16px rgba(0,0,0,0.6)" }}
+        >
           {t("hero_desc")}
         </p>
 
-        {/* Delivery Badge */}
-        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-green-500/10 border border-green-500/20 backdrop-blur-sm">
-          <span className="text-green-400 text-xs sm:text-sm font-medium">
-            {t("hero_delivery_badge")}
-          </span>
+        {/* Bo'lib to'lash ilgagi — hero'dagi asosiy savdo argumenti */}
+        <div {...rise(0.46)} className="hero-rise mt-8 flex justify-center">
+          <Link
+            href="#nasiya"
+            className="shadow-deep inline-flex max-w-full items-center gap-3 border border-[#ded0b8]/45
+                       bg-[#141210]/70 px-5 py-3 backdrop-blur-sm transition-colors
+                       hover:border-[#ded0b8] hover:bg-[#141210]/85"
+          >
+            <CreditCard
+              className="h-4 w-4 shrink-0 text-[#e8d49a]"
+              strokeWidth={1.5}
+            />
+            <span className="eyebrow text-left text-[#ded0b8]">
+              {t("hero_delivery_badge")}
+            </span>
+          </Link>
         </div>
 
         {/* CTA */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div
+          {...rise(0.56)}
+          className="hero-rise mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center"
+        >
           <Link
             href="/catalog"
             id="hero-cta-catalog"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-gold text-black font-bold text-sm uppercase tracking-wider
-                       hover:opacity-90 active:scale-[0.98] transition-all duration-300
-                       shadow-xl shadow-gold/25 hover:shadow-gold/40"
+            className="shadow-deep-gold bg-gradient-gold eyebrow inline-flex min-h-[56px]
+                       items-center justify-center gap-3 px-10 text-[#1a1a1a]"
           >
             {t("btn_catalog")}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-              <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
-            </svg>
+            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
           </Link>
 
           <a
@@ -84,54 +128,43 @@ export default function HeroSection() {
             target="_blank"
             rel="noopener noreferrer"
             id="hero-cta-instagram"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-gold/30 text-gold font-semibold text-sm uppercase tracking-wider
-                       hover:bg-gold/10 transition-all duration-300"
+            className="shadow-deep eyebrow inline-flex min-h-[56px] items-center justify-center gap-2.5
+                       border border-white/45 bg-[#141210]/60 px-10 text-white backdrop-blur-sm
+                       hover:border-white hover:bg-[#141210]/80"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            {/* lucide 1.31 da brend ikonkalari yo'q — Instagram inline SVG */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              className="h-3.5 w-3.5"
+              aria-hidden
+            >
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+            </svg>
             Instagram
           </a>
         </div>
 
-        {/* Social Links / Contacts */}
-        <div className="flex justify-center items-center gap-4 pt-6">
-          <a href="https://www.instagram.com/elore_parfumes?igsh=a2xrMmp1ZmpleGpm" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-white/80 hover:text-pink-500 hover:border-pink-500/50 hover:bg-pink-500/10 transition-all shadow-lg hover:scale-110" title="Instagram">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-          </a>
-          <a href={`tel:${shopPhone.replace(/\s/g, '')}`} className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-white/80 hover:text-green-500 hover:border-green-500/50 hover:bg-green-500/10 transition-all shadow-lg hover:scale-110" title="Telefon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-          </a>
-          <a href={telegramAdminUsername} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-white/80 hover:text-[#0088cc] hover:border-[#0088cc]/50 hover:bg-[#0088cc]/10 transition-all shadow-lg hover:scale-110" title="Telegram Lichka">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M21.198 2.433a2.242 2.242 0 0 0-1.022.215l-18 8a2.25 2.25 0 0 0 .122 4.108l4.49 1.49 2.112 6.538a1.5 1.5 0 0 0 2.813.111l2.584-4.838 5.766 4.316a2.25 2.25 0 0 0 3.593-1.63L23.454 3.73a2.25 2.25 0 0 0-2.256-1.297zM8.835 15.6l-1.39-4.254 11.233-7.534-8.835 11.161v.627zm-3.056-2.582l-2.92-.973L19.467 4.6l-13.688 8.418zm13.18 7.078l-5.328-3.988L16.4 12.22l-1.898-2.4 4.457 6.276z"/></svg>
-          </a>
-          <a href={telegramChannel} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-white/80 hover:text-[#0088cc] hover:border-[#0088cc]/50 hover:bg-[#0088cc]/10 transition-all shadow-lg hover:scale-110" title="Telegram Kanal">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          </a>
-        </div>
-
-        {/* Stats */}
-        <div className="flex items-center justify-center gap-8 sm:gap-12 pt-8">
-          <div className="text-center">
-            <div className="text-2xl sm:text-3xl font-bold text-gradient-gold">200+</div>
-            <div className="text-xs text-muted-foreground mt-1">{t("stats_products")}</div>
-          </div>
-          <div className="w-px h-10 bg-border" />
-          <div className="text-center">
-            <div className="text-2xl sm:text-3xl font-bold text-gradient-gold">50+</div>
-            <div className="text-xs text-muted-foreground mt-1">{t("stats_brands")}</div>
-          </div>
-          <div className="w-px h-10 bg-border" />
-          <div className="text-center">
-            <div className="text-2xl sm:text-3xl font-bold text-gradient-gold">24/7</div>
-            <div className="text-xs text-muted-foreground mt-1">{t("stats_support")}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
-        <span className="text-[10px] text-muted-foreground tracking-widest uppercase">{t("hero_scroll")}</span>
-        <div className="w-5 h-8 rounded-full border border-gold/30 flex items-start justify-center p-1.5">
-          <div className="w-1 h-2 rounded-full bg-gold animate-bounce" />
+        {/* Statistika */}
+        <div
+          {...rise(0.66)}
+          className="hero-rise mt-14 flex items-start justify-center gap-8 sm:gap-16"
+        >
+          {[
+            { v: "200+", l: t("stats_products") },
+            { v: "50+", l: t("stats_brands") },
+            { v: "24/7", l: t("stats_support") },
+          ].map((s) => (
+            <div key={s.v} className="text-center">
+              <div className="font-heading text-3xl text-white">{s.v}</div>
+              <div className="eyebrow mt-2 text-white/55">{s.l}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

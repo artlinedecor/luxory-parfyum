@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { Lock, ShoppingBag } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
-
 import { useShopSettings } from "@/lib/settings-context";
 
 export default function Header() {
@@ -15,109 +14,104 @@ export default function Header() {
   const { t, lang, setLang } = useI18n();
   const { shopName, logoUrl } = useShopSettings();
 
-  // Don't show on dashboard routes
+  // Dashboard sahifalarida ko'rsatilmaydi
   if (pathname.startsWith("/dashboard")) return null;
+
+  const navLink = (href: string, label: string) => (
+    <Link
+      href={href}
+      className={`relative text-[11px] uppercase tracking-[0.16em] transition-colors duration-300 ${
+        pathname === href
+          ? "text-foreground after:absolute after:-bottom-1.5 after:left-0 after:right-0 after:h-px after:bg-gold"
+          : "text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {label}
+    </Link>
+  );
 
   return (
     <header id="site-header" className="fixed top-0 left-0 right-0 z-50">
-      {/* Glassmorphism background */}
-      <div className="absolute inset-0 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-gold/10" />
+      <div className="absolute inset-0 bg-background/85 backdrop-blur-xl border-b border-border" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg overflow-hidden bg-gradient-gold flex items-center justify-center shadow-lg shadow-gold/20 group-hover:shadow-gold/40 transition-shadow duration-300 relative">
-              {logoUrl ? (
-                <img src={logoUrl} alt={`${shopName} — Toshkentda original atirlar do'koni`} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-black font-bold text-sm">{siteConfig.logoInitial}</span>
-              )}
-            </div>
-            <span className="font-heading text-xl font-semibold tracking-wide text-gradient-gold">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            {logoUrl ? (
+              <span className="w-8 h-8 overflow-hidden flex-shrink-0">
+                <img
+                  src={logoUrl}
+                  alt={`${shopName} — Toshkentda original atirlar do'koni`}
+                  className="w-full h-full object-cover"
+                />
+              </span>
+            ) : (
+              <span className="w-8 h-8 border border-gold flex items-center justify-center flex-shrink-0">
+                <span className="font-heading text-sm text-gold-dark">
+                  {siteConfig.logoInitial}
+                </span>
+              </span>
+            )}
+            {/* "Elore Parfume" "Lux Atir" dan uzunroq — telefonda kichikroq
+                o'lchamda, harf oralig'i ham torroq, aks holda UZ/RU va
+                ikonkalarga tiqilib qolardi */}
+            <span className="font-heading text-[17px] sm:text-xl text-foreground tracking-[0.05em] sm:tracking-[0.08em] whitespace-nowrap">
               {shopName}
             </span>
           </Link>
 
-          {/* Desktop Nav Links — hidden on mobile (BottomNav handles it) */}
-          <nav className="hidden md:flex items-center gap-8">
-            <Link
-              href="/"
-              className={`text-sm font-medium tracking-wide transition-colors duration-300 ${
-                pathname === "/" ? "text-gold" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t("home")}
-            </Link>
-            <Link
-              href="/catalog"
-              className={`text-sm font-medium tracking-wide transition-colors duration-300 ${
-                pathname === "/catalog" ? "text-gold" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t("catalog")}
-            </Link>
-            <Link
-              href="/cart"
-              className={`text-sm font-medium tracking-wide transition-colors duration-300 relative ${
-                pathname === "/cart" ? "text-gold" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t("cart")}
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-4 w-5 h-5 rounded-full bg-gradient-gold text-black text-[10px] font-bold flex items-center justify-center animate-scale-in">
-                  {totalItems}
-                </span>
-              )}
-            </Link>
+          {/* Kompyuterdagi menyu (telefonda BottomNav ishlaydi) */}
+          <nav className="hidden md:flex items-center gap-9">
+            {navLink("/", t("home"))}
+            {navLink("/catalog", t("catalog"))}
+            {navLink("/cart", t("cart"))}
           </nav>
 
-          {/* Action Items — ALWAYS visible on all screens */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Language Switcher */}
-            <div className="flex items-center gap-1.5 text-xs font-semibold">
-              <button
-                onClick={() => setLang("uz")}
-                className={`px-1.5 py-0.5 rounded transition-colors ${lang === "uz" ? "text-gold bg-gold/10" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                UZ
-              </button>
-              <span className="text-border">|</span>
-              <button
-                onClick={() => setLang("ru")}
-                className={`px-1.5 py-0.5 rounded transition-colors ${lang === "ru" ? "text-gold bg-gold/10" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                RU
-              </button>
+          {/* O'ng tomon — har doim ko'rinadi */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Til almashtirish */}
+            <div className="flex items-center text-[11px] tracking-[0.12em]">
+              {(["uz", "ru"] as const).map((code, i) => (
+                <span key={code} className="flex items-center">
+                  {i > 0 && <span className="text-muted-foreground/40">/</span>}
+                  <button
+                    onClick={() => setLang(code)}
+                    aria-pressed={lang === code}
+                    /* px/py — barmoq uchun 44px nishon (ko'rinishi o'zgarmaydi) */
+                    className={`px-1.5 py-3.5 -my-3.5 transition-colors ${
+                      lang === code
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {code.toUpperCase()}
+                  </button>
+                </span>
+              ))}
             </div>
 
-            {/* Cart Icon (mobile-friendly) */}
+            {/* Savatcha */}
             <Link
               href="/cart"
-              className="relative p-2 text-muted-foreground hover:text-gold transition-colors duration-300"
+              className="relative flex items-center justify-center w-11 h-11 -mr-2.5 text-muted-foreground hover:text-foreground transition-colors duration-300"
               title={t("cart")}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-                <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-              </svg>
+              <ShoppingBag className="w-5 h-5" strokeWidth={1.25} />
               {totalItems > 0 && (
-                <span className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-gradient-gold text-black text-[9px] font-bold flex items-center justify-center animate-scale-in">
+                <span className="absolute top-1.5 right-1 min-w-[16px] h-4 px-1 rounded-full bg-foreground text-background text-[9px] font-semibold flex items-center justify-center animate-scale-in">
                   {totalItems}
                 </span>
               )}
             </Link>
 
-            {/* Ghost Login (Lock Icon) */}
+            {/* Admin kirish */}
             <Link
               href="/login"
-              className="p-2 text-muted-foreground hover:text-gold transition-colors duration-300"
+              className="flex items-center justify-center w-11 h-11 -mr-3 text-muted-foreground/60 hover:text-foreground transition-colors duration-300"
               title="Admin Panel"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
+              <Lock className="w-4 h-4" strokeWidth={1.25} />
             </Link>
           </div>
         </div>

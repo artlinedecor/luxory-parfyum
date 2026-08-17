@@ -2,9 +2,9 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Lux Atir — Dashboard",
-    short_name: "Lux Atir",
-    description: "Lux Atir hisob-kitob va ombor tizimi",
+    name: "Elore Parfume — Dashboard",
+    short_name: "Elore Parfume",
+    description: "Elore Parfume hisob-kitob va ombor tizimi",
     start_url: "/dashboard",
     display: "standalone",
     background_color: "#0a0a0a",

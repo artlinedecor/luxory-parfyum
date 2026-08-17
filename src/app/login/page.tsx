@@ -50,10 +50,10 @@ export default function LoginPage() {
       <Header />
       <main className="flex-1 pt-24 pb-24 md:pb-16 flex items-center justify-center">
         <div className="w-full max-w-md mx-auto px-4 sm:px-6">
-          <div className="glass-card rounded-2xl p-8 sm:p-10 space-y-8">
+          <div className="glass-card p-8 sm:p-10 space-y-8">
             {/* Header */}
             <div className="text-center space-y-2 mb-8">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-gold flex items-center justify-center shadow-lg shadow-gold/20 mb-4 animate-float">
+              <div className="w-14 h-14 mx-auto border border-gold flex items-center justify-center mb-5">
                 <span className="text-black font-bold text-xl">{siteConfig.logoInitial}</span>
               </div>
               <h1 className="font-heading text-2xl font-bold text-foreground">
@@ -65,7 +65,7 @@ export default function LoginPage() {
             </div>
 
             {errorMsg && (
-              <div className="p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-medium text-center animate-shake">
+              <div className="p-3.5 mb-4 bg-destructive/8 border border-destructive/25 text-destructive text-xs text-center">
                 {errorMsg}
               </div>
             )}
@@ -88,7 +88,7 @@ export default function LoginPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder={siteConfig.siteName}
-                    className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm
+                    className="w-full px-4 min-h-[48px] py-3 bg-transparent border border-input text-foreground text-sm
                              placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50
                              transition-all duration-300"
                   />
@@ -104,7 +104,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm
+                  className="w-full px-4 min-h-[48px] py-3 bg-transparent border border-input text-foreground text-sm
                            placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50
                            transition-all duration-300"
                 />
@@ -120,7 +120,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm
+                  className="w-full px-4 min-h-[48px] py-3 bg-transparent border border-input text-foreground text-sm
                            placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50
                            transition-all duration-300"
                 />
@@ -130,13 +130,13 @@ export default function LoginPage() {
                 type="submit"
                 id="login-btn"
                 disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-gradient-gold text-black font-bold text-sm uppercase tracking-wider
+                className="w-full min-h-[52px] py-3.5 bg-foreground text-background text-[11px] uppercase tracking-[0.16em] font-semibold
                          hover:opacity-90 active:scale-[0.98] transition-all duration-300
                          shadow-lg shadow-gold/25 hover:shadow-gold/40 flex items-center justify-center gap-2
                          disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
-                  <span className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                  <span className="w-4 h-4 border border-background/30 border-t-background rounded-full animate-spin" />
                 ) : (
                   isLogin ? t("login") : "Ro'yxatdan o'tish"
                 )}
@@ -159,7 +159,7 @@ export default function LoginPage() {
                   setIsLogin(!isLogin);
                   setErrorMsg("");
                 }}
-                className="text-gold font-medium cursor-pointer hover:underline focus:outline-none"
+                className="text-gold-deep font-medium cursor-pointer hover:underline underline-offset-4 focus:outline-none"
               >
                 {isLogin ? "Ro'yxatdan o'tish" : t("login")}
               </button>
