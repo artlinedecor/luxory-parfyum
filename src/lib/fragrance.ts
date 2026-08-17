@@ -32,6 +32,17 @@ export const CONCENTRATION_LABEL: Record<Concentration, string> = {
   cologne: "Cologne",
 };
 
+/** Kartochka uchun qisqa shakl. To'liq "Eau de Parfum" tor kartochkada
+ *  hajm belgisiga tiqilib, ustma-ust tushib qolardi. */
+export const CONCENTRATION_SHORT: Record<Concentration, string> = {
+  extrait: "Extrait",
+  elixir: "Elixir",
+  edp: "EDP",
+  edt: "EDT",
+  edc: "EDC",
+  cologne: "Cologne",
+};
+
 /** Nomdagi yozuvlardan konsentratsiyani aniqlaydi. Topilmasa — null. */
 export function parseConcentration(title: string): Concentration | null {
   const t = title.toLowerCase();
@@ -55,10 +66,16 @@ export function parseVolumeMl(title: string): number | null {
   return ml > 0 && ml <= 500 ? ml : null;
 }
 
-/** "100 ml / 3.4 fl.oz" ko'rinishida formatlaydi. */
+/** "100 ml / 3.4 fl.oz" — mahsulot sahifasi uchun to'liq shakl. */
 export function formatVolume(ml: number): string {
   const oz = (ml * 0.033814).toFixed(1).replace(/\.0$/, "");
   return `${ml} ml / ${oz} fl.oz`;
+}
+
+/** "100 ml" — kartochka uchun. To'liq shakl tor kartochkada ikki
+ *  qatorga bo'linib, rasm tepasini butunlay egallab qo'yardi. */
+export function formatVolumeShort(ml: number): string {
+  return `${ml} ml`;
 }
 
 // ── Brend ─────────────────────────────────────────────────────────
