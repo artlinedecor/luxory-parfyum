@@ -171,9 +171,7 @@ export default function ProductCard({
               );
             });
           }}
-          className="shadow-deep flex-1 py-2.5 px-3 border border-foreground/15 text-foreground eyebrow
-                     hover:border-foreground hover:bg-foreground hover:text-background
-                     min-h-[44px]"
+          className="btn btn-outline btn-sm flex-1 px-3"
         >
           {t("btn_add_cart")}
         </button>
@@ -183,8 +181,7 @@ export default function ProductCard({
             onClick={() => onQuickView(product)}
             aria-label={lang === "ru" ? "Быстрый просмотр" : "Tezkor ko'rish"}
             title={lang === "ru" ? "Быстрый просмотр" : "Tezkor ko'rish"}
-            className="w-11 h-11 flex items-center justify-center border border-border text-muted-foreground
-                       hover:text-foreground hover:border-foreground/30 transition-colors duration-300"
+            className="btn-icon"
           >
             <Eye className="w-4 h-4" strokeWidth={1.5} />
           </button>
@@ -195,11 +192,7 @@ export default function ProductCard({
           aria-label={lang === "ru" ? "В избранное" : "Sevimlilarga"}
           aria-pressed={saved}
           title={lang === "ru" ? "В избранное" : "Sevimlilarga"}
-          className={`w-11 h-11 flex items-center justify-center border transition-colors duration-300 ${
-            saved
-              ? "border-gold text-gold-dark"
-              : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
-          }`}
+          className="btn-icon"
         >
           <Heart
             className="w-4 h-4"

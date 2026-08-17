@@ -245,8 +245,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             <div className="flex gap-2.5">
               <button
                 onClick={handleAddToCart}
-                className="shadow-deep flex-1 min-h-[54px] py-4 bg-foreground text-background eyebrow
-                           hover:bg-gold-dark"
+                className="btn btn-primary flex-1"
               >
                 {t("btn_add_cart")}
               </button>
@@ -255,11 +254,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 onClick={() => wishlist.toggle(product.id)}
                 aria-pressed={saved}
                 aria-label={lang === "ru" ? "В избранное" : "Sevimlilarga"}
-                className={`w-14 min-h-[52px] flex items-center justify-center border transition-colors duration-300 ${
-                  saved
-                    ? "border-gold text-gold-dark"
-                    : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
-                }`}
+                className="btn-icon w-14 min-h-[54px]"
               >
                 <Heart
                   className="w-5 h-5"

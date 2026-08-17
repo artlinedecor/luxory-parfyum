@@ -538,3 +538,327 @@
     }
   }
 }
+
+/* Tugmalar @layer components ichida: shunda Tailwind utilitalari
+   (px-*, min-h-*, w-*) ularni bemalol ustidan yoza oladi. */
+@layer components {
+  /* ================================================================
+     TUGMALAR — iOS uslubi
+     Apple tugmalarini premium qiladigan narsa "katta soya" emas:
+       1) keng yumaloq burchak (14px) va baland gabarit;
+       2) ustida bir piksellik yorug' chiziq — sirt yorug'likni tutadi;
+       3) ikki qatlam soya: yaqin "kontakt" + keng "atrof";
+       4) bosilganda prujinali kichrayish (0.97) va soyaning yo'qolishi;
+       5) matn ustidagi mayin gradient — tekis rang "arzon" ko'rinadi.
+     ================================================================ */
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    border-radius: 14px;
+    padding-inline: 2rem;
+    min-height: 54px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    isolation: isolate;
+    overflow: hidden;
+    /* Telefonda bosilganda kulrang chaqnash bo'lmasin */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease,
+      opacity 0.25s ease;
+  }
+  /* Yuqoridan pastga mayin yorug'lik — sirt tekis emas, "moddiy" ko'rinadi */
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0.04) 42%,
+      rgba(0, 0, 0, 0.06) 100%
+    );
+    pointer-events: none;
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    transform: none;
+  }
+  .btn-sm {
+    min-height: 46px;
+    padding-inline: 1.25rem;
+    border-radius: 12px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+  }
+  .btn-block {
+    width: 100%;
+  }
+
+  /* ── Asosiy: ko'mir ─────────────────────────────────────────── */
+  .btn-primary {
+    background-color: #1a1a1a;
+    color: #faf8f5;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 1px 2px rgba(20, 18, 16, 0.24),
+      0 8px 18px -6px rgba(20, 18, 16, 0.34),
+      0 22px 44px -18px rgba(20, 18, 16, 0.42);
+  }
+  .btn-primary:hover {
+    background-color: #000;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 2px 4px rgba(20, 18, 16, 0.26),
+      0 12px 26px -8px rgba(20, 18, 16, 0.4),
+      0 32px 60px -20px rgba(20, 18, 16, 0.48);
+  }
+  .btn-primary:active {
+    box-shadow:
+      inset 0 2px 6px rgba(0, 0, 0, 0.4),
+      0 1px 2px rgba(20, 18, 16, 0.2);
+  }
+
+  /* ── Tilla: quyma metall ────────────────────────────────────── */
+  .btn-gold {
+    background-image: linear-gradient(
+      175deg,
+      #f0e0af 0%,
+      #dcb84a 30%,
+      #cfa64a 52%,
+      #b8934f 76%,
+      #a37f3c 100%
+    );
+    color: #1a1a1a;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -1px 0 rgba(120, 88, 40, 0.35),
+      0 1px 2px rgba(120, 88, 40, 0.28),
+      0 8px 18px -6px rgba(120, 88, 40, 0.38),
+      0 24px 46px -18px rgba(120, 88, 40, 0.46);
+  }
+  .btn-gold::before {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.32) 0%,
+      rgba(255, 255, 255, 0.06) 45%,
+      rgba(120, 88, 40, 0.12) 100%
+    );
+  }
+  .btn-gold:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      0 2px 4px rgba(120, 88, 40, 0.3),
+      0 14px 28px -8px rgba(120, 88, 40, 0.44),
+      0 34px 64px -20px rgba(120, 88, 40, 0.52);
+  }
+  .btn-gold:active {
+    box-shadow:
+      inset 0 2px 6px rgba(120, 88, 40, 0.45),
+      0 1px 2px rgba(120, 88, 40, 0.22);
+  }
+
+  /* ── Ikkilamchi: nozik chegara, oq sirt ─────────────────────── */
+  .btn-outline {
+    background-color: var(--surface-raised);
+    color: var(--foreground);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      0 1px 2px rgba(20, 18, 16, 0.06),
+      0 6px 16px -8px rgba(20, 18, 16, 0.14),
+      0 18px 36px -20px rgba(20, 18, 16, 0.18);
+  }
+  .btn-outline::before {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.6) 0%,
+      rgba(0, 0, 0, 0.015) 100%
+    );
+  }
+  .btn-outline:hover {
+    border-color: rgba(0, 0, 0, 0.22);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 2px 4px rgba(20, 18, 16, 0.08),
+      0 10px 22px -10px rgba(20, 18, 16, 0.2),
+      0 26px 48px -24px rgba(20, 18, 16, 0.24);
+  }
+  .btn-outline:active {
+    box-shadow: inset 0 2px 5px rgba(20, 18, 16, 0.12);
+  }
+
+  /* ── Shisha: fotosurat ustida (hero) ────────────────────────── */
+  .btn-glass {
+    background-color: rgba(20, 18, 16, 0.55);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 10px 24px -8px rgba(0, 0, 0, 0.45);
+  }
+  .btn-glass:hover {
+    background-color: rgba(20, 18, 16, 0.72);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+  .btn-glass:active {
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+  }
+
+  /* ── Uzum brendi ────────────────────────────────────────────── */
+  .btn-uzum {
+    background-color: #6100ff;
+    color: #fff;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.28),
+      0 1px 2px rgba(45, 0, 120, 0.3),
+      0 8px 18px -6px rgba(97, 0, 255, 0.42),
+      0 24px 46px -18px rgba(97, 0, 255, 0.45);
+  }
+  .btn-uzum:hover {
+    background-color: #5000e0;
+  }
+  .btn-uzum:active {
+    box-shadow: inset 0 2px 6px rgba(30, 0, 80, 0.5);
+  }
+
+  /* ── Kvadrat ikonka tugmasi (yurak, ko'z) ───────────────────── */
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    min-height: 46px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: var(--surface-raised);
+    color: var(--muted-foreground);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      0 1px 2px rgba(20, 18, 16, 0.06),
+      0 6px 14px -8px rgba(20, 18, 16, 0.14);
+    transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.35s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+  .btn-icon:hover {
+    color: var(--foreground);
+    border-color: rgba(0, 0, 0, 0.22);
+  }
+  .btn-icon:active {
+    transform: scale(0.94);
+    box-shadow: inset 0 2px 5px rgba(20, 18, 16, 0.12);
+  }
+  .btn-icon[aria-pressed="true"] {
+    border-color: var(--gold);
+    color: var(--gold-dark);
+  }
+
+  /* ── Pill: filtr va segment tanlash (iOS segmented control) ─── */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding-inline: 1.125rem;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.09);
+    background-color: var(--surface-raised);
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    box-shadow: 0 1px 2px rgba(20, 18, 16, 0.05);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background-color 0.28s ease, color 0.28s ease, border-color 0.28s ease,
+      box-shadow 0.28s ease;
+  }
+  .pill:hover {
+    color: var(--foreground);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+  .pill:active {
+    transform: scale(0.96);
+  }
+  .pill[data-active="true"] {
+    background-color: #1a1a1a;
+    border-color: #1a1a1a;
+    color: #faf8f5;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      0 2px 6px rgba(20, 18, 16, 0.22),
+      0 10px 22px -12px rgba(20, 18, 16, 0.3);
+  }
+
+  /* Kiritish maydonlari ham iOS geometriyasida bo'lsin */
+  .field {
+    min-height: 52px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: var(--surface-raised);
+    padding-inline: 1rem;
+    font-size: 0.9375rem;
+    color: var(--foreground);
+    box-shadow: inset 0 1px 2px rgba(20, 18, 16, 0.04);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .field::placeholder {
+    color: color-mix(in srgb, var(--muted-foreground) 65%, transparent);
+  }
+  /* Ikonkali maydon — chapda qidiruv belgisi uchun joy.
+     Tailwind pl-* bilan qilinmadi: bu qoidalar components qatlamida
+     va padding-inline'ni bosa olmasdi. */
+  .field-icon {
+    padding-left: 2.875rem;
+  }
+  .field-clear {
+    padding-right: 2.875rem;
+  }
+
+  .field:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow:
+      inset 0 1px 2px rgba(20, 18, 16, 0.04),
+      0 0 0 3px rgba(197, 168, 128, 0.22);
+  }
+
+  /* Animatsiya kamaytirilsa — prujina yo'q, faqat rang o'zgaradi */
+  @media (prefers-reduced-motion: reduce) {
+    .btn,
+    .btn-icon,
+    .pill {
+      transition: background-color 0.2s ease, color 0.2s ease,
+        border-color 0.2s ease;
+    }
+    .btn:active,
+    .btn-icon:active,
+    .pill:active {
+      transform: none;
+    }
+  }
+}

@@ -112,15 +112,13 @@ export default function InstallmentBanner({ products }: InstallmentBannerProps) 
             <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <Link
                 href="/catalog"
-                className="shadow-deep min-h-[54px] inline-flex items-center justify-center px-10
-                           bg-foreground text-background eyebrow hover:bg-[#000]"
+                className="btn btn-primary"
               >
                 {t("nasiya_cta")}
               </Link>
               <Link
                 href="/cart"
-                className="shadow-deep-gold min-h-[54px] inline-flex items-center justify-center px-10
-                           bg-gradient-gold text-[#1a1a1a] eyebrow"
+                className="btn btn-gold"
               >
                 {t("cart")}
               </Link>

@@ -251,21 +251,14 @@ export default function ProductGrid({ products }: ProductGridProps) {
     unisex: { uz: "Unisex", ru: "Унисекс" },
   };
 
-  const chip = (active: boolean) =>
-    `px-3.5 py-2 text-[11px] uppercase tracking-[0.14em] font-medium border transition-colors duration-300 min-h-[38px] whitespace-nowrap ${
-      active
-        ? "border-foreground bg-foreground text-background"
-        : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
-    }`;
-
   return (
     <div className="space-y-8">
       {/* Qidiruv */}
       <div className="max-w-xl mx-auto w-full">
         <div className="relative group">
           <Search
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground
-                       group-focus-within:text-gold-dark transition-colors pointer-events-none"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground
+                       group-focus-within:text-gold-dark transition-colors pointer-events-none z-[1]"
             strokeWidth={1.5}
           />
           <input
@@ -273,14 +266,12 @@ export default function ProductGrid({ products }: ProductGridProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("search_placeholder")}
-            className="w-full pl-7 pr-8 py-3 bg-transparent border-0 border-b border-input
-                       text-sm text-foreground placeholder:text-muted-foreground
-                       focus:outline-none focus:border-gold transition-colors duration-300"
+            className="field field-icon field-clear w-full"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors z-[1]"
               aria-label={lang === "ru" ? "\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c" : "Tozalash"}
             >
               <X className="w-4 h-4" strokeWidth={1.5} />
@@ -295,7 +286,8 @@ export default function ProductGrid({ products }: ProductGridProps) {
           <button
             key={g}
             onClick={() => setGenderFilter(g)}
-            className={chip(genderFilter === g)}
+            className="pill"
+            data-active={genderFilter === g}
           >
             {lang === "ru" ? genderLabels[g].ru : genderLabels[g].uz}
           </button>
@@ -304,7 +296,8 @@ export default function ProductGrid({ products }: ProductGridProps) {
         <button
           onClick={() => setFiltersOpen((v) => !v)}
           aria-expanded={filtersOpen}
-          className={`${chip(filtersOpen || activeCount > 0)} inline-flex items-center gap-2`}
+          className="pill gap-2"
+          data-active={filtersOpen || activeCount > 0}
         >
           <SlidersHorizontal className="w-3.5 h-3.5" strokeWidth={1.5} />
           {lang === "ru" ? "\u0424\u0438\u043b\u044c\u0442\u0440\u044b" : "Filtrlar"}
@@ -337,7 +330,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
                   }))}
                   value={familyFilter}
                   onChange={(v) => setFamilyFilter(v as NoteFamily | null)}
-                  chip={chip}
                 />
               </FilterGroup>
             )}
@@ -355,7 +347,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
                   }))}
                   value={concFilter}
                   onChange={(v) => setConcFilter(v as Concentration | null)}
-                  chip={chip}
                 />
               </FilterGroup>
             )}
@@ -377,7 +368,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
                   }))}
                   value={seasonFilter}
                   onChange={(v) => setSeasonFilter(v as Season | null)}
-                  chip={chip}
                 />
               </FilterGroup>
             )}
@@ -399,7 +389,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
                   }))}
                   value={timeFilter}
                   onChange={(v) => setTimeFilter(v as TimeOfDay | null)}
-                  chip={chip}
                 />
               </FilterGroup>
             )}
@@ -417,7 +406,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
                   }))}
                   value={brandFilter}
                   onChange={setBrandFilter}
-                  chip={chip}
                 />
               </FilterGroup>
             )}
@@ -468,7 +456,8 @@ export default function ProductGrid({ products }: ProductGridProps) {
           <div className="flex flex-wrap items-center gap-3 py-6">
             <button
               onClick={() => setOnlySaved((v) => !v)}
-              className={chip(onlySaved)}
+              className="pill"
+              data-active={onlySaved}
             >
               {lang === "ru" ? "\u0418\u0437\u0431\u0440\u0430\u043d\u043d\u043e\u0435" : "Sevimlilar"}
               {wishlist.count > 0 && ` (${wishlist.count})`}
@@ -510,8 +499,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
         <div ref={sentinelRef} className="flex justify-center pt-4">
           <button
             onClick={() => setVisible((v) => v + PAGE)}
-            className="px-8 py-3.5 border border-foreground/15 text-foreground eyebrow
-                       hover:border-foreground hover:bg-foreground hover:text-background transition-colors duration-300"
+            className="btn btn-outline"
           >
             {lang === "ru" ? "Показать ещё" : "Yana ko'rsatish"}
             <span className="ml-2 opacity-60 normal-case tracking-normal">
@@ -602,12 +590,10 @@ function ChipRow({
   items,
   value,
   onChange,
-  chip,
 }: {
   items: { key: string; label: string }[];
   value: string | null;
   onChange: (v: string | null) => void;
-  chip: (active: boolean) => string;
 }) {
   return (
     <div className="flex flex-wrap gap-2">
@@ -615,7 +601,8 @@ function ChipRow({
         <button
           key={it.key}
           onClick={() => onChange(value === it.key ? null : it.key)}
-          className={chip(value === it.key)}
+          className="pill"
+          data-active={value === it.key}
         >
           {it.label}
         </button>

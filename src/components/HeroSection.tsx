@@ -94,9 +94,8 @@ export default function HeroSection() {
         <div {...rise(0.46)} className="hero-rise mt-8 flex justify-center">
           <Link
             href="#nasiya"
-            className="shadow-deep inline-flex max-w-full items-center gap-3 border border-[#ded0b8]/45
-                       bg-[#141210]/70 px-5 py-3 backdrop-blur-sm transition-colors
-                       hover:border-[#ded0b8] hover:bg-[#141210]/85"
+            className="btn btn-glass btn-sm max-w-full rounded-full border-[#ded0b8]/45
+                       text-[#ded0b8] hover:border-[#ded0b8]"
           >
             <CreditCard
               className="h-4 w-4 shrink-0 text-[#e8d49a]"
@@ -116,8 +115,7 @@ export default function HeroSection() {
           <Link
             href="/catalog"
             id="hero-cta-catalog"
-            className="shadow-deep-gold bg-gradient-gold eyebrow inline-flex min-h-[56px]
-                       items-center justify-center gap-3 px-10 text-[#1a1a1a]"
+            className="btn btn-gold w-full sm:w-auto"
           >
             {t("btn_catalog")}
             <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
@@ -128,9 +126,7 @@ export default function HeroSection() {
             target="_blank"
             rel="noopener noreferrer"
             id="hero-cta-instagram"
-            className="shadow-deep eyebrow inline-flex min-h-[56px] items-center justify-center gap-2.5
-                       border border-white/45 bg-[#141210]/60 px-10 text-white backdrop-blur-sm
-                       hover:border-white hover:bg-[#141210]/80"
+            className="btn btn-glass w-full sm:w-auto"
           >
             {/* lucide 1.31 da brend ikonkalari yo'q — Instagram inline SVG */}
             <svg

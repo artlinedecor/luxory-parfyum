@@ -129,8 +129,7 @@ export default function QuickViewDialog({
                     <div className="mt-auto pt-8 space-y-2.5">
                       <button
                         onClick={() => onAddToCart?.(product)}
-                        className="shadow-deep w-full min-h-[50px] py-3 bg-foreground text-background eyebrow
-                                   hover:bg-gold-dark"
+                        className="btn btn-primary btn-block btn-sm"
                       >
                         {t("btn_add_cart")}
                       </button>
@@ -139,9 +138,7 @@ export default function QuickViewDialog({
                         <Link
                           href={`/catalog/${product.id}`}
                           onClick={onClose}
-                          className="flex-1 min-h-[44px] flex items-center justify-center border border-border
-                                     eyebrow text-muted-foreground hover:text-foreground
-                                     hover:border-foreground/30 transition-colors duration-300"
+                          className="btn btn-outline btn-sm flex-1"
                         >
                           {lang === "ru" ? "Подробнее" : "Batafsil"}
                         </Link>
@@ -150,11 +147,7 @@ export default function QuickViewDialog({
                           onClick={() => wishlist.toggle(product.id)}
                           aria-pressed={saved}
                           aria-label={lang === "ru" ? "В избранное" : "Sevimlilarga"}
-                          className={`w-12 min-h-[44px] flex items-center justify-center border transition-colors duration-300 ${
-                            saved
-                              ? "border-gold text-gold-dark"
-                              : "border-border text-muted-foreground hover:text-foreground"
-                          }`}
+                          className="btn-icon"
                         >
                           <Heart
                             className="w-4 h-4"

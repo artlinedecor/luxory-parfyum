@@ -106,17 +106,13 @@ export default function UzumPaymentResult() {
         <div className="mt-10 flex flex-col gap-2.5">
           <Link
             href="/cart"
-            className="min-h-[52px] inline-flex items-center justify-center
-                       bg-foreground text-background eyebrow
-                       hover:bg-gold-dark transition-colors duration-300"
+            className="btn btn-primary btn-block"
           >
             Qayta urinib ko&apos;rish
           </Link>
           <a
             href="tel:+998992620101"
-            className="min-h-[48px] inline-flex items-center justify-center gap-2
-                       border border-border eyebrow text-muted-foreground
-                       hover:text-foreground hover:border-foreground/30 transition-colors duration-300"
+            className="btn btn-outline btn-block btn-sm"
           >
             <Phone className="w-3.5 h-3.5" strokeWidth={1.5} />
             Do&apos;kon bilan bog&apos;lanish
@@ -148,10 +144,7 @@ export default function UzumPaymentResult() {
 
       <Link
         href="/catalog"
-        className="mt-10 min-h-[52px] w-full inline-flex items-center justify-center gap-2.5
-                   border border-foreground/15 eyebrow text-foreground
-                   hover:border-foreground hover:bg-foreground hover:text-background
-                   transition-colors duration-300"
+        className="btn btn-outline btn-block mt-10"
       >
         <ArrowLeft className="w-3.5 h-3.5" strokeWidth={1.5} />
         Katalogga qaytish

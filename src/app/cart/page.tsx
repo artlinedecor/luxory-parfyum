@@ -188,7 +188,7 @@ export default function CartPage() {
               
               <a 
                 href={`https://my.click.uz/services/pay?service_id=${process.env.NEXT_PUBLIC_CLICK_SERVICE_ID || '0'}&merchant_id=${process.env.NEXT_PUBLIC_CLICK_MERCHANT_ID || '0'}&amount=${finalAmount}&transaction_param=${submittedOrderId}&return_url=https://parfumelux.uz/payment-success`}
-                className="w-full min-h-[48px] py-3 bg-[#00A1F1] text-white text-[11px] uppercase tracking-[0.16em] font-semibold hover:bg-[#0090D8] transition-colors flex items-center justify-center gap-2"
+                className="btn btn-block btn-sm bg-[#00A1F1] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_8px_18px_-6px_rgba(0,161,241,0.45)] hover:bg-[#0090D8]"
               >
                 {/* Minimal Click Logo SVG */}
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -199,7 +199,7 @@ export default function CartPage() {
 
               <a 
                 href={`https://my.click.uz/services/pay?service_id=${process.env.NEXT_PUBLIC_CLICK_SERVICE_ID || '0'}&merchant_id=${process.env.NEXT_PUBLIC_CLICK_MERCHANT_ID || '0'}&amount=${finalAmount}&transaction_param=${submittedOrderId}&card_type=uzcard&return_url=https://parfumelux.uz/payment-success`}
-                className="w-full min-h-[48px] py-3 bg-[#1a1a1a] text-white text-[11px] uppercase tracking-[0.16em] font-semibold hover:bg-[#000] transition-colors flex items-center justify-center gap-2"
+                className="btn btn-primary btn-block btn-sm"
               >
                 {/* Generic Credit Card SVG */}
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
@@ -212,7 +212,7 @@ export default function CartPage() {
             <div className="flex flex-col gap-3">
               <Link
                 href="/catalog"
-                className="inline-flex items-center justify-center gap-2 px-8 min-h-[48px] border border-border eyebrow text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors duration-300"
+                className="btn btn-outline"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -255,7 +255,7 @@ export default function CartPage() {
                 <h2 className="text-lg font-semibold text-foreground">{t("cart_empty_title")}</h2>
                 <p className="text-sm text-muted-foreground max-w-xs mx-auto">{t("cart_empty_desc")}</p>
               </div>
-              <Link href="/catalog" className="shadow-deep inline-flex items-center justify-center gap-2 px-8 min-h-[50px] bg-foreground text-background eyebrow hover:bg-gold-dark">
+              <Link href="/catalog" className="btn btn-primary">
                 {t("cart_go_catalog")}
               </Link>
             </div>
@@ -303,11 +303,11 @@ export default function CartPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="w-11 h-11 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors">−</button>
+                  <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="btn-icon w-11">−</button>
                   <span className="text-sm font-semibold w-5 text-center">{item.quantity}</span>
-                  <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)} className="w-11 h-11 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors">+</button>
+                  <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)} className="btn-icon w-11">+</button>
                 </div>
-                <button onClick={() => removeItem(item.product.id)} className="w-11 h-11 -mr-2 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors">
+                <button onClick={() => removeItem(item.product.id)} className="btn-icon w-11 border-transparent bg-transparent shadow-none hover:text-destructive">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clipRule="evenodd" /></svg>
                 </button>
               </div>
@@ -321,16 +321,16 @@ export default function CartPage() {
             <div className="space-y-3">
               <div className="space-y-1.5">
                 <label htmlFor="client-name" className="text-xs text-muted-foreground">{t("cart_name")}</label>
-                <input id="client-name" type="text" value={clientName} onChange={(e) => setClientName(e.target.value)} className="w-full px-4 min-h-[48px] py-3 bg-transparent border border-input text-foreground text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:border-gold transition-colors" />
+                <input id="client-name" type="text" value={clientName} onChange={(e) => setClientName(e.target.value)} className="field w-full" />
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="client-phone" className="text-xs text-muted-foreground">{t("cart_phone")}</label>
-                <input id="client-phone" type="tel" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="+998 XX XXX XX XX" className="w-full px-4 min-h-[48px] py-3 bg-transparent border border-input text-foreground text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:border-gold transition-colors" />
+                <input id="client-phone" type="tel" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="+998 XX XXX XX XX" className="field w-full" />
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="client-region" className="text-xs text-muted-foreground">{t("cart_region")}</label>
                 <div className="relative">
-                  <select id="client-region" value={clientRegion} onChange={(e) => setClientRegion(e.target.value)} className="w-full px-4 min-h-[48px] py-3 appearance-none bg-transparent border border-input text-foreground text-sm focus:outline-none focus:border-gold transition-colors">
+                  <select id="client-region" value={clientRegion} onChange={(e) => setClientRegion(e.target.value)} className="field w-full appearance-none">
                     <option value="" disabled>{t("cart_region_placeholder")}</option>
                     {REGIONS.map((region) => (<option key={region} value={region}>{t(region)}</option>))}
                   </select>
@@ -341,7 +341,7 @@ export default function CartPage() {
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="client-address" className="text-xs text-muted-foreground">{t("cart_address")}</label>
-                <input id="client-address" type="text" value={clientAddress} onChange={(e) => setClientAddress(e.target.value)} className="w-full px-4 min-h-[48px] py-3 bg-transparent border border-input text-foreground text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:border-gold transition-colors" />
+                <input id="client-address" type="text" value={clientAddress} onChange={(e) => setClientAddress(e.target.value)} className="field w-full" />
               </div>
 
             </div>
@@ -364,7 +364,7 @@ export default function CartPage() {
               id="checkout-btn"
               onClick={handleCheckout}
               disabled={loading || !clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion}
-              className="shadow-deep w-full min-h-[54px] py-4 bg-foreground text-background eyebrow
+              className="btn btn-primary btn-block
                          hover:opacity-90 active:scale-[0.98] transition-all duration-300
                          shadow-xl shadow-gold/25 hover:shadow-gold/40
                          disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
@@ -386,7 +386,7 @@ export default function CartPage() {
               id="uzum-checkout-btn"
               onClick={handleUzumCheckout}
               disabled={loading || !clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion}
-              className="shadow-deep w-full min-h-[54px] py-4 bg-[#6100FF] text-white text-[11px] uppercase tracking-[0.16em] font-semibold
+              className="btn btn-uzum btn-block
                          hover:bg-[#5000E0] active:scale-[0.98] transition-all duration-300
                          shadow-lg shadow-[#6100FF]/25
                          disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
