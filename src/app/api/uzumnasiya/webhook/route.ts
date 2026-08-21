@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { formatUzs } from "@/lib/utils";
+import { checkContractStatus } from "@/lib/uzumnasiya";
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,15 +35,42 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ status: "order_not_found" }, { status: 200 });
     }
 
-    // 2. Check if status indicates a successful contract/payment
-    const isPaid =
-      status.includes("CONFIRM") ||
-      status.includes("COMPLETE") ||
-      status.includes("PAID") ||
-      status.includes("SUCCESS") ||
-      status.includes("ACTIVATED");
+    // ⚠️ Audit P7: idempotentlik. Bir xil webhook necha marta kelsa,
+    // shuncha marta Telegram xabari ketardi va admin bitta buyurtmani
+    // bir necha marta jo'natishi mumkin edi.
+    if (order.payment_status === "paid") {
+      return NextResponse.json({ status: "already_processed" }, { status: 200 });
+    }
 
-    const newPaymentStatus = isPaid ? "paid" : (status.includes("CANCEL") ? "cancelled" : "pending");
+    // ⚠️ Audit X3: webhook BODY'SIGA ISHONMAYMIZ.
+    // Bu route ochiq va imzo tekshirilmasdi — mijoz o'z order_id sini
+    // biladi (callback URL va localStorage'da) va
+    //   POST {ext_order_id:<uuid>, status:'PAID'}
+    // yuborib, bir tiyin to'lamasdan buyurtmani 'paid' qila olardi.
+    //
+    // Endi webhook faqat "borib tekshir" signali: haqiqiy holat Uzum
+    // Partner API dan so'raladi. Uzum kelgusida imzo mexanizmini bersa,
+    // uni qo'shimcha qatlam sifatida qo'shish mumkin — bu tekshiruv
+    // baribir kerak bo'lib qoladi.
+    let isPaid = false;
+    let isCancelled = false;
+    if (contractId) {
+      try {
+        const chk = await checkContractStatus(Number(contractId));
+        const cs = Number(chk.data?.contract_status);
+        isPaid = cs === 1; // CONTRACT_STATUS.ACTIVE
+        isCancelled = cs === 5; // CONTRACT_STATUS.CANCELLED
+      } catch (e) {
+        console.error("[uzum/webhook] shartnoma holatini tekshirib bo'lmadi", e);
+        // 502 qaytaramiz — Uzum webhook'ni qayta yuboradi.
+        return NextResponse.json({ status: "verify_failed" }, { status: 502 });
+      }
+    } else {
+      console.warn("[uzum/webhook] contract_id yo'q — tasdiqlab bo'lmaydi", { extOrderId });
+      return NextResponse.json({ status: "contract_id_required" }, { status: 400 });
+    }
+
+    const newPaymentStatus = isPaid ? "paid" : isCancelled ? "cancelled" : "pending";
 
     // 3. Update order in database
     await supabase
