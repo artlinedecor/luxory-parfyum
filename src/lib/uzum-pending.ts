@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/utils/supabase/client";
 import { trackMetaEvent } from "@/lib/meta-tracker";
 
 const KEY = "uzum_pending";
@@ -44,45 +43,37 @@ export function clearPending() {
   } catch {}
 }
 
-/** Buyurtmani Supabase'ga yozadi (faqat shartnoma imzolangach chaqiriladi) */
-async function insertOrder(p: PendingOrder) {
-  const supabase = createClient();
-  const base: Record<string, unknown> = {
-    items: p.items,
-    client_name: p.client.name,
-    client_phone: p.client.phone,
-    region: `${p.client.region} — ${p.client.address}`,
-    status: "pending",
-    total_amount: p.total,
-  };
-
-  // Migratsiya bajarilgan bo'lsa — maxsus ustunlar bilan
-  let res = await supabase
-    .from("orders")
-    .insert({
-      ...base,
-      order_type: "uzum_nasiya",
-      uzum_contract_id: p.contract_id,
-      uzum_order_id: p.order,
-      uzum_period: p.period,
-    })
-    .select("id")
-    .single();
-  if (!res.error) return;
-
-  // Zaxira: eski sxema — shartnoma ma'lumoti birinchi mahsulot ichida
-  const itemsWithMeta = p.items.map((it, i) =>
-    i === 0
-      ? { ...it, _uzum: { contract_id: p.contract_id, order: p.order, period: p.period } }
-      : it
-  );
-  await supabase
-    .from("orders")
-    .insert({ ...base, order_type: "full_payment", items: itemsWithMeta })
-    .select("id")
-    .single();
+/**
+ * Buyurtmani SERVER orqali yozadi.
+ *
+ * ⚠️ Audit D1: oldin bu yerda brauzerdan to'g'ridan-to'g'ri Supabase'ga
+ * yozilardi. Birinchi insert bazada MAVJUD BO'LMAGAN `uzum_contract_id`
+ * ustuniga yozardi — ya'ni har doim yiqilardi. Zaxira insertning xatosi
+ * esa umuman tekshirilmasdi va funksiya hech qachon throw qilmasdi.
+ * Mijoz qarz shartnomasini imzolab, buyurtmasiz qolishi mumkin edi.
+ *
+ * Endi xato bo'lsa THROW qiladi — chaqiruvchi localStorage'ni
+ * tozalamaydi va mijoz qayta urinib ko'ra oladi.
+ */
+async function insertOrder(p: PendingOrder): Promise<string> {
+  const res = await fetch("/api/uzumnasiya/finalize", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contract_id: p.contract_id,
+      uzum_order: p.order,
+      period: p.period,
+      client: p.client,
+      // ⚠️ narx YUBORILMAYDI — server bazadan hisoblaydi
+      items: p.items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
+    }),
+  });
+  const j = await res.json();
+  if (!res.ok || !j.order_id) {
+    throw new Error(j.error || "Buyurtmani saqlab bo'lmadi");
+  }
+  return String(j.order_id);
 }
-
 export type PendingResult = "signed" | "not_signed" | "none" | "error";
 
 /**
@@ -135,9 +126,12 @@ export async function resolvePending(): Promise<PendingResult> {
         order_id: String(p.contract_id),
       });
     }
+    // ⚠️ Faqat MUVAFFAQIYATDA tozalanadi. Xato bo'lsa pending saqlanib
+    // qoladi va mijoz sahifani qayta ochganda avtomatik qayta urinadi.
     clearPending();
     return "signed";
-  } catch {
+  } catch (e) {
+    console.error("[uzum] buyurtmani yakunlab bo'lmadi", e);
     return "error";
   }
 }
