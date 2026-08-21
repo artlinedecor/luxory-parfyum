@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { calculateTariffs, productIdToInt, uzumErrorPayload } from "@/lib/uzumnasiya";
+import { computeOrderTotal } from "@/lib/pricing-server";
 
 /**
  * 2-bosqich: savat bo'yicha tariflarni hisoblash.
@@ -18,11 +19,19 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    const mapped = products.map((p) => ({
-      product_id:
-        typeof p.product_id === "number" ? p.product_id : productIdToInt(String(p.product_id)),
-      price: Math.round(Number(p.price)),
-      amount: Number(p.amount),
+    // ⚠️ Audit P2: narx bazadan. Aks holda tarif bir summaga, shartnoma
+    // boshqa summaga tuzilardi va mijoz noto'g'ri oylik to'lov ko'rardi.
+    const { lines } = await computeOrderTotal(
+      products.map((p) => ({
+        product_id: String(p.product_id),
+        quantity: Number(p.amount),
+      }))
+    );
+
+    const mapped = lines.map((l) => ({
+      product_id: productIdToInt(l.product_id),
+      price: l.price_uzs,
+      amount: l.quantity,
     }));
     const res = await calculateTariffs(user_id, mapped);
 

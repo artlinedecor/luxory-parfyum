@@ -6,6 +6,7 @@ import {
   UZUM_DEFAULT_CATEGORY,
   UZUM_UNIT_PIECE,
 } from "@/lib/uzumnasiya";
+import { computeOrderTotal } from "@/lib/pricing-server";
 
 /**
  * Shartnoma yaratish (3-bosqich).
@@ -29,12 +30,21 @@ export async function POST(req: Request) {
       );
     }
 
-    const mapped = products.map((p) => ({
-      product_id:
-        typeof p.product_id === "number" ? p.product_id : productIdToInt(String(p.product_id)),
-      name: String(p.name).slice(0, 255),
-      price: Math.round(Number(p.price)),
-      amount: Number(p.amount),
+    // ⚠️ Audit P2: mijoz yuborgan `price` va `name` E'TIBORSIZ qoldiriladi.
+    // Oldin ular to'g'ridan-to'g'ri Uzumga uzatilardi — 800 000 so'mlik
+    // atirga 10 000 so'mlik shartnoma rasmiylashtirish mumkin edi.
+    const { lines } = await computeOrderTotal(
+      products.map((p) => ({
+        product_id: String(p.product_id),
+        quantity: Number(p.amount),
+      }))
+    );
+
+    const mapped = lines.map((l) => ({
+      product_id: productIdToInt(l.product_id),
+      name: l.title.slice(0, 255),
+      price: l.price_uzs,
+      amount: l.quantity,
       category: UZUM_DEFAULT_CATEGORY,
       unit_id: UZUM_UNIT_PIECE,
     }));

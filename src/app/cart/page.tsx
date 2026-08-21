@@ -8,7 +8,6 @@ import { useCart } from "@/lib/cart-context";
 import { siteConfig } from "@/config/site";
 import { useState, useRef, useEffect } from "react";
 import { useI18n } from "@/lib/i18n-context";
-import { createClient } from "@/utils/supabase/client";
 import { trackMetaEvent } from "@/lib/meta-tracker";
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 import UzumCheckout from "@/components/UzumCheckout";
@@ -40,6 +39,8 @@ export default function CartPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null);
   const [finalAmount, setFinalAmount] = useState<number>(0);
+  // ⚠️ Audit U1: alert() o'rniga — mijozga keyingi qadam tugmalari kerak
+  const [checkoutError, setCheckoutError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [dynPaymentCard, setDynPaymentCard] = useState<string>(siteConfig.paymentCard);
@@ -96,41 +97,44 @@ export default function CartPage() {
   const handleCheckout = async () => {
     if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion) return;
 
+    setCheckoutError("");
     setLoading(true);
 
     try {
-      const supabase = createClient();
-
-      // 1. Prepare order items (clean JSONB array)
-      const orderItems = items.map((item) => ({
-        product_id: item.product.id,
-        quantity: item.quantity,
-        price_at_purchase: item.product.price_usd,
-        title: item.product.title,
-        product_type: item.product.product_type,
-      }));
-
-      // 3. Insert into Supabase — NO merchant_id (avoids FK constraint on "m1")
+      // ⚠️ Audit P1: buyurtma endi SERVER tomonda yaratiladi.
+      // Oldin savat anon kalit bilan to'g'ridan-to'g'ri Supabase'ga
+      // yozardi va total_amount ni O'ZI hisoblardi — DevTools'dan
+      // 1000 so'm yozib, istalgan atirni arzonga olish mumkin edi.
+      //
+      // Serverga FAQAT product_id va miqdor yuboriladi. Narx bazadan.
       const regionDisplay = `${t(clientRegion)} — ${clientAddress}`;
-      const insertPayload: Record<string, any> = {
-        items: orderItems,
-        client_name: clientName,
-        client_phone: clientPhone,
-        region: regionDisplay,
-        order_type: "full_payment",
-        status: "pending",
-        total_amount: paymentAmount, // Added for Click validation
-      };
 
-      let { data: newOrder, error } = await supabase.from("orders").insert(insertPayload).select('id').single();
+      const res = await fetch("/api/orders/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((it) => ({
+            product_id: it.product.id,
+            quantity: it.quantity,
+          })),
+          client: {
+            name: clientName,
+            phone: clientPhone,
+            address: clientAddress,
+            region: regionDisplay,
+          },
+          order_type: "full_payment",
+        }),
+      });
 
-      if (error || !newOrder) {
-        console.error("Supabase insert error:", error);
-        alert("Buyurtmani saqlashda xatolik yuz berdi. Iltimos qayta urinib ko'ring.");
-        setLoading(false);
-        return;
+      const j = await res.json();
+      if (!res.ok || !j.order_id) {
+        throw new Error(j.error || "Buyurtmani saqlab bo'lmadi");
       }
-      
+
+      const newOrder = { id: j.order_id as string };
+      // Click havolasidagi summa ham SERVER hisobidan olinadi.
+      const serverTotal = Number(j.total_uzs);
       setSubmittedOrderId(newOrder.id);
 
       // Trigger Purchase Event (Client + Server Deduplicated)
@@ -139,7 +143,7 @@ export default function CartPage() {
         "Purchase",
         purchaseEventId,
         { client_name: clientName, client_phone: clientPhone },
-        { value: paymentAmount, currency: "UZS" }
+        { value: serverTotal, currency: "UZS" }
       );
 
       // Trigger Lead / Contact Event (Client + Server Deduplicated)
@@ -150,13 +154,19 @@ export default function CartPage() {
         { client_name: clientName, client_phone: clientPhone }
       );
 
-      setFinalAmount(paymentAmount);
+      setFinalAmount(serverTotal);
       setSubmitted(true);
       clearCart();
     } catch (err) {
       console.error(err);
-      alert("Xatolik yuz berdi.");
-    } finally {
+      setCheckoutError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Buyurtmani rasmiylashtirib bo'lmadi. Internet aloqangizni tekshiring."
+      );
+      // ⚠️ Audit U2: loading FAQAT xatoda ochiladi. Muvaffaqiyatda
+      // `submitted` ekraniga o'tiladi — oldin `finally` tugmani erta
+      // ochib yuborardi va ikkinchi bosish YANGI buyurtma yaratardi.
       setLoading(false);
     }
   };
@@ -359,6 +369,27 @@ export default function CartPage() {
               </span>
               <span className="text-2xl font-semibold text-foreground tabular-nums">{formatUzs(paymentAmount)} so'm</span>
             </div>
+
+            {checkoutError && (
+              <div className="p-4 bg-destructive/8 border border-destructive/25 space-y-3">
+                <p className="text-xs text-destructive leading-relaxed">{checkoutError}</p>
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={handleCheckout}
+                    disabled={loading}
+                    className="btn btn-primary btn-block"
+                  >
+                    Qayta urinib ko&apos;rish
+                  </button>
+                  <a
+                    href={`tel:${siteConfig.phone.replace(/s/g, "")}`}
+                    className="btn btn-ghost btn-block no-underline text-center"
+                  >
+                    Do&apos;kon bilan bog&apos;lanish: {siteConfig.phone}
+                  </a>
+                </div>
+              </div>
+            )}
 
             <button
               id="checkout-btn"
