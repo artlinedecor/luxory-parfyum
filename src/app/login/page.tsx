@@ -6,8 +6,6 @@ import { useState } from "react";
 import { siteConfig } from "@/config/site";
 import { useI18n } from "@/lib/i18n-context";
 
-const ALLOWED_ADMIN = "mamatkuloff@bk.ru";
-
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

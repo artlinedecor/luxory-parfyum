@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const { email, password } = await req.json();
 
     // ⚠️ Kodda default parol BO'LMAYDI (audit X2). Oldin bu yerda
-    // "mamatkuloff@bk.ru" / "umar2016" turardi va env sozlanmagan
+    // qattiq yozilgan email/parol turardi va env sozlanmagan
     // bo'lsa o'sha ochiq parol bilan kirish mumkin edi.
     const adminEmail = process.env.ADMIN_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD;
