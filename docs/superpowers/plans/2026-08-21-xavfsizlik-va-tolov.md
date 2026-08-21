@@ -43,6 +43,62 @@
 
 ---
 
+## BAJARILISH HOLATI (2026-08-21)
+
+| Bosqich | Holat | Commit |
+|---|---|---|
+| 0 — Merge | ✅ Bajarildi | `914b671` |
+| 1.1 — Imzolangan sessiya | ✅ Bajarildi | `80f2d41` |
+| 1.2 — Route himoyasi | ✅ Bajarildi (rejadan farq bilan) | `80f2d41` |
+| 1.3 — Telegram webhook | ✅ Bajarildi | `c1bc6a4` |
+| 1.4 — Uzum webhook | ✅ Bajarildi | `00d267c` |
+| 1.5 — Kalit rotatsiyasi | ⏸ Do'kon egasi bajaradi |  |
+| 2 — RLS | ⏸ Task 2.1 tekshiruvi kutilmoqda |  |
+| 3 — Server narxi | ⬜ Boshlanmagan |  |
+| 4 — Yaxlitlik | 🟡 P7 (idempotentlik) bajarildi | `00d267c` |
+| 5 — UX | ⬜ Boshlanmagan |  |
+| 6 — Click QR | ⏸ Task 6.0 bloklaydi |  |
+
+### Rejadan farqlar (bajarish paytida aniqlangan)
+
+**Task 1.2 — "hamma route'ga requireAdmin" NOTO'G'RI edi.**
+Chaqiruvchilarni tekshirganda 3 ta route'ni mijozning O'ZI chaqirishi
+ma'lum bo'ldi. Reja bo'yicha qilinsa, mijoz oqimi butunlay buzilardi:
+
+| Route | Chaqiruvchi | Amaldagi himoya |
+|---|---|---|
+| `contracts` confirm/cancel | `UzumContractActions` (admin) | `requireAdmin` |
+| `contracts` status | `uzum-pending.ts:98` (**mijoz**) | rate limit |
+| `notify` | `uzum-pending.ts:116` (**mijoz**) | `contract_id` Uzum API dan tasdiqlanadi + rate limit |
+| `telegram-notify` | `click/complete:94` (server) | `requireInternalSecret` |
+| `meta-capi` | `meta-tracker.ts` (**mijoz**) | rate limit |
+
+**Task 1.4 — Uzum imzo mexanizmi hali noma'lum.**
+"Webhook'ga ishonmaslik" yondashuvi tanlandi: holat Uzum API dan
+qayta so'raladi. Bu Uzum imzo bersa ham, bermasa ham xavfsiz.
+
+**Qo'shimcha topilma:** `src/app/login/page.tsx:9` da ishlatilmaydigan
+`ALLOWED_ADMIN` konstantasi (qattiq yozilgan email) bor edi — o'chirildi.
+
+### ⚠️ Deploy'dan OLDIN Vercel'ga qo'shilishi SHART
+
+Bu kalitlarsiz sayt ishlamay qoladi:
+
+| Kalit | Nima uchun | Bo'lmasa nima bo'ladi |
+|---|---|---|
+| `ADMIN_SESSION_SECRET` | Sessiya imzosi (32+ belgi) | Admin panelga hech kim kira olmaydi |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Endi fallback yo'q | Login 503 qaytaradi |
+| `INTERNAL_API_SECRET` | Ichki route chaqiruvlari | Click to'lovida Telegram xabari kelmaydi |
+| `TELEGRAM_WEBHOOK_SECRET` | Bot himoyasi | Bot tugmalari ishlamaydi |
+
+Telegram uchun qo'shimcha qadam:
+
+```
+curl "https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://parfumelux.uz/api/telegram-webhook&secret_token=<SECRET>"
+```
+
+---
+
 # 0-BOSQICH: Merge'ni yakunlash (BLOKER)
 
 Busiz hech narsa kompilyatsiya bo'lmaydi va deploy qilinmaydi.
