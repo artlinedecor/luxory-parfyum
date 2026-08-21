@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getAdminChatIds, sendTelegram } from "@/lib/telegram";
 import { formatUzs } from "@/lib/utils";
+import { checkContractStatus } from "@/lib/uzumnasiya";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 /**
  * Imzolangan Uzum Nasiya buyurtmasini Telegram'ga yuboradi —
@@ -23,6 +25,35 @@ export async function POST(req: Request) {
 
     if (!contract_id) {
       return NextResponse.json({ error: "contract_id majburiy" }, { status: 400 });
+    }
+
+    // ⚠️ Audit X11: bu route'ni mijoz brauzeri chaqiradi
+    // (uzum-pending.ts:116), shuning uchun admin tekshiruvi qo'yib
+    // bo'lmaydi. Oldin har kim ixtiyoriy contract_id bilan adminga
+    // "Tasdiqlash" tugmali xabar yuborib, uni aldab bosdira olardi.
+    //
+    // Yechim: contract_id HAQIQATDAN Uzumda bor va imzolangan bo'lishi
+    // shart — buni Uzum API dan so'rab tekshiramiz.
+    if (!rateLimit(`ntf:${clientIp(req)}`, 20, 10 * 60 * 1000)) {
+      return NextResponse.json({ error: "Juda ko'p so'rov" }, { status: 429 });
+    }
+
+    try {
+      const chk = await checkContractStatus(Number(contract_id));
+      const cs = Number(chk.data?.contract_status);
+      // 1 = ACTIVE, 2 = MODERATION — faqat shu ikkisida xabar yuboriladi
+      if (cs !== 1 && cs !== 2) {
+        return NextResponse.json(
+          { error: "Shartnoma imzolanmagan" },
+          { status: 409 }
+        );
+      }
+    } catch (e) {
+      console.error("[uzum/notify] shartnomani tasdiqlab bo'lmadi", e);
+      return NextResponse.json(
+        { error: "Shartnomani tekshirib bo'lmadi" },
+        { status: 502 }
+      );
     }
 
     const lines = (items || [])

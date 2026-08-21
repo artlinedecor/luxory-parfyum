@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireInternalSecret } from '@/lib/api-guard';
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from '@/lib/utils';
 
 export async function POST(req: NextRequest) {
+  // ⚠️ Audit X11: oldin har kim adminlarga soxta buyurtma xabari
+  // yubora olardi. Bu route'ni faqat click/complete chaqiradi.
+  const denied = requireInternalSecret(req);
+  if (denied) return denied;
+
   try {
     const body = await req.json();
     const token = process.env.TELEGRAM_BOT_TOKEN;

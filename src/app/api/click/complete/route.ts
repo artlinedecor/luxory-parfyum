@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { internalHeaders } from "@/lib/api-guard";
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { submitOfdData } from '@/lib/click-merchant';
@@ -93,7 +94,7 @@ export async function POST(req: NextRequest) {
     try {
       await fetch(new URL("/api/telegram-notify", req.url).toString(), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: internalHeaders(),
         body: JSON.stringify({
           clientName: order.client_name,
           clientPhone: order.client_phone,

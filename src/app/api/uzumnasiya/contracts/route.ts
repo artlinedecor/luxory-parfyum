@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/api-guard";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 import {
   confirmContract,
   cancelContract,
@@ -25,6 +27,23 @@ export async function POST(req: Request) {
 
     if (!action) {
       return NextResponse.json({ error: "action majburiy" }, { status: 400 });
+    }
+
+    // ⚠️ Audit X4: oldin bu route BUTUNLAY ochiq edi — har kim istalgan
+    // shartnomani aktivlashtira yoki bekor qila olardi (contract id lar
+    // ketma-ket: 990001877...).
+    //
+    // 'status' ni mijozning O'ZI chaqiradi (uzum-pending.ts:98 —
+    // imzolangandan keyin buyurtmani tiklash uchun), shuning uchun u
+    // ochiq qoladi, lekin rate limit bilan.
+    if (action === "confirm" || action === "cancel") {
+      const denied = await requireAdmin(req);
+      if (denied) return denied;
+    } else if (!rateLimit(`ctr:${clientIp(req)}`, 30, 10 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: "Juda ko'p urinish. Birozdan keyin qayta urining." },
+        { status: 429 }
+      );
     }
 
     let res;

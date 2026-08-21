@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 import crypto from "crypto";
 import { normalizePhone, splitName } from "@/lib/meta-normalize";
 
 export async function POST(req: NextRequest) {
+  // ⚠️ Audit X12: bu route'ni mijoz brauzeri chaqiradi (meta-tracker.ts),
+  // shuning uchun admin tekshiruvi qo'yib bo'lmaydi. Rate limit bilan
+  // soxta Purchase eventlari bilan pixelni ko'mishning oldi olinadi.
+  if (!rateLimit(`capi:${clientIp(req)}`, 60, 10 * 60 * 1000)) {
+    return NextResponse.json({ error: "Juda ko'p so'rov" }, { status: 429 });
+  }
+
   try {
     const body = await req.json();
     const {

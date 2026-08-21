@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { checkBuyerStatus, uzumErrorPayload } from "@/lib/uzumnasiya";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 /**
  * 1-bosqich: foydalanuvchi statusi.
@@ -8,6 +9,16 @@ import { checkBuyerStatus, uzumErrorPayload } from "@/lib/uzumnasiya";
  */
 export async function POST(req: Request) {
   try {
+    // ⚠️ Audit X10: bu route raqam bo'yicha kimning Uzum limiti borligini,
+    // balansini va qora ro'yxatda ekanini aytadi. Limitsiz bo'lsa butun
+    // 998XXXXXXXXX oralig'ini aylanib chiqish mumkin edi.
+    if (!rateLimit(`chk:${clientIp(req)}`, 10, 10 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: "Juda ko'p urinish. 10 daqiqadan keyin qayta urinib ko'ring." },
+        { status: 429 }
+      );
+    }
+
     const { phone } = await req.json();
     const digits = Number(String(phone).replace(/\D/g, ""));
     if (!digits || String(digits).length !== 12) {
