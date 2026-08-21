@@ -88,7 +88,7 @@ export default function PwaInstallHelper() {
       </div>
 
       {/* Tabs */}
-      <div className="grid grid-cols-2 gap-1 mb-5 bg-[#141414] p-1 rounded-2xl border border-border/30">
+      <div className="grid grid-cols-2 gap-1 mb-5 bg-secondary p-1 border border-border">
         <button
           onClick={() => setActiveTab("android")}
           className={`py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
@@ -115,8 +115,8 @@ export default function PwaInstallHelper() {
         <div className="space-y-4">
           <p className="text-xs text-muted-foreground leading-relaxed px-1">
             {isUz 
-              ? "Lux Atir boshqaruv panelini telefoningizga yuklab oling va brauzersiz tezkor ishlating."
-              : "Скачайте панель управления Lux Atir на свой телефон для быстрой работы без браузера."}
+              ? "Elore Parfume boshqaruv panelini telefoningizga yuklab oling va brauzersiz tezkor ishlating."
+              : "Скачайте панель управления Elore Parfume на свой телефон для быстрой работы без браузера."}
           </p>
           <button
             onClick={handleInstallClick}
@@ -127,7 +127,7 @@ export default function PwaInstallHelper() {
         </div>
       ) : (
         <div className="space-y-4 text-left">
-          <div className="bg-[#141414] p-4 rounded-2xl border border-border/20 space-y-3">
+          <div className="bg-secondary p-4 border border-border space-y-3">
             <h4 className="text-xs font-bold text-gold uppercase tracking-wider">
               {isUz ? "iPhone-ga O'rnatish:" : "Установка на iPhone:"}
             </h4>

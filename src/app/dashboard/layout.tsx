@@ -92,7 +92,8 @@ export default function DashboardLayout({
   }, []);
 
   return (
-    <div className="flex h-screen bg-background">
+    // theme-dark — do'kon yorug' mavzuga o'tdi, admin panel qora qoladi
+    <div className="theme-dark flex h-screen bg-background">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div

@@ -22,10 +22,10 @@ export default function PrivacyPolicy() {
           {lang === "uz" ? (
             <article className="space-y-8 prose prose-invert max-w-none text-muted-foreground">
               <div className="space-y-4 border-b border-gold/10 pb-6 text-center">
-                <h1 className="font-heading text-3xl sm:text-4xl font-bold text-gradient-gold">
+                <h1 className="font-heading text-4xl sm:text-5xl text-foreground">
                   Maxfiylik Siyosati
                 </h1>
-                <p className="text-sm text-gold/60">
+                <p className="text-sm text-muted-foreground">
                   Oxirgi yangilanish: {new Date().toLocaleDateString("uz-UZ")}
                 </p>
               </div>
@@ -113,16 +113,16 @@ export default function PrivacyPolicy() {
                   Ushbu Maxfiylik siyosati bo'yicha savollaringiz yoki takliflaringiz bo'lsa, quyidagi ma'lumotlar orqali biz bilan bog'lanishingiz mumkin:
                 </p>
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2 text-sm">
-                  <p><strong className="text-gold">Do'kon nomi:</strong> {shopName}</p>
-                  <p><strong className="text-gold">Manzil:</strong> {shopAddress}</p>
-                  <p><strong className="text-gold">Telefon:</strong> {shopPhone}</p>
+                  <p><strong className="text-foreground font-semibold">Do'kon nomi:</strong> {shopName}</p>
+                  <p><strong className="text-foreground font-semibold">Manzil:</strong> {shopAddress}</p>
+                  <p><strong className="text-foreground font-semibold">Telefon:</strong> {shopPhone}</p>
                 </div>
               </section>
 
               <div className="pt-6 border-t border-gold/10 text-center">
                 <Link
                   href="/"
-                  className="inline-flex items-center justify-center px-6 py-2 rounded-xl bg-gradient-gold text-black font-semibold text-sm hover:opacity-90 transition-opacity"
+                  className="inline-flex items-center justify-center px-8 min-h-[48px] border border-foreground/15 eyebrow text-foreground hover:border-foreground hover:bg-foreground hover:text-background transition-colors duration-300"
                 >
                   Bosh sahifaga qaytish
                 </Link>
@@ -131,10 +131,10 @@ export default function PrivacyPolicy() {
           ) : (
             <article className="space-y-8 prose prose-invert max-w-none text-muted-foreground">
               <div className="space-y-4 border-b border-gold/10 pb-6 text-center">
-                <h1 className="font-heading text-3xl sm:text-4xl font-bold text-gradient-gold">
+                <h1 className="font-heading text-4xl sm:text-5xl text-foreground">
                   Политика Конфиденциальности
                 </h1>
-                <p className="text-sm text-gold/60">
+                <p className="text-sm text-muted-foreground">
                   Последнее обновление: {new Date().toLocaleDateString("ru-RU")}
                 </p>
               </div>
@@ -222,16 +222,16 @@ export default function PrivacyPolicy() {
                   Если у вас возникли вопросы касательно политики конфиденциальности, пожалуйста, свяжитесь с нами:
                 </p>
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2 text-sm">
-                  <p><strong className="text-gold">Название магазина:</strong> {shopName}</p>
-                  <p><strong className="text-gold">Адрес:</strong> {shopAddress}</p>
-                  <p><strong className="text-gold">Телефон:</strong> {shopPhone}</p>
+                  <p><strong className="text-foreground font-semibold">Название магазина:</strong> {shopName}</p>
+                  <p><strong className="text-foreground font-semibold">Адрес:</strong> {shopAddress}</p>
+                  <p><strong className="text-foreground font-semibold">Телефон:</strong> {shopPhone}</p>
                 </div>
               </section>
 
               <div className="pt-6 border-t border-gold/10 text-center">
                 <Link
                   href="/"
-                  className="inline-flex items-center justify-center px-6 py-2 rounded-xl bg-gradient-gold text-black font-semibold text-sm hover:opacity-90 transition-opacity"
+                  className="inline-flex items-center justify-center px-8 min-h-[48px] border border-foreground/15 eyebrow text-foreground hover:border-foreground hover:bg-foreground hover:text-background transition-colors duration-300"
                 >
                   Вернуться на главную
                 </Link>

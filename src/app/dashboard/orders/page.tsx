@@ -5,6 +5,22 @@ import Image from "next/image";
 import { Order, Product } from "@/lib/types";
 import { createClient } from "@/utils/supabase/client";
 import { trackDmConversion } from "@/lib/meta-tracker";
+import UzumContractActions from "@/components/UzumContractActions";
+
+/**
+ * Buyurtmadan Uzum Nasiya shartnoma ma'lumotini oladi.
+ * Migratsiya bajarilgan bo'lsa — ustunlardan, aks holda items[0]._uzum dan.
+ */
+function getUzumInfo(order: unknown): { contract_id: number; order?: number } | null {
+  const o = order as Record<string, unknown> | null;
+  if (!o) return null;
+  if (o.uzum_contract_id) {
+    return { contract_id: Number(o.uzum_contract_id), order: Number(o.uzum_order_id) || undefined };
+  }
+  const items = (o.items as { _uzum?: { contract_id: number; order?: number } }[]) || [];
+  const meta = items.map((i) => i?._uzum).find(Boolean);
+  return meta?.contract_id ? { contract_id: Number(meta.contract_id), order: Number(meta.order) || undefined } : null;
+}
 
 const statusLabels: Record<string, { text: string; color: string }> = {
   pending: { text: "Kutilmoqda", color: "text-yellow-400 bg-yellow-400/10 border border-yellow-400/20" },
@@ -375,6 +391,14 @@ export default function OrdersPage() {
                   O&apos;chirish
                 </button>
               </div>
+
+              {/* Uzum Nasiya shartnomasi (2-bosqichli tasdiqlash) */}
+              {(() => {
+                const uz = getUzumInfo(item.parentOrder);
+                return uz ? (
+                  <UzumContractActions contractId={uz.contract_id} orderNo={uz.order} />
+                ) : null;
+              })()}
             </div>
           );
         })}

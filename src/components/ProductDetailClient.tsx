@@ -3,13 +3,31 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import * as Tabs from "@radix-ui/react-tabs";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { ChevronLeft, Heart, Truck, ShieldCheck, CreditCard } from "lucide-react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
+import { useWishlist } from "@/lib/wishlist-context";
 import { trackMetaEvent } from "@/lib/meta-tracker";
-import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
+import {
+  getFragranceView,
+  formatVolume,
+  NOTE_FAMILY_LABEL,
+  SEASON_LABEL,
+  TIME_LABEL,
+} from "@/lib/fragrance";
+import {
+  calculateOriginalPriceUzs,
+  calculatePremiumPriceUzs,
+  formatUzs,
+} from "@/lib/utils";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
+import FragrancePyramid from "@/components/FragrancePyramid";
+import AccordBars from "@/components/AccordBars";
 
 interface ProductDetailClientProps {
   product: Product;
@@ -18,168 +36,319 @@ interface ProductDetailClientProps {
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [added, setAdded] = useState(false);
-  
+  const [activeImage, setActiveImage] = useState(0);
+
+  const router = useRouter();
   const { addItem } = useCart();
   const { t, lang } = useI18n();
+  const wishlist = useWishlist();
 
-  const displayTitle = lang === "ru" && product.title_ru ? product.title_ru : product.title;
-  const displayDesc = lang === "ru" && product.description_ru ? product.description_ru : product.description;
+  const frag = getFragranceView(product);
   const isOriginal = product.product_type === "original";
+  const saved = wishlist.has(product.id);
+
+  const displayName =
+    lang === "ru" && product.title_ru ? product.title_ru : frag.name;
+  const displayDesc =
+    lang === "ru" && product.description_ru
+      ? product.description_ru
+      : product.description;
+
+  const priceUzs = isOriginal
+    ? calculateOriginalPriceUzs(product.price_usd)
+    : calculatePremiumPriceUzs(product.price_usd);
+
+  // Bazada bor rasmlar (soxta rakurs qo'shilmaydi)
+  const images = [product.image_url, product.image_url_2].filter(
+    (x): x is string => !!x
+  );
+  const gallery = images.length ? images : ["/products/default.png"];
+  const currentSrc = imageError
+    ? "/products/default.png"
+    : gallery[Math.min(activeImage, gallery.length - 1)];
 
   // ViewContent — mahsulot sahifasi ochilganda
   useEffect(() => {
     const eid = `vc_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-    trackMetaEvent("ViewContent", eid, {}, {
-      content_ids: [product.id],
-      content_name: product.title,
-      content_type: "product",
-      value: isOriginal ? calculateOriginalPriceUzs(product.price_usd) : calculatePremiumPriceUzs(product.price_usd),
-      currency: "UZS",
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    trackMetaEvent(
+      "ViewContent",
+      eid,
+      {},
+      {
+        content_ids: [product.id],
+        content_name: product.title,
+        content_type: "product",
+        value: priceUzs,
+        currency: "UZS",
+      }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAddToCart = () => {
     addItem(product);
-    setAdded(true);
-    // AddToCart event
+    // Meta hodisasi uchun bir martalik id. Bu chizish emas, bosish
+    // ishlovchisi — tasodifiy qiymat bu yerda xavfsiz.
+    // eslint-disable-next-line react-hooks/purity
     const eid = `atc_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-    trackMetaEvent("AddToCart", eid, {}, {
-      content_ids: [product.id],
-      content_name: product.title,
-      content_type: "product",
-      value: isOriginal ? calculateOriginalPriceUzs(product.price_usd) : calculatePremiumPriceUzs(product.price_usd),
-      currency: "UZS",
+    trackMetaEvent(
+      "AddToCart",
+      eid,
+      {},
+      {
+        content_ids: [product.id],
+        content_name: product.title,
+        content_type: "product",
+        value: priceUzs,
+        currency: "UZS",
+      }
+    );
+    toast(frag.brand ? `${frag.brand} — ${frag.name}` : frag.name, {
+      description: lang === "ru" ? "Добавлено в корзину" : "Savatchaga qo'shildi",
+      action: {
+        label: lang === "ru" ? "Корзина" : "Savatcha",
+        onClick: () => router.push("/cart"),
+      },
     });
-    setTimeout(() => setAdded(false), 2000);
   };
+
+  // Mavsum / kun vaqti / oila teglari — faqat bazada bo'lsa
+  const contextTags = [
+    ...frag.families.map((f) => NOTE_FAMILY_LABEL[f][lang === "ru" ? "ru" : "uz"]),
+    ...frag.seasons.map((s) => SEASON_LABEL[s][lang === "ru" ? "ru" : "uz"]),
+    ...frag.times.map((x) => TIME_LABEL[x][lang === "ru" ? "ru" : "uz"]),
+  ];
+
+  const hasNotes = !!(frag.notes || frag.accords);
+  const tabList = [
+    hasNotes && { id: "notes", label: lang === "ru" ? "Аромат" : "Ifor" },
+    displayDesc && { id: "about", label: lang === "ru" ? "Описание" : "Tavsif" },
+    { id: "delivery", label: lang === "ru" ? "Доставка" : "Yetkazib berish" },
+  ].filter(Boolean) as { id: string; label: string }[];
+
+  const tabTrigger =
+    "relative py-4 eyebrow text-muted-foreground transition-colors " +
+    "hover:text-foreground data-[state=active]:text-foreground " +
+    "after:absolute after:left-0 after:right-0 after:-bottom-px after:h-px " +
+    "after:bg-gold after:scale-x-0 after:transition-transform after:duration-300 " +
+    "data-[state=active]:after:scale-x-100";
 
   return (
     <>
       <Header />
-      <main className="min-h-screen pt-28 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
-        {/* Back Link */}
-        <div>
-          <Link
-            href="/catalog"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-gold transition-colors font-medium"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2.5"
-              stroke="currentColor"
-              className="w-4 h-4"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
-            {lang === "ru" ? "Назад в каталог" : "Katalogga qaytish"}
-          </Link>
-        </div>
+      <main className="min-h-screen pt-24 pb-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        {/* Orqaga */}
+        <Link
+          href="/catalog"
+          className="-ml-2 inline-flex min-h-[44px] items-center gap-1.5 px-2 eyebrow text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" strokeWidth={1.5} />
+          {lang === "ru" ? "Каталог" : "Katalog"}
+        </Link>
 
-        {/* Product details grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start">
-          {/* Left: Product Image */}
-          <div className="relative aspect-[3/4] w-full rounded-3xl overflow-hidden bg-secondary border border-gold/10 shadow-2xl shadow-gold/5 backdrop-blur-sm">
-            {!imageLoaded && <div className="absolute inset-0 z-[1] shimmer bg-secondary" />}
-            <Image
-              src={imageError ? "/products/default.png" : (product.image_url || "/products/default.png")}
-              alt={displayTitle}
-              fill
-              priority
-              unoptimized={true}
-              className="object-cover transition-opacity duration-300 opacity-100"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              onError={() => { 
-                if (!imageError) setImageError(true); 
-              }}
-              onLoad={() => setImageLoaded(true)}
-            />
-            {/* Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-            
-            {/* Absolute badge */}
-            <div className="absolute top-4 left-4 z-10">
-              {isOriginal ? (
-                <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-gold text-black text-xs font-bold uppercase tracking-wider shadow-lg shadow-gold/20">
-                  ⚡ Original atir
+        {/* ── Asosiy blok ─────────────────────────────────────── */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start">
+          {/* Rasm */}
+          <div className="md:sticky md:top-24 space-y-3">
+            <div className="relative aspect-[3/4] w-full overflow-hidden bg-surface-image border border-border">
+              {!imageLoaded && <div className="absolute inset-0 z-[1] shimmer" />}
+              <Image
+                src={currentSrc}
+                alt={displayName}
+                fill
+                priority
+                className={`object-cover transition-opacity duration-500 ${
+                  imageLoaded ? "opacity-100" : "opacity-0"
+                }`}
+                sizes="(max-width: 768px) 100vw, 50vw"
+                onError={() => {
+                  if (!imageError) setImageError(true);
+                  setImageLoaded(true);
+                }}
+                onLoad={() => setImageLoaded(true)}
+              />
+
+              {frag.concentrationLabel && (
+                <span className="absolute top-4 left-4 z-[2] eyebrow px-2.5 py-1.5 bg-white/85 text-foreground/80">
+                  {frag.concentrationLabel}
                 </span>
-              ) : (
-                <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-semibold uppercase tracking-wider border border-white/15">
-                  {lang === "ru" ? "Люкс Премиум" : "Lyuks Premium atir"}
+              )}
+              {frag.volumeMl && (
+                <span className="absolute top-4 right-4 z-[2] eyebrow px-2.5 py-1.5 bg-white/85 text-muted-foreground">
+                  {formatVolume(frag.volumeMl)}
+                </span>
+              )}
+              {isOriginal && (
+                <span className="absolute bottom-4 left-4 z-[2] eyebrow px-2.5 py-1.5 bg-gradient-gold text-[#1a1a1a]">
+                  Original
                 </span>
               )}
             </div>
+
+            {/* Rakurslar — ikkinchi rasm bo'lsagina */}
+            {gallery.length > 1 && (
+              <div className="flex gap-3">
+                {gallery.map((src, i) => (
+                  <button
+                    key={src}
+                    onClick={() => {
+                      setActiveImage(i);
+                      setImageLoaded(true);
+                    }}
+                    className={`relative w-16 aspect-[3/4] overflow-hidden border transition-colors ${
+                      i === activeImage
+                        ? "border-gold"
+                        : "border-border hover:border-foreground/25"
+                    }`}
+                    aria-label={`${i + 1}-rasm`}
+                  >
+                    <Image src={src} alt="" fill className="object-cover" sizes="64px" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Right: Info Column */}
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">
-                  {isOriginal ? (lang === "ru" ? "Оригинал под заказ" : "Buyurtma asosida original") : (lang === "ru" ? "Копия высшего качества" : "Oliy toifali klon")}
-                </span>
-              </div>
-              <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-                {displayTitle}
+          {/* Ma'lumot */}
+          <div className="space-y-8">
+            <div>
+              {frag.brand && (
+                <p className="eyebrow text-muted-foreground">{frag.brand}</p>
+              )}
+
+              <h1 className="font-heading mt-3 text-4xl sm:text-5xl leading-[1.1] text-foreground">
+                {displayName}
               </h1>
-              <div className="flex items-baseline gap-2 pt-2">
-                <span className="text-3xl font-extrabold text-gradient-gold">
-                  {formatUzs(isOriginal ? calculateOriginalPriceUzs(product.price_usd) : calculatePremiumPriceUzs(product.price_usd))}
-                </span>
-                <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">so'm</span>
-              </div>
+
+              <p className="mt-4 text-xs text-muted-foreground">
+                {isOriginal
+                  ? lang === "ru"
+                    ? "Оригинал под заказ"
+                    : "Buyurtma asosida original"
+                  : lang === "ru"
+                  ? "Копия высшего качества"
+                  : "Oliy toifali klon"}
+                {frag.volumeMl ? ` · ${formatVolume(frag.volumeMl)}` : ""}
+              </p>
             </div>
 
-            <hr className="border-border/50" />
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-semibold text-foreground tabular-nums">
+                {formatUzs(priceUzs)}
+              </span>
+              <span className="eyebrow text-muted-foreground">
+                {lang === "ru" ? "сум" : "so'm"}
+              </span>
+            </div>
 
-            {/* Product Actions */}
-            <div className="space-y-4">
+            {/* Harakatlar */}
+            <div className="flex gap-2.5">
               <button
                 onClick={handleAddToCart}
-                className={`w-full py-4 rounded-2xl text-sm font-bold uppercase tracking-widest active:scale-[0.98] transition-all duration-300 ${isOriginal ? 'bg-gradient-gold text-black hover:opacity-90 shadow-xl shadow-gold/10' : 'border border-gold/30 text-gold hover:bg-gold/10'}`}
+                className="btn btn-primary flex-1"
               >
-                {added ? t("btn_added") : t("btn_add_cart")}
+                {t("btn_add_cart")}
+              </button>
+
+              <button
+                onClick={() => wishlist.toggle(product.id)}
+                aria-pressed={saved}
+                aria-label={lang === "ru" ? "В избранное" : "Sevimlilarga"}
+                className="btn-icon w-14 min-h-[54px]"
+              >
+                <Heart
+                  className="w-5 h-5"
+                  strokeWidth={1.5}
+                  fill={saved ? "currentColor" : "none"}
+                />
               </button>
             </div>
 
-            {/* Description */}
-            {displayDesc && (
-              <div className="space-y-2 pt-4">
-                <h3 className="text-xs text-muted-foreground uppercase tracking-wider font-bold">
-                  {lang === "ru" ? "Описание аромата" : "Atir tavsifi"}
-                </h3>
-                <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line font-normal">
-                  {displayDesc}
-                </p>
+            {contextTags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {contextTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-[11px] px-2.5 py-1.5 border border-border text-muted-foreground"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
             )}
 
-            <hr className="border-border/50" />
+            {/* ── Ma'lumot bo'limlari ─────────────────────────── */}
+            <Tabs.Root defaultValue={tabList[0].id} className="pt-2">
+              <Tabs.List className="flex gap-8 border-b border-border">
+                {tabList.map((tab) => (
+                  <Tabs.Trigger key={tab.id} value={tab.id} className={tabTrigger}>
+                    {tab.label}
+                  </Tabs.Trigger>
+                ))}
+              </Tabs.List>
 
-            {/* Quick Benefits Checklist */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-gold/10 flex items-center justify-center text-gold flex-shrink-0 text-xs mt-0.5">✓</div>
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{t("features_fast_title")}</p>
-                  <p className="text-[10px] text-muted-foreground">{t("features_fast_desc")}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-gold/10 flex items-center justify-center text-gold flex-shrink-0 text-xs mt-0.5">✓</div>
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{t("features_quality_title")}</p>
-                  <p className="text-[10px] text-muted-foreground">{t("features_quality_desc")}</p>
-                </div>
-              </div>
-            </div>
+              {hasNotes && (
+                <Tabs.Content
+                  value="notes"
+                  className="pt-8 space-y-10 focus:outline-none animate-fade-in"
+                >
+                  {frag.accords && <AccordBars accords={frag.accords} />}
+                  {frag.notes && <FragrancePyramid notes={frag.notes} />}
+                </Tabs.Content>
+              )}
+
+              {displayDesc && (
+                <Tabs.Content
+                  value="about"
+                  className="pt-8 focus:outline-none animate-fade-in"
+                >
+                  <p className="text-sm text-foreground/75 leading-[1.9] whitespace-pre-line">
+                    {displayDesc}
+                  </p>
+                </Tabs.Content>
+              )}
+
+              <Tabs.Content
+                value="delivery"
+                className="pt-8 space-y-6 focus:outline-none animate-fade-in"
+              >
+                {[
+                  {
+                    Icon: Truck,
+                    title: t("features_fast_title"),
+                    desc: t("features_fast_desc"),
+                  },
+                  {
+                    Icon: ShieldCheck,
+                    title: t("features_quality_title"),
+                    desc: t("features_quality_desc"),
+                  },
+                  {
+                    Icon: CreditCard,
+                    title: t("installment_short"),
+                    desc: t("features_price_desc"),
+                  },
+                ].map(({ Icon, title, desc }) => (
+                  <div key={title} className="flex gap-4">
+                    <Icon
+                      className="w-5 h-5 shrink-0 mt-0.5 text-gold-dark"
+                      strokeWidth={1.25}
+                    />
+                    <div className="space-y-1.5">
+                      <p className="eyebrow text-foreground">{title}</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </Tabs.Content>
+            </Tabs.Root>
           </div>
         </div>
       </main>
       <BottomNav />
+      <div className="h-20 md:hidden" />
     </>
   );
 }

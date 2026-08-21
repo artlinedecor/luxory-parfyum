@@ -1,22 +1,39 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, Cormorant_Garamond } from "next/font/google";
 import { siteConfig } from "@/config/site";
 import { CartProvider } from "@/lib/cart-context";
+import { WishlistProvider } from "@/lib/wishlist-context";
 import { I18nProvider } from "@/lib/i18n-context";
 import FloatingCart from "@/components/FloatingCart";
 import MetaPixel from "@/components/MetaPixel";
+import ChunkErrorRecovery from "@/components/ChunkErrorRecovery";
+import UzumPendingRecovery from "@/components/UzumPendingRecovery";
 import YandexMetrica from "@/components/YandexMetrica";
+import SmoothScroll from "@/components/SmoothScroll";
+import LuxToaster from "@/components/LuxToaster";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin", "cyrillic"],
+// Asosiy matn shrifti — narx, hajm, filtr, tugma, tavsif.
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-heading",
+// Plus Jakarta Sans da kirill harflari YO'Q — ruscha matn uchun Inter
+// zaxira sifatida turadi (brauzer har bir harf uchun avtomatik tanlaydi).
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+// Sarlavhalar, brend nomlari, bannerlar — nafis serif.
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -38,7 +55,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Lux Atir",
+    title: siteConfig.siteName,
   },
 };
 
@@ -52,16 +69,22 @@ export default function RootLayout({
   return (
     <html
       lang="uz"
-      className={`${inter.variable} ${playfair.variable} h-full antialiased`}
+      className={`${jakarta.variable} ${inter.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <SettingsProvider>
           <I18nProvider>
             <CartProvider>
+            <WishlistProvider>
+            <SmoothScroll />
+            <ChunkErrorRecovery />
+            <UzumPendingRecovery />
             <MetaPixel />
             <YandexMetrica />
             {children}
             <FloatingCart />
+            <LuxToaster />
+            </WishlistProvider>
           </CartProvider>
           </I18nProvider>
         </SettingsProvider>

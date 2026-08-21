@@ -11,11 +11,17 @@
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-heading);
 
-  /* Gold / Tilla palette */
+  /* Gold / Bronze palette */
   --color-gold: var(--gold);
   --color-gold-light: var(--gold-light);
   --color-gold-dark: var(--gold-dark);
   --color-gold-muted: var(--gold-muted);
+  --color-gold-bright: var(--gold-bright);
+  --color-gold-deep: var(--gold-deep);
+
+  /* Mahsulot rasmi konteyneri foni */
+  --color-surface-image: var(--surface-image);
+  --color-surface-raised: var(--surface-raised);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -55,8 +61,73 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Luxury Dark Theme - default  */
+/* ================================================================
+   LYUKS YORUG MAVZU (Warm Alabaster) — do'kon uchun asosiy.
+   Fon issiq alabastr, matn chuqur ko'mir, aksent — bronza/tilla.
+   Og'ir soyalar YO'Q: 1px nozik chegara + keng bo'sh joy.
+   ================================================================ */
 :root {
+  --background: #faf8f5;          /* Warm Alabaster */
+  --foreground: #1a1a1a;          /* Deep Carbon Charcoal */
+  --card: #fdfcfb;                /* Porcelain */
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  --primary: #1a1a1a;             /* asosiy CTA — ko'mir */
+  --primary-foreground: #faf8f5;
+  --secondary: #f2efe9;
+  --secondary-foreground: #1a1a1a;
+  --muted: #f2efe9;
+  --muted-foreground: #6e6d7a;    /* meta matn */
+  --accent: #f6f2ec;
+  --accent-foreground: #1a1a1a;
+  --destructive: #b3261e;
+  --border: rgba(0, 0, 0, 0.06);  /* nozik hairline */
+  --input: rgba(0, 0, 0, 0.12);
+  --ring: #c5a880;
+  --radius: 0.25rem;              /* lyuks = deyarli to'g'ri burchak */
+
+  /* Gold / Bronze */
+  --gold: #c5a880;                /* asosiy bronza aksent */
+  --gold-bright: #d4af37;         /* yorqin tilla — faqat belgilar uchun */
+  --gold-light: #ded0b8;
+  --gold-dark: #b39268;           /* hover */
+  --gold-deep: #8a6d3b;           /* matn uchun — kontrast yetarli */
+  --gold-muted: rgba(197, 168, 128, 0.14);
+
+  /* Sirtlar */
+  --surface-image: #f8f6f2;       /* mahsulot rasmi konteyneri */
+  --surface-raised: #ffffff;
+
+  /* Charts */
+  --chart-1: #c5a880;
+  --chart-2: #8a6d3b;
+  --chart-3: #6e6d7a;
+  --chart-4: #b39268;
+  --chart-5: #1a1a1a;
+
+  /* Sidebar */
+  --sidebar: #fdfcfb;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #1a1a1a;
+  --sidebar-primary-foreground: #faf8f5;
+  --sidebar-accent: #f2efe9;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: rgba(0, 0, 0, 0.06);
+  --sidebar-ring: #c5a880;
+
+  /* Shriftlar — next/font hashlangan nom beradi, shuning uchun o'zgaruvchi.
+     Jakarta da kirill yo'q, shu bois Inter zaxira sifatida ketma-ket turadi. */
+  --font-sans: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui,
+    sans-serif;
+  --font-heading: var(--font-cormorant), Georgia, "Times New Roman", serif;
+}
+
+/* ================================================================
+   QORONG'I SIRT (.theme-dark) — admin panel / login uchun saqlanadi.
+   Do'kon yorug' bo'ldi, dashboard eski qora ko'rinishda qoladi.
+   ================================================================ */
+.theme-dark {
   --background: #0a0a0a;
   --foreground: #f5f5f5;
   --card: #141414;
@@ -77,20 +148,16 @@
   --ring: #c9a84c;
   --radius: 0.75rem;
 
-  /* Gold variants */
   --gold: #c9a84c;
+  --gold-bright: #e0c97f;
   --gold-light: #e0c97f;
   --gold-dark: #a68b3a;
+  --gold-deep: #e0c97f;
   --gold-muted: rgba(201, 168, 76, 0.15);
 
-  /* Charts */
-  --chart-1: #c9a84c;
-  --chart-2: #e0c97f;
-  --chart-3: #a68b3a;
-  --chart-4: #8a7230;
-  --chart-5: #6b5825;
+  --surface-image: #1a1a1a;
+  --surface-raised: #141414;
 
-  /* Sidebar */
   --sidebar: #0f0f0f;
   --sidebar-foreground: #f5f5f5;
   --sidebar-primary: #c9a84c;
@@ -100,8 +167,8 @@
   --sidebar-border: #2a2a2a;
   --sidebar-ring: #c9a84c;
 
-  /* Font */
-  --font-heading: "Playfair Display", serif;
+  background-color: #0a0a0a;
+  color: #f5f5f5;
 }
 
 @layer base {
@@ -109,44 +176,131 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: var(--background);
+  }
+  /* Juda nozik issiq don — qog'ozdek chuqurlik (faqat kompyuterda) */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
   }
   html {
     @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* Serif sarlavhalar — keng harf oralig'i (lyuks tipografika) */
+  h1, h2, h3, .font-heading {
+    font-family: var(--font-heading);
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+  ::selection {
+    background: rgba(197, 168, 128, 0.3);
+    color: #1a1a1a;
   }
 }
 
-/* Custom utility classes */
+/* ---- Yordamchi klasslar --------------------------------------- */
 @layer utilities {
+  /* Bronza matn — yorug' fonda kontrasti yetarli */
   .text-gradient-gold {
-    background: linear-gradient(135deg, #e0c97f 0%, #c9a84c 50%, #a68b3a 100%);
+    background: linear-gradient(
+      100deg,
+      #8a6d3b 0%,
+      #b39268 40%,
+      #c5a880 55%,
+      #8a6d3b 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .theme-dark .text-gradient-gold {
+    background: linear-gradient(135deg, #f7e7a8 0%, #e6c766 45%, #c9a84c 100%);
+    background-size: auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .border-gradient-gold {
-    border-image: linear-gradient(135deg, #e0c97f 0%, #c9a84c 50%, #a68b3a 100%) 1;
+    border-image: linear-gradient(135deg, #ded0b8 0%, #c5a880 50%, #b39268 100%) 1;
   }
 
+  /* Quyma metalik tilla — belgilar (badge) uchun */
   .bg-gradient-gold {
-    background: linear-gradient(135deg, #e0c97f 0%, #c9a84c 50%, #a68b3a 100%);
+    background: linear-gradient(
+      135deg,
+      #b39268 0%,
+      #d4af37 30%,
+      #e8d49a 48%,
+      #d4af37 66%,
+      #b39268 100%
+    );
   }
 
   .bg-gradient-dark {
-    background: linear-gradient(180deg, #0a0a0a 0%, #141414 100%);
+    background: linear-gradient(180deg, #1a1a1a 0%, #262626 100%);
   }
 
+  /* Kartochka sirti — soya emas, nozik chegara */
   .glass-card {
-    background: rgba(20, 20, 20, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(201, 168, 76, 0.1);
+    background: var(--card);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: none;
+  }
+  .theme-dark .glass-card {
+    background: linear-gradient(
+      180deg,
+      rgba(28, 28, 28, 0.72) 0%,
+      rgba(14, 14, 14, 0.62) 100%
+    );
+    backdrop-filter: blur(18px) saturate(120%);
+    -webkit-backdrop-filter: blur(18px) saturate(120%);
+    border: 1px solid rgba(201, 168, 76, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 18px 40px -20px rgba(0, 0, 0, 0.8);
   }
 
+  /* Bronza soch chizig'i (hairline) ajratkich */
+  .gold-hairline {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(197, 168, 128, 0.55) 50%,
+      transparent
+    );
+  }
+
+  /* Mahsulot kartochkasi — juda nozik ko'tarilish */
+  .lux-card {
+    position: relative;
+    transition: border-color 0.5s ease, box-shadow 0.5s ease;
+  }
+  .lux-card:hover {
+    border-color: rgba(197, 168, 128, 0.55);
+    box-shadow: 0 12px 32px -20px rgba(26, 26, 26, 0.28);
+  }
+  .theme-dark .lux-card:hover {
+    border-color: rgba(201, 168, 76, 0.45);
+    box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.9);
+  }
+
+  /* Rasm yuklanayotgandagi skelet */
   .shimmer {
     position: relative;
     overflow: hidden;
+    background: var(--surface-image);
   }
   .shimmer::after {
     content: "";
@@ -158,10 +312,18 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
+      rgba(255, 255, 255, 0.7) 50%,
+      transparent 100%
+    );
+    animation: shimmer 1.8s infinite;
+  }
+  .theme-dark .shimmer::after {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
       rgba(201, 168, 76, 0.08) 50%,
       transparent 100%
     );
-    animation: shimmer 3s infinite;
   }
 
   @keyframes shimmer {
@@ -174,7 +336,7 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
@@ -187,27 +349,524 @@
     to { opacity: 1; transform: scale(1); }
   }
 
+  /* Eski "porlash" — yorug' mavzuda shovqin qilardi, o'chirildi */
   .animate-glow-shimmer {
-    animation: goldGlow 3s ease-in-out infinite alternate;
+    animation: none;
   }
 
-  @keyframes goldGlow {
-    0% {
-      text-shadow: 0 0 4px rgba(201, 168, 76, 0.15), 0 0 8px rgba(201, 168, 76, 0.05);
-      opacity: 0.9;
-    }
-    100% {
-      text-shadow: 0 0 16px rgba(224, 201, 127, 0.6), 0 0 28px rgba(201, 168, 76, 0.35);
-      opacity: 1;
-    }
+  /* Marquee (tanlangan atirlar banneri) */
+  .animate-marquee {
+    animation: marquee 45s linear infinite;
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black 6%,
+      black 94%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black 6%,
+      black 94%,
+      transparent 100%
+    );
   }
 
-  /* Hide scrollbar but allow scrolling */
+  /* Skrollbarni yashirish */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* ── CHUQUR SOYALAR ─────────────────────────────────────────
+     Tugmalarga hajm beradi: uch qatlam (yaqin/o'rta/uzoq) + ustidagi
+     yorug' chiziq. Bosilganda soya pasayadi — tugma "cho'kadi". */
+  .shadow-deep {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 1px 2px rgba(26, 26, 26, 0.18),
+      0 6px 14px -4px rgba(26, 26, 26, 0.28),
+      0 18px 36px -12px rgba(26, 26, 26, 0.32);
+    transition: box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+  }
+  .shadow-deep:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 2px 4px rgba(26, 26, 26, 0.2),
+      0 10px 22px -6px rgba(26, 26, 26, 0.34),
+      0 28px 52px -14px rgba(26, 26, 26, 0.4);
+    transform: translateY(-1px);
+  }
+  .shadow-deep:active {
+    box-shadow:
+      inset 0 2px 4px rgba(26, 26, 26, 0.28),
+      0 1px 2px rgba(26, 26, 26, 0.16);
+    transform: translateY(1px);
+  }
+
+  /* Tilla tugma uchun — soya iliq tusda bo'lsin */
+  .shadow-deep-gold {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.45),
+      inset 0 -1px 0 rgba(120, 88, 40, 0.25),
+      0 1px 2px rgba(120, 88, 40, 0.24),
+      0 8px 18px -5px rgba(120, 88, 40, 0.34),
+      0 22px 44px -14px rgba(120, 88, 40, 0.4);
+    transition: box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.2s ease;
+  }
+  .shadow-deep-gold:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      0 2px 4px rgba(120, 88, 40, 0.26),
+      0 12px 26px -6px rgba(120, 88, 40, 0.4),
+      0 32px 60px -16px rgba(120, 88, 40, 0.46);
+    transform: translateY(-1px);
+  }
+  .shadow-deep-gold:active {
+    box-shadow:
+      inset 0 2px 5px rgba(120, 88, 40, 0.35),
+      0 1px 2px rgba(120, 88, 40, 0.2);
+    transform: translateY(1px);
+  }
+
+  /* Kartochka/blok uchun yumshoq chuqurlik */
+  .shadow-soft {
+    box-shadow:
+      0 1px 2px rgba(26, 26, 26, 0.04),
+      0 12px 28px -14px rgba(26, 26, 26, 0.16),
+      0 40px 80px -40px rgba(26, 26, 26, 0.18);
+  }
+
+  /* Hero matnining bosqichma-bosqich ochilishi.
+     Ataylab CSS: element ODATDA KO'RINADI, animatsiya esa uni ko'rinmas
+     holatdan olib keladi. Shu bois JS yuklanmasa yoki animatsiya
+     ishlamasa ham sarlavha yo'qolib qolmaydi. */
+  .hero-rise {
+    animation: heroRise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes heroRise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Radix Accordion - ochilish/yopilish balandligi */
+  @keyframes accordionDown {
+    from { height: 0; opacity: 0; }
+    to { height: var(--radix-accordion-content-height); opacity: 1; }
+  }
+  @keyframes accordionUp {
+    from { height: var(--radix-accordion-content-height); opacity: 1; }
+    to { height: 0; opacity: 0; }
+  }
+  [data-slot="accordion-content"],
+  [data-radix-accordion-content] {
+    overflow: hidden;
+  }
+  [data-radix-accordion-content][data-state="open"] {
+    animation: accordionDown 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  [data-radix-accordion-content][data-state="closed"] {
+    animation: accordionUp 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Mayda bosh harfli meta yozuv (brend nomi, konsentratsiya) */
+  .eyebrow {
+    font-size: 0.6875rem;   /* 11px — 10px da 0.18em oraliq bilan o'qilmasdi */
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 600;
+  }
+}
+
+/* ----------------------------------------------------------------
+   SKROLL TEZLIGI
+   Ekrandan tashqaridagi kartochkalar chizilmaydi.
+   ---------------------------------------------------------------- */
+@layer utilities {
+  .lux-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 420px;
+  }
+
+  /* -- TELEFON / SENSORLI QURILMALAR --
+     backdrop-filter va doimiy animatsiyalar mobil GPU uchun qimmat. */
+  @media (max-width: 1024px) {
+    body::before {
+      display: none;
+    }
+    .theme-dark .glass-card {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: linear-gradient(
+        180deg,
+        rgba(26, 26, 26, 0.94) 0%,
+        rgba(13, 13, 13, 0.94) 100%
+      );
+    }
+    .text-gradient-gold {
+      background: linear-gradient(135deg, #8a6d3b 0%, #b39268 100%);
+      background-size: auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .shimmer::after {
+      animation: none;
+    }
+    .lux-card:hover {
+      box-shadow: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-marquee,
+    .hero-rise,
+    .shimmer::after {
+      animation: none !important;
+    }
+  }
+}
+
+/* Tugmalar @layer components ichida: shunda Tailwind utilitalari
+   (px-*, min-h-*, w-*) ularni bemalol ustidan yoza oladi. */
+@layer components {
+  /* ================================================================
+     TUGMALAR — iOS uslubi
+     Apple tugmalarini premium qiladigan narsa "katta soya" emas:
+       1) keng yumaloq burchak (14px) va baland gabarit;
+       2) ustida bir piksellik yorug' chiziq — sirt yorug'likni tutadi;
+       3) ikki qatlam soya: yaqin "kontakt" + keng "atrof";
+       4) bosilganda prujinali kichrayish (0.97) va soyaning yo'qolishi;
+       5) matn ustidagi mayin gradient — tekis rang "arzon" ko'rinadi.
+     ================================================================ */
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    border-radius: 14px;
+    padding-inline: 2rem;
+    min-height: 54px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    isolation: isolate;
+    overflow: hidden;
+    /* Telefonda bosilganda kulrang chaqnash bo'lmasin */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease,
+      opacity 0.25s ease;
+  }
+  /* Yuqoridan pastga mayin yorug'lik — sirt tekis emas, "moddiy" ko'rinadi */
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0.04) 42%,
+      rgba(0, 0, 0, 0.06) 100%
+    );
+    pointer-events: none;
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    transform: none;
+  }
+  .btn-sm {
+    min-height: 46px;
+    padding-inline: 1.25rem;
+    border-radius: 12px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+  }
+  .btn-block {
+    width: 100%;
+  }
+  /* Uzun yozuvli tugma uchun — satrga bo'linsin.
+     .btn da nowrap turibdi va u hero'ni ekrandan chiqarib yuborgan edi. */
+  .btn-wrap {
+    white-space: normal;
+    text-wrap: balance;
+    line-height: 1.5;
+    padding-block: 0.75rem;
+  }
+
+  /* ── Asosiy: ko'mir ─────────────────────────────────────────── */
+  .btn-primary {
+    background-color: #1a1a1a;
+    color: #faf8f5;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 1px 2px rgba(20, 18, 16, 0.24),
+      0 8px 18px -6px rgba(20, 18, 16, 0.34),
+      0 22px 44px -18px rgba(20, 18, 16, 0.42);
+  }
+  .btn-primary:hover {
+    background-color: #000;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 2px 4px rgba(20, 18, 16, 0.26),
+      0 12px 26px -8px rgba(20, 18, 16, 0.4),
+      0 32px 60px -20px rgba(20, 18, 16, 0.48);
+  }
+  .btn-primary:active {
+    box-shadow:
+      inset 0 2px 6px rgba(0, 0, 0, 0.4),
+      0 1px 2px rgba(20, 18, 16, 0.2);
+  }
+
+  /* ── Tilla: quyma metall ────────────────────────────────────── */
+  .btn-gold {
+    background-image: linear-gradient(
+      175deg,
+      #f0e0af 0%,
+      #dcb84a 30%,
+      #cfa64a 52%,
+      #b8934f 76%,
+      #a37f3c 100%
+    );
+    color: #1a1a1a;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -1px 0 rgba(120, 88, 40, 0.35),
+      0 1px 2px rgba(120, 88, 40, 0.28),
+      0 8px 18px -6px rgba(120, 88, 40, 0.38),
+      0 24px 46px -18px rgba(120, 88, 40, 0.46);
+  }
+  .btn-gold::before {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.32) 0%,
+      rgba(255, 255, 255, 0.06) 45%,
+      rgba(120, 88, 40, 0.12) 100%
+    );
+  }
+  .btn-gold:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      0 2px 4px rgba(120, 88, 40, 0.3),
+      0 14px 28px -8px rgba(120, 88, 40, 0.44),
+      0 34px 64px -20px rgba(120, 88, 40, 0.52);
+  }
+  .btn-gold:active {
+    box-shadow:
+      inset 0 2px 6px rgba(120, 88, 40, 0.45),
+      0 1px 2px rgba(120, 88, 40, 0.22);
+  }
+
+  /* ── Ikkilamchi: nozik chegara, oq sirt ─────────────────────── */
+  .btn-outline {
+    background-color: var(--surface-raised);
+    color: var(--foreground);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      0 1px 2px rgba(20, 18, 16, 0.06),
+      0 6px 16px -8px rgba(20, 18, 16, 0.14),
+      0 18px 36px -20px rgba(20, 18, 16, 0.18);
+  }
+  .btn-outline::before {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.6) 0%,
+      rgba(0, 0, 0, 0.015) 100%
+    );
+  }
+  .btn-outline:hover {
+    border-color: rgba(0, 0, 0, 0.22);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 2px 4px rgba(20, 18, 16, 0.08),
+      0 10px 22px -10px rgba(20, 18, 16, 0.2),
+      0 26px 48px -24px rgba(20, 18, 16, 0.24);
+  }
+  .btn-outline:active {
+    box-shadow: inset 0 2px 5px rgba(20, 18, 16, 0.12);
+  }
+
+  /* ── Shisha: fotosurat ustida (hero) ────────────────────────── */
+  .btn-glass {
+    background-color: rgba(20, 18, 16, 0.55);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 10px 24px -8px rgba(0, 0, 0, 0.45);
+  }
+  .btn-glass:hover {
+    background-color: rgba(20, 18, 16, 0.72);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+  .btn-glass:active {
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+  }
+
+  /* ── Uzum brendi ────────────────────────────────────────────── */
+  .btn-uzum {
+    background-color: #6100ff;
+    color: #fff;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.28),
+      0 1px 2px rgba(45, 0, 120, 0.3),
+      0 8px 18px -6px rgba(97, 0, 255, 0.42),
+      0 24px 46px -18px rgba(97, 0, 255, 0.45);
+  }
+  .btn-uzum:hover {
+    background-color: #5000e0;
+  }
+  .btn-uzum:active {
+    box-shadow: inset 0 2px 6px rgba(30, 0, 80, 0.5);
+  }
+
+  /* ── Kvadrat ikonka tugmasi (yurak, ko'z) ───────────────────── */
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    min-height: 46px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: var(--surface-raised);
+    color: var(--muted-foreground);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      0 1px 2px rgba(20, 18, 16, 0.06),
+      0 6px 14px -8px rgba(20, 18, 16, 0.14);
+    transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.35s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+  .btn-icon:hover {
+    color: var(--foreground);
+    border-color: rgba(0, 0, 0, 0.22);
+  }
+  .btn-icon:active {
+    transform: scale(0.94);
+    box-shadow: inset 0 2px 5px rgba(20, 18, 16, 0.12);
+  }
+  .btn-icon[aria-pressed="true"] {
+    border-color: var(--gold);
+    color: var(--gold-dark);
+  }
+
+  /* ── Pill: filtr va segment tanlash (iOS segmented control) ─── */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding-inline: 1.125rem;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.09);
+    background-color: var(--surface-raised);
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    box-shadow: 0 1px 2px rgba(20, 18, 16, 0.05);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background-color 0.28s ease, color 0.28s ease, border-color 0.28s ease,
+      box-shadow 0.28s ease;
+  }
+  .pill:hover {
+    color: var(--foreground);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+  .pill:active {
+    transform: scale(0.96);
+  }
+  .pill[data-active="true"] {
+    background-color: #1a1a1a;
+    border-color: #1a1a1a;
+    color: #faf8f5;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      0 2px 6px rgba(20, 18, 16, 0.22),
+      0 10px 22px -12px rgba(20, 18, 16, 0.3);
+  }
+
+  /* Kiritish maydonlari ham iOS geometriyasida bo'lsin */
+  .field {
+    min-height: 52px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: var(--surface-raised);
+    padding-inline: 1rem;
+    font-size: 0.9375rem;
+    color: var(--foreground);
+    box-shadow: inset 0 1px 2px rgba(20, 18, 16, 0.04);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .field::placeholder {
+    color: color-mix(in srgb, var(--muted-foreground) 65%, transparent);
+  }
+  /* Ikonkali maydon — chapda qidiruv belgisi uchun joy.
+     Tailwind pl-* bilan qilinmadi: bu qoidalar components qatlamida
+     va padding-inline'ni bosa olmasdi. */
+  .field-icon {
+    padding-left: 2.875rem;
+  }
+  .field-clear {
+    padding-right: 2.875rem;
+  }
+
+  .field:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow:
+      inset 0 1px 2px rgba(20, 18, 16, 0.04),
+      0 0 0 3px rgba(197, 168, 128, 0.22);
+  }
+
+  /* Animatsiya kamaytirilsa — prujina yo'q, faqat rang o'zgaradi */
+  @media (prefers-reduced-motion: reduce) {
+    .btn,
+    .btn-icon,
+    .pill {
+      transition: background-color 0.2s ease, color 0.2s ease,
+        border-color 0.2s ease;
+    }
+    .btn:active,
+    .btn-icon:active,
+    .pill:active {
+      transform: none;
+    }
   }
 }
