@@ -6,6 +6,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/lib/cart-context";
 import { siteConfig } from "@/config/site";
+import { clickPayUrl, clickConfigured } from "@/lib/click-links";
+import ClickPayByCard from "@/components/ClickPayByCard";
+import ClickQrCode from "@/components/ClickQrCode";
 import { useState, useRef, useEffect } from "react";
 import { useI18n } from "@/lib/i18n-context";
 import { trackMetaEvent } from "@/lib/meta-tracker";
@@ -191,34 +194,70 @@ export default function CartPage() {
             </p>
 
 
-            {/* Click Payment Options */}
-            <div className="glass-card p-4 space-y-3">
-              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider text-center">Onlayn To'lov</h3>
-              <p className="text-[10px] text-muted-foreground text-center -mt-2 mb-3">To'lovni uyingizdan chiqmasdan, xavfsiz amalga oshiring</p>
-              
-              <a 
-                href={`https://my.click.uz/services/pay?service_id=${process.env.NEXT_PUBLIC_CLICK_SERVICE_ID || '0'}&merchant_id=${process.env.NEXT_PUBLIC_CLICK_MERCHANT_ID || '0'}&amount=${finalAmount}&transaction_param=${submittedOrderId}&return_url=https://parfumelux.uz/payment-success`}
-                className="btn btn-block btn-sm bg-[#00A1F1] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_8px_18px_-6px_rgba(0,161,241,0.45)] hover:bg-[#0090D8]"
-              >
-                {/* Minimal Click Logo SVG */}
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
-                </svg>
-                Click orqali to'lash
-              </a>
+            {/* ── Click to'lov usullari ──────────────────────────────
+                Manba: https://docs.click.uz/en/click-button/
+                        https://docs.click.uz/en/click-pay-by-card/
+            */}
+            {/* buyurtma raqamisiz to'lov havolasi yasab bo'lmaydi */}
+            {clickConfigured() && submittedOrderId && (
+              <div className="glass-card p-4 space-y-3">
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider text-center">
+                  Onlayn to&apos;lov
+                </h3>
+                <p className="text-[10px] text-muted-foreground text-center -mt-2">
+                  To&apos;lovni uyingizdan chiqmasdan, xavfsiz amalga oshiring
+                </p>
 
-              <a 
-                href={`https://my.click.uz/services/pay?service_id=${process.env.NEXT_PUBLIC_CLICK_SERVICE_ID || '0'}&merchant_id=${process.env.NEXT_PUBLIC_CLICK_MERCHANT_ID || '0'}&amount=${finalAmount}&transaction_param=${submittedOrderId}&card_type=uzcard&return_url=https://parfumelux.uz/payment-success`}
-                className="btn btn-primary btn-block btn-sm"
-              >
-                {/* Generic Credit Card SVG */}
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-                </svg>
-                Karta bilan to'lash (Uzcard/Humo)
-              </a>
-            </div>
+                {/* 1. Saytdan chiqmasdan — HAR QANDAY bank kartasi */}
+                <ClickPayByCard
+                  amountUzs={finalAmount}
+                  orderId={submittedOrderId}
+                  onPaid={() => { window.location.href = "/payment-success"; }}
+                />
 
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="h-px flex-1 bg-border/60" />
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider">yoki</span>
+                  <span className="h-px flex-1 bg-border/60" />
+                </div>
+
+                {/* 2. Click ilovasi orqali */}
+                <a
+                  href={clickPayUrl({ amountUzs: finalAmount, orderId: submittedOrderId })}
+                  className="btn btn-block btn-sm bg-[#00A1F1] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_8px_18px_-6px_rgba(0,161,241,0.45)] hover:bg-[#0090D8]"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
+                  </svg>
+                  Click ilovasi orqali
+                </a>
+
+                {/* 3. Uzcard / Humo — alohida */}
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href={clickPayUrl({ amountUzs: finalAmount, orderId: submittedOrderId, cardType: "uzcard" })}
+                    className="btn btn-outline btn-sm"
+                  >
+                    Uzcard
+                  </a>
+                  <a
+                    href={clickPayUrl({ amountUzs: finalAmount, orderId: submittedOrderId, cardType: "humo" })}
+                    className="btn btn-outline btn-sm"
+                  >
+                    Humo
+                  </a>
+                </div>
+
+                {/* 4. QR — kompyuterda ochgan mijoz telefoni bilan skanerlaydi */}
+                <ClickQrCode
+                  url={clickPayUrl({ amountUzs: finalAmount, orderId: submittedOrderId })}
+                />
+
+                <a href={`tel:${siteConfig.phone.replace(/s/g, "")}`} className="btn btn-ghost btn-block btn-sm no-underline">
+                  To&apos;lovda muammo bo&apos;lsa: {siteConfig.phone}
+                </a>
+              </div>
+            )}
             <div className="flex flex-col gap-3">
               <Link
                 href="/catalog"
