@@ -53,10 +53,10 @@
 | 1.3 — Telegram webhook | ✅ Bajarildi | `c1bc6a4` |
 | 1.4 — Uzum webhook | ✅ Bajarildi | `00d267c` |
 | 1.5 — Kalit rotatsiyasi | ⏸ Do'kon egasi bajaradi |  |
-| 2 — RLS | ⏸ Task 2.1 tekshiruvi kutilmoqda |  |
-| 3 — Server narxi | ⬜ Boshlanmagan |  |
+| 2 — RLS | 🟡 Kod tayyor, SQL deploy'dan keyin | `43e4a3e` |
+| 3 — Server narxi | ✅ Bajarildi | `6ae45b8` |
 | 4 — Yaxlitlik | 🟡 P7 (idempotentlik) bajarildi | `00d267c` |
-| 5 — UX | ⬜ Boshlanmagan |  |
+| 5 — UX | 🟡 Savat tuzatildi, alert'lar qoldi | `6ae45b8` |
 | 6 — Click QR | ⏸ Task 6.0 bloklaydi |  |
 
 ### Rejadan farqlar (bajarish paytida aniqlangan)
@@ -80,6 +80,22 @@ qayta so'raladi. Bu Uzum imzo bersa ham, bermasa ham xavfsiz.
 **Qo'shimcha topilma:** `src/app/login/page.tsx:9` da ishlatilmaydigan
 `ALLOWED_ADMIN` konstantasi (qattiq yozilgan email) bor edi — o'chirildi.
 
+### RLS holati — TASDIQLANGAN (2026-08-22)
+
+Haqiqiy baza bilan sinaldi (faqat o'qish). Ommaviy anon kalit bilan:
+
+```
+orders        ✗ OCHIQ — 31 qator
+users         ✗ OCHIQ — 1 qator
+transactions  ✗ OCHIQ — 49 qator
+products      ✗ OCHIQ — 218 qator  (bu normal, katalog ommaviy)
+```
+
+X7 tasdiqlandi. Dashboard'ning 37 ta so'rovi API orqasiga ko'chirildi
+(`43e4a3e`), ya'ni RLS ni yoqishga endi to'siq yo'q — LEKIN faqat kod
+deploy qilingandan KEYIN (`migrations/03_rls_policies.sql` ichida
+tartib yozilgan).
+
 ### ⚠️ Deploy'dan OLDIN Vercel'ga qo'shilishi SHART
 
 Bu kalitlarsiz sayt ishlamay qoladi:
@@ -90,6 +106,7 @@ Bu kalitlarsiz sayt ishlamay qoladi:
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Endi fallback yo'q | Login 503 qaytaradi |
 | `INTERNAL_API_SECRET` | Ichki route chaqiruvlari | Click to'lovida Telegram xabari kelmaydi |
 | `TELEGRAM_WEBHOOK_SECRET` | Bot himoyasi | Bot tugmalari ishlamaydi |
+| `SUPABASE_SERVICE_ROLE_KEY` | RLS ortidan o'qish | RLS yoqilgach dashboard o'ladi |
 
 Telegram uchun qo'shimcha qadam:
 
