@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { internalHeaders } from "@/lib/api-guard";
 import crypto from 'crypto';
-import { createClient } from '@supabase/supabase-js';
+import { serverSupabase } from "@/lib/supabase-server";
 import { submitOfdData } from '@/lib/click-merchant';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+// ⚠️ Audit X7: RLS yoqilgach anon kalit orders jadvaliga kira olmaydi.
+// serverSupabase() service_role kalitini ishlatadi.
+const supabase = serverSupabase();
 
 const CLICK_SECRET_KEY = process.env.CLICK_SECRET_KEY || '';
 

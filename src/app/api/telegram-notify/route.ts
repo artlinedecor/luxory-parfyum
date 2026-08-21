@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireInternalSecret } from '@/lib/api-guard';
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from '@/lib/utils';
+import { serverSupabase } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   // ⚠️ Audit X11: oldin har kim adminlarga soxta buyurtma xabari
@@ -38,11 +39,7 @@ ${productLines}
 💰 Jami summa: ${formatUzs(totalAmount)} so'm
 🧾 To'lov: To'liq to'lov`;
 
-    const { createClient } = require('@supabase/supabase-js');
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = serverSupabase();
     
     // 1. Get static IDs from ENV
     let chatIds = (chatId || '').split(',').map(id => id.trim()).filter(Boolean);

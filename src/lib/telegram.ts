@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { serverSupabase } from "@/lib/supabase-server";
 
 const API = (m: string) => `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/${m}`;
 
@@ -10,10 +10,7 @@ export async function getAdminChatIds(): Promise<string[]> {
     .filter(Boolean);
 
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = serverSupabase();
     const { data } = await supabase
       .from("users")
       .select("email")

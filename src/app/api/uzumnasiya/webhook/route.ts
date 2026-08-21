@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { formatUzs } from "@/lib/utils";
 import { checkContractStatus } from "@/lib/uzumnasiya";
+import { serverSupabase } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,10 +17,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing ext_order_id or contract_id" }, { status: 400 });
     }
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = serverSupabase();
 
     // 1. Find the corresponding order
     let orderQuery = supabase.from("orders").select("*");
