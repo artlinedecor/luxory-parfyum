@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Product, Order, Transaction } from "@/lib/types";
-import { createClient } from "@/utils/supabase/client";
+import { dashLoad } from "@/lib/dashboard-api";
 import { useI18n } from "@/lib/i18n-context";
 
 export default function AccountingPage() {
@@ -65,17 +65,11 @@ export default function AccountingPage() {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const supabase = createClient();
-
-        const [prodRes, ordRes, txRes] = await Promise.all([
-          supabase.from("products").select("*").order("title", { ascending: true }),
-          supabase.from("orders").select("*").order("created_at", { ascending: false }),
-          supabase.from("transactions").select("*").order("created_at", { ascending: false }),
-        ]);
-
-        setProducts(prodRes.data || []);
-        setOrders(ordRes.data || []);
-        setTransactions(txRes.data || []);
+        // Audit X7: admin tekshiruvi bo'lgan server route orqali.
+        const d = await dashLoad();
+        setProducts(d.products as never);
+        setOrders(d.orders as never);
+        setTransactions(d.transactions as never);
       } catch (e) {
         console.error("Error fetching accounting data:", e);
       } finally {

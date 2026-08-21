@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { Product } from "@/lib/types";
 import { MOCK_PRODUCTS } from "@/lib/mock-data";
 import Image from "next/image";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/client"; // faqat Storage (rasm yuklash) uchun
+import { dashLoad, dashInsert, dashUpdate, dashDelete } from "@/lib/dashboard-api";
 
 export default function InventoryPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,14 +29,9 @@ export default function InventoryPage() {
 
   const fetchProducts = async () => {
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setProducts(data || []);
+      // Audit X7: admin tekshiruvi bo'lgan server route orqali.
+      const d = await dashLoad();
+      setProducts(d.products as never);
     } catch (e) {
       console.error("Error fetching database products in inventory:", e);
     } finally {
@@ -146,22 +142,12 @@ export default function InventoryPage() {
 
       if (editingProduct && isUUID) {
         // Try updating WITH cost_price_usd first
-        let { error } = await supabase
-          .from("products")
-          .update(productDataWithCost)
-          .eq("id", editingProduct.id);
-
         let savedCost = true;
-
-        if (error) {
-          console.warn("Retrying update without cost_price_usd...");
-          // Fallback: Try updating WITHOUT cost_price_usd
-          const fallbackResult = await supabase
-            .from("products")
-            .update(productDataWithoutCost)
-            .eq("id", editingProduct.id);
-          
-          if (fallbackResult.error) throw fallbackResult.error;
+        try {
+          await dashUpdate("products", productDataWithCost, { id: editingProduct.id });
+        } catch {
+          console.warn("cost_price_usd'siz qayta urinilmoqda...");
+          await dashUpdate("products", productDataWithoutCost, { id: editingProduct.id });
           savedCost = false;
         }
         
@@ -180,23 +166,13 @@ export default function InventoryPage() {
       } else {
         // Insert new product
         // Try inserting WITH cost_price_usd first
-        let { data, error } = await supabase
-          .from("products")
-          .insert([productDataWithCost])
-          .select();
-
+        let data: Product[] | null = null;
         let savedCost = true;
-
-        if (error) {
-          console.warn("Retrying insert without cost_price_usd...");
-          // Fallback: Try inserting WITHOUT cost_price_usd
-          const fallbackResult = await supabase
-            .from("products")
-            .insert([productDataWithoutCost])
-            .select();
-          
-          if (fallbackResult.error) throw fallbackResult.error;
-          data = fallbackResult.data;
+        try {
+          data = await dashInsert<Product>("products", [productDataWithCost]);
+        } catch {
+          console.warn("cost_price_usd'siz qayta urinilmoqda...");
+          data = await dashInsert<Product>("products", [productDataWithoutCost]);
           savedCost = false;
         }
         
@@ -231,13 +207,7 @@ export default function InventoryPage() {
       
       try {
         if (isUUID) {
-          const supabase = createClient();
-          const { error } = await supabase
-            .from("products")
-            .delete()
-            .eq("id", id);
-
-          if (error) throw error;
+          await dashDelete("products", { id });
         }
         
         // Always remove from local state regardless of database presence

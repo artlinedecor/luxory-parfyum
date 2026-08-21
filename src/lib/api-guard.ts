@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { ADMIN_COOKIE, verifySessionToken } from "@/lib/admin-session";
+import { readCookie } from "@/lib/cookies";
 
 /**
  * API route'lar uchun himoya qatlami.
@@ -13,9 +14,8 @@ import { ADMIN_COOKIE, verifySessionToken } from "@/lib/admin-session";
  * @returns null — ruxsat berildi; Response — rad etildi
  */
 export async function requireAdmin(req: Request): Promise<Response | null> {
-  const cookie = req.headers.get("cookie") || "";
-  const m = cookie.match(new RegExp(`(?:^|;\s*)${ADMIN_COOKIE}=([^;]+)`));
-  const session = await verifySessionToken(m?.[1]);
+  const token = readCookie(req.headers.get("cookie"), ADMIN_COOKIE);
+  const session = await verifySessionToken(token);
   if (!session) {
     return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 401 });
   }

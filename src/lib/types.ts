@@ -37,7 +37,10 @@ export interface Order {
   items: {
     product_id: string;
     quantity: number;
+    /** Eski maydon — DOLLARDA. Yangi buyurtmalarda price_uzs ishlatiladi. */
     price_at_purchase: number;
+    /** Soʼmdagi haqiqiy narx — kassa va toʼlov shu maydonga tayanadi. */
+    price_uzs?: number;
     title?: string;
     product_type?: "lux_copy" | "original";
   }[];

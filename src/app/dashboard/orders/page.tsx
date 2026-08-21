@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { Order, Product } from "@/lib/types";
-import { createClient } from "@/utils/supabase/client";
+import { dashLoad } from "@/lib/dashboard-api";
+import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 import { trackDmConversion } from "@/lib/meta-tracker";
 import UzumContractActions from "@/components/UzumContractActions";
 
@@ -40,26 +41,30 @@ export default function OrdersPage() {
   // Manual order form states
   const [manualName, setManualName] = useState("");
   const [manualPhone, setManualPhone] = useState("");
-  const [manualSelectedItems, setManualSelectedItems] = useState<{ product_id: string; title: string; quantity: number; price_at_purchase: number; product_type: "lux_copy" | "original" }[]>([]);
+  const [manualSelectedItems, setManualSelectedItems] = useState<{ product_id: string; title: string; quantity: number; price_at_purchase: number; price_uzs: number; product_type: "lux_copy" | "original" }[]>([]);
   const [manualStatus, setManualStatus] = useState("pending");
   const [manualSaving, setManualSaving] = useState(false);
 
-  const manualTotal = manualSelectedItems.reduce((acc, item) => acc + item.price_at_purchase * item.quantity, 0);
+  // ⚠️ Audit P8: forma endi SO'MDA ko'rsatadi — server ham shu formula
+  // bo'yicha hisoblaydi, ya'ni admin ko'rgan raqam kassaga tushadigan
+  // raqam bilan bir xil. Oldin bu yerda dollar summasi turardi.
+  const manualTotal = manualSelectedItems.reduce(
+    (acc, item) => acc + Number(item.price_uzs || 0) * item.quantity,
+    0
+  );
 
   const fetchOrders = useCallback(async () => {
-    const supabase = createClient();
-    const [ordersRes, productsRes] = await Promise.all([
-      supabase.from("orders").select("*").order("created_at", { ascending: false }),
-      supabase.from("products").select("*").order("title", { ascending: true })
-    ]);
-
-    if (!ordersRes.error && ordersRes.data) {
-      setOrders(ordersRes.data as Order[]);
+    // Audit X7: admin tekshiruvi bo'lgan server route orqali.
+    try {
+      const d = await dashLoad();
+      setOrders(d.orders as Order[]);
+      setProducts(d.products as Product[]);
+    } catch (e) {
+      console.error("Buyurtmalarni yuklab bo'lmadi", e);
+      alert(e instanceof Error ? e.message : "Ma'lumot yuklanmadi");
+    } finally {
+      setIsLoading(false);
     }
-    if (!productsRes.error && productsRes.data) {
-      setProducts(productsRes.data as Product[]);
-    }
-    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -73,136 +78,89 @@ export default function OrdersPage() {
   };
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
-    // 1. Update local state
+    const prevOrders = orders;
+    // Optimistik ko'rsatish
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus as Order["status"] } : o));
-    
-    const supabase = createClient();
-    
-    // 2. Fetch order details before updating database (to see if it's transitioning to "delivered")
-    const { data: orderData, error: fetchErr } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("id", orderId)
-      .single();
 
-    if (!fetchErr && orderData) {
-      const order = orderData as Order;
-      
-      // 3. If transitioning to "delivered" AND wasn't delivered before
-      if (newStatus === "delivered" && order.status !== "delivered") {
-        // Decrease stock in products table
-        if (order.items && Array.isArray(order.items)) {
-          for (const item of order.items) {
-            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.product_id);
-            if (isUUID) {
-              const { data: prod } = await supabase
-                .from("products")
-                .select("stock")
-                .eq("id", item.product_id)
-                .single();
-              
-              if (prod) {
-                const currentStock = prod.stock !== undefined && prod.stock !== null ? prod.stock : 10;
-                const newStock = Math.max(0, currentStock - item.quantity);
-                await supabase
-                  .from("products")
-                  .update({ stock: newStock })
-                  .eq("id", item.product_id);
-              }
-            }
-          }
-        }
-
-        // Add income transaction to transactions table
-        const total = calculateTotal(order);
-        await supabase.from("transactions").insert({
-          type: "income",
-          amount: total,
-          description: `Buyurtma #${orderId.slice(0, 8)} yetkazildi - Daromad`,
-        });
-      }
-      // 3.1. If transitioning AWAY from "delivered" AND was delivered before
-      else if (newStatus !== "delivered" && order.status === "delivered") {
-        // Restore stock in products table (increase back)
-        if (order.items && Array.isArray(order.items)) {
-          for (const item of order.items) {
-            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.product_id);
-            if (isUUID) {
-              const { data: prod } = await supabase
-                .from("products")
-                .select("stock")
-                .eq("id", item.product_id)
-                .single();
-              
-              if (prod) {
-                const currentStock = prod.stock !== undefined && prod.stock !== null ? prod.stock : 10;
-                const newStock = currentStock + item.quantity;
-                await supabase
-                  .from("products")
-                  .update({ stock: newStock })
-                  .eq("id", item.product_id);
-              }
-            }
-          }
-        }
-
-        // Delete associated income transaction from transactions table
-        await supabase
-          .from("transactions")
-          .delete()
-          .like("description", `%Buyurtma #${orderId.slice(0, 8)}%`);
-      }
+    // ⚠️ Audit X7/P8/U4: stok kamaytirish, daromad yozish va holat
+    // o'zgartirish endi SERVER tomonda, bitta joyda. Oldin bu mantiq
+    // brauzerda, ikki joyda takrorlangan holda ishlardi va xatolar
+    // e'tiborsiz qolardi.
+    try {
+      const res = await fetch("/api/dashboard/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ action: "status", order_id: orderId, status: newStatus }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || "Holatni yangilab bo'lmadi");
+      fetchOrders();
+    } catch (e) {
+      console.error("Holat yangilanmadi", e);
+      alert(e instanceof Error ? e.message : "Holatni yangilab bo'lmadi");
+      setOrders(prevOrders); // orqaga qaytaramiz
     }
-
-    // 4. Update the order status in Supabase database
-    await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
   };
-
   const handleDeleteOrder = async (orderId: string) => {
     if (!window.confirm("Bu buyurtmani o'chirishni xohlaysizmi? Bu amalni ortga qaytarib bo'lmaydi!")) return;
-    
-    // Optimistic update
-    setOrders(prev => prev.filter(o => o.id !== orderId));
-    
-    const supabase = createClient();
-    // Delete the order
-    await supabase.from("orders").delete().eq("id", orderId);
-    // Delete any associated transactions
-    const orderPrefix = orderId.slice(0, 8);
-    await supabase
-      .from("transactions")
-      .delete()
-      .like("description", `%Buyurtma #${orderPrefix}%`);
-  };
 
+    const prevOrders = orders;
+    setOrders(prev => prev.filter(o => o.id !== orderId));
+
+    try {
+      const res = await fetch("/api/dashboard/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ action: "delete", order_id: orderId }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || "O'chirib bo'lmadi");
+    } catch (e) {
+      console.error("Buyurtma o'chirilmadi", e);
+      alert(e instanceof Error ? e.message : "O'chirib bo'lmadi");
+      setOrders(prevOrders);
+    }
+  };
   const handleManualSave = async () => {
     if (!manualName.trim() || !manualPhone.trim() || manualSelectedItems.length === 0) {
       alert("Mijoz ismi, telefon va kamida 1 ta mahsulot kiritilishi shart!");
       return;
     }
     setManualSaving(true);
-    const supabase = createClient();
 
-    const { data: newOrderData, error } = await supabase.from("orders").insert({
-      items: manualSelectedItems,
-      client_name: manualName,
-      client_phone: manualPhone,
-      region: "Qo'lda kiritilgan",
-      order_type: "full_payment",
-      status: manualStatus,
-    }).select().single();
+    // ⚠️ Audit X7/P8: buyurtma va uning stok/daromad ta'siri SERVER
+    // tomonda hisoblanadi. Narx do'kondagi bilan bir xil formula
+    // bo'yicha, SO'MDA. Oldin bu yerda price_usd (masalan 25) yozilib,
+    // kassaga dollar so'm sifatida tushardi.
+    try {
+      const res = await fetch("/api/dashboard/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          action: "create",
+          items: manualSelectedItems.map((i) => ({
+            product_id: i.product_id,
+            quantity: i.quantity,
+          })),
+          client_name: manualName,
+          client_phone: manualPhone,
+          status: manualStatus,
+        }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || "Buyurtma yaratilmadi");
 
-    if (!error && newOrderData) {
-      // DM / qo'lda savdo konversiyasini Meta CAPI ga yuborish (action_source: "chat").
-      // Brauzer Pixel ishlatilmaydi — bu sayt tashqarisidagi (Instagram/Telegram DM) savdo.
-      const order = newOrderData as Order;
+      // DM / qo'lda savdo konversiyasi Meta CAPI ga (action_source: "chat").
       trackDmConversion({
         eventName: "Purchase",
-        eventId: `dm_pur_${order.id}`,
+        eventId: `dm_pur_${j.order.id}`,
         clientName: manualName,
         clientPhone: manualPhone,
-        value: manualTotal,
-        currency: "USD",
+        value: Number(j.total_uzs) || 0,
+        currency: "UZS",
         customData: {
           content_ids: manualSelectedItems.map((i) => i.product_id),
           content_type: "product",
@@ -210,37 +168,16 @@ export default function OrdersPage() {
         },
       });
 
-      // If created as 'delivered', we must apply the same logic as handleStatusChange
-      if (manualStatus === "delivered") {
-        // Decrease stock
-        for (const item of manualSelectedItems) {
-          const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.product_id);
-          if (isUUID) {
-            const { data: prod } = await supabase.from("products").select("stock").eq("id", item.product_id).single();
-            if (prod) {
-              const currentStock = prod.stock !== undefined && prod.stock !== null ? prod.stock : 10;
-              const newStock = Math.max(0, currentStock - item.quantity);
-              await supabase.from("products").update({ stock: newStock }).eq("id", item.product_id);
-            }
-          }
-        }
-
-        // Add income transaction
-        const total = manualSelectedItems.reduce((sum, item) => sum + (item.price_at_purchase * item.quantity), 0);
-        await supabase.from("transactions").insert({
-          type: "income",
-          amount: total,
-          description: `Buyurtma #${order.id.slice(0, 8)} yetkazildi (Qo'lda) - Daromad`,
-        });
-      }
-
       setShowManualModal(false);
       setManualName(""); setManualPhone(""); setManualSelectedItems([]); setManualStatus("pending");
       fetchOrders();
+    } catch (e) {
+      console.error("Qo'lda buyurtma yaratilmadi", e);
+      alert(e instanceof Error ? e.message : "Buyurtma yaratilmadi");
+    } finally {
+      setManualSaving(false);
     }
-    setManualSaving(false);
   };
-
   const addManualProduct = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const pId = e.target.value;
     if (!pId) return;
@@ -256,7 +193,17 @@ export default function OrdersPage() {
     } else {
       setManualSelectedItems(prev => [
         ...prev,
-        { product_id: p.id, title: p.title, quantity: 1, price_at_purchase: p.price_usd || 0, product_type: p.product_type || "lux_copy" }
+        {
+          product_id: p.id,
+          title: p.title,
+          quantity: 1,
+          price_at_purchase: p.price_usd || 0,
+          price_uzs:
+            (p.product_type || "lux_copy") === "original"
+              ? calculateOriginalPriceUzs(p.price_usd || 0)
+              : calculatePremiumPriceUzs(p.price_usd || 0),
+          product_type: p.product_type || "lux_copy",
+        }
       ]);
     }
     e.target.value = ""; // reset dropdown
@@ -563,8 +510,8 @@ export default function OrdersPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-muted-foreground uppercase tracking-wider">Jami ($)</label>
-                  <input type="number" readOnly value={manualTotal} className="w-full px-3 py-2 bg-secondary/50 border border-border rounded-lg text-sm font-bold text-gold focus:outline-none" />
+                  <label className="text-xs text-muted-foreground uppercase tracking-wider">Jami (so&apos;m)</label>
+                  <input type="text" readOnly value={formatUzs(manualTotal)} className="w-full px-3 py-2 bg-secondary/50 border border-border rounded-lg text-sm font-bold text-gold focus:outline-none" />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground uppercase tracking-wider">Status</label>

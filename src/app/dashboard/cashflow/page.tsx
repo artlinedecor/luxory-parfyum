@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Transaction, Order, Product } from "@/lib/types";
-import { createClient } from "@/utils/supabase/client";
+import { dashLoad, dashInsert, dashDelete } from "@/lib/dashboard-api";
 
 export default function CashflowPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -18,16 +18,11 @@ export default function CashflowPage() {
 
   const fetchData = async () => {
     try {
-      const supabase = createClient();
-      const [txRes, ordRes, prodRes] = await Promise.all([
-        supabase.from("transactions").select("*").order("created_at", { ascending: false }),
-        supabase.from("orders").select("*").order("created_at", { ascending: false }),
-        supabase.from("products").select("*"),
-      ]);
-
-      setTransactions(txRes.data || []);
-      setOrders((ordRes.data || []) as Order[]);
-      setProducts(prodRes.data || []);
+      // Audit X7: admin tekshiruvi bo'lgan server route orqali.
+      const d = await dashLoad();
+      setTransactions(d.transactions as never);
+      setOrders(d.orders as Order[]);
+      setProducts(d.products as never);
     } catch (e) {
       console.error("Error fetching data:", e);
     } finally {
@@ -114,18 +109,14 @@ export default function CashflowPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
 
     try {
-      const { data, error } = await supabase
-        .from("transactions")
-        .insert([{ type, amount: Number(amount), description }])
-        .select();
-
-      if (error) throw error;
+      const data = await dashInsert("transactions", [
+        { type, amount: Number(amount), description },
+      ]);
 
       if (data && data[0]) {
-        setTransactions([data[0], ...transactions]);
+        setTransactions([data[0] as never, ...transactions]);
       } else {
         fetchData();
       }
@@ -141,8 +132,15 @@ export default function CashflowPage() {
   const handleDeleteTransaction = async (txId: string) => {
     if (!window.confirm("Bu tranzaksiyani o'chirishni xohlaysizmi?")) return;
     setTransactions(prev => prev.filter(t => t.id !== txId));
-    const supabase = createClient();
-    await supabase.from("transactions").delete().eq("id", txId);
+    try {
+      await dashDelete("transactions", { id: txId });
+    } catch (e) {
+      // Audit D5/U4: o'chirish muvaffaqiyatsiz bo'lsa ro'yxatni tiklaymiz —
+      // oldin UI o'chgandek ko'rsatib turaverardi.
+      console.error("Tranzaksiyani o'chirib bo'lmadi", e);
+      alert(e instanceof Error ? e.message : "O'chirib bo'lmadi");
+      fetchData();
+    }
   };
 
   // ── CSV EXPORT (Google Sheets uchun) ──────────

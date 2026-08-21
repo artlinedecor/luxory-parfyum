@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { createClient } from "@/utils/supabase/client";
+import { dashLoad } from "@/lib/dashboard-api";
 import { Order, Product, Transaction } from "@/lib/types";
 
 const statusLabels: Record<string, { text: string; color: string }> = {
@@ -24,17 +24,12 @@ export default function DashboardPage() {
 
     const loadDashboardData = async () => {
       try {
-        const supabase = createClient();
-
-        const [prodRes, ordRes, txRes] = await Promise.all([
-          supabase.from("products").select("*"),
-          supabase.from("orders").select("*").order("created_at", { ascending: false }),
-          supabase.from("transactions").select("*"),
-        ]);
-
-        setProducts(prodRes.data || []);
-        setOrders((ordRes.data || []) as Order[]);
-        setTransactions((txRes.data || []) as Transaction[]);
+        // Audit X7: bazaga to'g'ridan-to'g'ri emas, admin tekshiruvi
+        // bo'lgan server route orqali.
+        const d = await dashLoad();
+        setProducts(d.products as never);
+        setOrders(d.orders as Order[]);
+        setTransactions(d.transactions as Transaction[]);
       } catch (error) {
         console.error("Error loading dashboard metrics:", error);
       } finally {
