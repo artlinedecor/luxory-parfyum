@@ -9,6 +9,7 @@ import { siteConfig } from "@/config/site";
 import { clickPayUrl, clickConfigured } from "@/lib/click-links";
 import ClickPayByCard from "@/components/ClickPayByCard";
 import ClickQrCode from "@/components/ClickQrCode";
+import { ClickLogo, ClickMark, UzumLogo, UzcardMark, HumoMark } from "@/components/PaymentLogos";
 import { useState, useRef, useEffect } from "react";
 import { useI18n } from "@/lib/i18n-context";
 import { trackMetaEvent } from "@/lib/meta-tracker";
@@ -201,9 +202,12 @@ export default function CartPage() {
             {/* buyurtma raqamisiz to'lov havolasi yasab bo'lmaydi */}
             {clickConfigured() && submittedOrderId && (
               <div className="glass-card p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider text-center">
-                  Onlayn to&apos;lov
-                </h3>
+                <div className="flex items-center justify-center gap-2">
+                  <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+                    Onlayn to&apos;lov
+                  </h3>
+                  <span className="text-foreground"><ClickLogo size={18} /></span>
+                </div>
                 <p className="text-[10px] text-muted-foreground text-center -mt-2">
                   To&apos;lovni uyingizdan chiqmasdan, xavfsiz amalga oshiring
                 </p>
@@ -226,9 +230,7 @@ export default function CartPage() {
                   href={clickPayUrl({ amountUzs: finalAmount, orderId: submittedOrderId })}
                   className="btn btn-block btn-sm bg-[#00A1F1] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_8px_18px_-6px_rgba(0,161,241,0.45)] hover:bg-[#0090D8]"
                 >
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
-                  </svg>
+                  <ClickMark size={20} />
                   Click ilovasi orqali
                 </a>
 
@@ -238,13 +240,13 @@ export default function CartPage() {
                     href={clickPayUrl({ amountUzs: finalAmount, orderId: submittedOrderId, cardType: "uzcard" })}
                     className="btn btn-outline btn-sm"
                   >
-                    Uzcard
+                    <UzcardMark size={18} />
                   </a>
                   <a
                     href={clickPayUrl({ amountUzs: finalAmount, orderId: submittedOrderId, cardType: "humo" })}
                     className="btn btn-outline btn-sm"
                   >
-                    Humo
+                    <HumoMark size={18} />
                   </a>
                 </div>
 
@@ -466,7 +468,8 @@ export default function CartPage() {
                 <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>Uzum Nasiya (Bo'lib to'lash)</span>
+                  <UzumLogo size={20} />
+                  <span className="opacity-90 text-sm">&mdash; bo&apos;lib to&apos;lash</span>
                 </>
               )}
             </button>
