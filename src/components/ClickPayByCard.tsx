@@ -50,6 +50,8 @@ export default function ClickPayByCard({
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  // Xabar turi: xato qizil, ma'lumot neytral ko'rinadi
+  const [msgKind, setMsgKind] = useState<"info" | "error">("info");
   const loaded = useRef(false);
 
   useEffect(() => {
@@ -82,6 +84,7 @@ export default function ClickPayByCard({
       return;
     }
     setMsg("");
+    setMsgKind("info");
     setBusy(true);
     window.createPaymentRequest(
       {
@@ -93,16 +96,50 @@ export default function ClickPayByCard({
       },
       (data) => {
         setBusy(false);
-        const st = Number(data?.status);
+
+        // ⚠️ Click hujjati: callback to'lov oynasi YOPILGANDA ishlaydi —
+        // to'langanda ham, mijoz shunchaki yopganda ham. Oldin bu yerda
+        // status aniqlanmagan holat ham "to'lov amalga oshmadi" degan
+        // QIZIL xato ko'rsatardi: mijoz oynani yopsa, xato ko'rgandek
+        // bo'lardi.
+        const raw = data?.status;
+        const st = raw === undefined || raw === null ? null : Number(raw);
+
         if (st === 2) {
           setMsg("");
           onPaid?.();
-        } else if (st === 1 || st === 0) {
-          setMsg("To'lov qabul qilindi, tasdiqlanmoqda. Buyurtmangiz tez orada rasmiylashtiriladi.");
-        } else {
-          // ⚠️ Bosh berk ko'cha bo'lmasin — pastda muqobil tugmalar turadi.
-          setMsg("To'lov amalga oshmadi. Quyidagi boshqa usullardan birini tanlang.");
+          return;
         }
+
+        if (st === 1) {
+          setMsgKind("info");
+          setMsg(
+            "To'lov qabul qilindi va tasdiqlanmoqda. Buyurtmangiz tez orada rasmiylashtiriladi."
+          );
+          return;
+        }
+
+        if (st === 0) {
+          setMsgKind("info");
+          setMsg(
+            "To'lov boshlandi, lekin hali yakunlanmadi. Tugmani qayta bosib davom ettirishingiz mumkin."
+          );
+          return;
+        }
+
+        if (st === null || Number.isNaN(st)) {
+          // Oyna yopildi — bu XATO EMAS.
+          setMsgKind("info");
+          setMsg("To'lov oynasi yopildi. To'lamoqchi bo'lsangiz qaytadan bosing.");
+          return;
+        }
+
+        // st < 0 — haqiqiy xato. Kodni ko'rsatamiz: muammo chiqsa
+        // Click qo'llab-quvvatlashiga aynan shu raqamni aytish kerak.
+        setMsgKind("error");
+        setMsg(
+          `To'lov amalga oshmadi (kod ${st}). Quyidagi boshqa usullardan birini tanlang.`
+        );
       }
     );
   };
@@ -126,7 +163,13 @@ export default function ClickPayByCard({
         Uzcard, Humo va boshqa bank kartalari. Click&apos;ga ulanish shart emas.
       </p>
       {msg && (
-        <div className="p-2.5 bg-destructive/8 border border-destructive/25 text-[11px] text-destructive leading-relaxed">
+        <div
+          className={
+            msgKind === "error"
+              ? "p-2.5 bg-destructive/8 border border-destructive/25 text-[11px] text-destructive leading-relaxed"
+              : "p-2.5 bg-secondary/50 border border-border/60 text-[11px] text-muted-foreground leading-relaxed"
+          }
+        >
           {msg}
         </div>
       )}
