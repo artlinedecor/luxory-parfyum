@@ -26,11 +26,12 @@ alter table orders add constraint orders_status_check
 
 
 -- ── 3. orders.order_type ────────────────────────────────────
--- "uzum_nasiya" faqat scratch/uzum_migration.sql ishga tushirilgan
--- bo'lsa ruxsat etilardi — u esa migrations/ da emas, scratch/ da edi.
+-- Asl ta'rif (schema.sql:43): ('full_payment', 'deposit_50').
+-- ⚠️ deposit_50 SAQLANADI — faqat uzum_nasiya qo'shiladi.
+-- ('installment' kodda hech qayerda ishlatilmaydi, qo'shilmaydi.)
 alter table orders drop constraint if exists orders_order_type_check;
 alter table orders add constraint orders_order_type_check
-  check (order_type in ('full_payment','installment','uzum_nasiya'));
+  check (order_type in ('full_payment','deposit_50','uzum_nasiya'));
 
 
 -- ── 4. uzum_contracts ───────────────────────────────────────
