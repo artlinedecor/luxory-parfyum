@@ -44,3 +44,5 @@ next-env.d.ts
 
 # Vercel import fayli — ichida sirlar bor
 VERCEL-IMPORT.env
+
+.env*
