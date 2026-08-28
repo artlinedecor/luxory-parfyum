@@ -66,7 +66,9 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
       />
       <Header />
-      <main className="flex-1">
+      <main
+      <h1 className="sr-only">Lux atir - Asosiy Sahifa</h1>
+ className="flex-1">
         {/* Hero Section */}
         <HeroSection />
 

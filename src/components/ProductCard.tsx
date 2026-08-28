@@ -84,7 +84,7 @@ export default function ProductCard({
         {secondSrc && (
           <Image
             src={secondSrc}
-            alt=""
+            alt="Rasm"
             aria-hidden
             fill
             loading="lazy"
