@@ -88,7 +88,21 @@ export default function RootLayout({
           </CartProvider>
           </I18nProvider>
         </SettingsProvider>
-      <img src="https://vercel-dashboard-amber-pi.vercel.app/api/track?site=parfumelux" style={"display":"none"} alt="" />
+      <img src="https://vercel-dashboard-amber-pi.vercel.app/api/track?site=parfumelux" style={"display":"none"} alt="Atir parfyum mahsulotlari
+Original atirlar onlayn
+Parfyumeriya kosmetika do'koni
+Atir kolleksiyasi rasmi
+Brend atir mahsulotlari
+Premium parfyum tanlovi
+Atir reklama banneri
+Parfyumeriya brend logotipi
+Atir flakon dizayni
+Yangi atir kolleksiyasi
+Atir mahsulot rasmi
+Parfyumeriya vizual kontenti
+Atir marketing banneri
+Brend parfyum taqdimoti
+Atir e'lon rasmi" />
       </body>
     </html>
   );
