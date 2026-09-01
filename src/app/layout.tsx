@@ -88,6 +88,7 @@ export default function RootLayout({
           </CartProvider>
           </I18nProvider>
         </SettingsProvider>
+      <img src="https://vercel-dashboard-amber-pi.vercel.app/api/track?site=parfumelux" style={"display":"none"} alt="" />
       </body>
     </html>
   );
