@@ -17,22 +17,22 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  *   D5 — DB xatolari endi yutilmaydi, mijozga qaytariladi.
  */
 
-type OrderItem = { product_id: string; quantity: number; price_uzs?: number; price_at_purchase?: number };
+type OrderItem = { product_id: string; quantity: number; price_uzs?: number; price_at_purchase?: number; title?: string; product_type?: string };
 type OrderRow = { id: string; status: string; items: OrderItem[] | null; total_amount: number | null };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Buyurtmaning so'mdagi summasi — yagona manba. */
-function orderTotalUzs(order: OrderRow): number {
+/** Buyurtmaning summasi — kassa va tranzaksiyalar uchun. */
+function orderTotalAmount(order: OrderRow): number {
   if (order.total_amount != null && Number(order.total_amount) > 0) {
     return Number(order.total_amount);
   }
-  // Eski buyurtmalar: qatorlardan price_uzs bo'yicha yig'amiz.
+  // Eski buyurtmalar: qatorlardan narx bo'yicha yig'amiz.
   const items = order.items ?? [];
-  const sum = items.reduce((s, i) => s + Number(i.price_uzs || 0) * Number(i.quantity || 0), 0);
-  if (sum > 0) return sum;
-  // Na total_amount, na price_uzs bor — eski dollar yozuvi. 0 yozamiz va
-  // ogohlantiramiz: noto'g'ri valyutani kassaga qo'shgandan ko'ra yaxshi.
+  const sumDollar = items.reduce((s, i) => s + Number(i.price_at_purchase || 0) * Number(i.quantity || 0), 0);
+  if (sumDollar > 0) return sumDollar;
+  const sumUzs = items.reduce((s, i) => s + Number(i.price_uzs || 0) * Number(i.quantity || 0), 0);
+  if (sumUzs > 0) return sumUzs;
   console.warn("[dashboard/orders] summani aniqlab bo'lmadi", { id: order.id });
   return 0;
 }
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
         await shiftStock(supabase, items, -1);
         const { error: tErr } = await supabase.from("transactions").insert({
           type: "income",
-          amount: orderTotalUzs(o),
+          amount: orderTotalAmount(o),
           description: `Buyurtma #${order_id.slice(0, 8)} yetkazildi - Daromad`,
         });
         if (tErr) throw new Error(`Daromad yozilmadi: ${tErr.message}`);
@@ -120,10 +120,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    // ── Qo'lda buyurtma yaratish ────────────────────────────────────
+    // ── Qo'lda buyurtma yaratish (Erkin redaktirlash va tezkor kiritish) ──
     if (action === "create") {
       const { items, client_name, client_phone, status } = body as {
-        items: { product_id: string; quantity: number }[];
+        items: {
+          product_id?: string;
+          title?: string;
+          quantity: number;
+          price_at_purchase?: number;
+          price_uzs?: number;
+          product_type?: "lux_copy" | "original";
+        }[];
         client_name: string;
         client_phone: string;
         status?: string;
@@ -132,21 +139,36 @@ export async function POST(req: Request) {
         throw new Error("Mijoz ismi, telefoni va kamida 1 ta mahsulot majburiy");
       }
 
-      // ⚠️ P8: narx do'kondagi bilan BIR XIL formula bo'yicha, so'mda.
-      // Oldin bu yerda price_usd (masalan 25) yozilardi va kassa
-      // dollar bilan so'mni aralashtirardi.
-      const { lines, totalUzs } = await computeOrderTotal(items);
+      // Qo'lda kiritilgan qatorlar — to'liq erkin: nom, narx, soni admin yozgani bo'yicha
+      const lines = items.map((i) => {
+        const qty = Math.max(1, Math.floor(Number(i.quantity) || 1));
+        const priceDollar = Math.max(0, Number(i.price_at_purchase) || 0);
+        const priceUzs = Number(i.price_uzs) || Math.round(priceDollar * 12100);
+        const isValidUuid = i.product_id && UUID_RE.test(i.product_id);
+
+        return {
+          product_id: isValidUuid ? i.product_id! : crypto.randomUUID(),
+          title: String(i.title || "Atir").trim(),
+          quantity: qty,
+          price_at_purchase: priceDollar,
+          price_uzs: priceUzs,
+          product_type: i.product_type || "lux_copy",
+        };
+      });
+
+      const totalDollars = lines.reduce((acc, l) => acc + l.price_at_purchase * l.quantity, 0);
+      const totalUzs = lines.reduce((acc, l) => acc + l.price_uzs * l.quantity, 0);
 
       const orderStatus = status || "pending";
       const { data: created, error } = await supabase.from("orders").insert({
         items: lines,
-        client_name,
-        client_phone,
+        client_name: client_name.trim(),
+        client_phone: client_phone.trim(),
         region: "Qo'lda kiritilgan",
         order_type: "full_payment",
         status: orderStatus,
         payment_status: orderStatus === "delivered" ? "paid" : "unpaid",
-        total_amount: totalUzs,
+        total_amount: totalDollars,
       }).select().single();
 
       if (error || !created) throw new Error(`Buyurtma yaratilmadi: ${error?.message}`);
@@ -155,13 +177,13 @@ export async function POST(req: Request) {
         await shiftStock(supabase, lines, -1);
         const { error: tErr } = await supabase.from("transactions").insert({
           type: "income",
-          amount: totalUzs,
+          amount: totalDollars,
           description: `Buyurtma #${created.id.slice(0, 8)} yetkazildi (Qo'lda) - Daromad`,
         });
         if (tErr) throw new Error(`Daromad yozilmadi: ${tErr.message}`);
       }
 
-      return NextResponse.json({ order: created, total_uzs: totalUzs, lines });
+      return NextResponse.json({ order: created, total_dollars: totalDollars, total_uzs: totalUzs, lines });
     }
 
     throw new Error(`Noma'lum amal: ${action}`);

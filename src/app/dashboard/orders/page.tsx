@@ -38,20 +38,37 @@ export default function OrdersPage() {
   const [showManualModal, setShowManualModal] = useState(false);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
-  // Manual order form states
+  interface ManualItem {
+    id: string;
+    product_id: string;
+    title: string;
+    quantity: number;
+    price_at_purchase: number;
+    product_type: "lux_copy" | "original";
+  }
+
+  // Manual order form states (Tezkor va erkin redaktirlash)
   const [manualName, setManualName] = useState("");
-  const [manualPhone, setManualPhone] = useState("");
-  const [manualSelectedItems, setManualSelectedItems] = useState<{ product_id: string; title: string; quantity: number; price_at_purchase: number; price_uzs: number; product_type: "lux_copy" | "original" }[]>([]);
-  const [manualStatus, setManualStatus] = useState("pending");
+  const [manualPhone, setManualPhone] = useState("+998 ");
+  const [manualSelectedItems, setManualSelectedItems] = useState<ManualItem[]>([
+    {
+      id: "item-1",
+      product_id: "",
+      title: "",
+      quantity: 1,
+      price_at_purchase: 45,
+      product_type: "lux_copy",
+    },
+  ]);
+  const [manualStatus, setManualStatus] = useState("delivered");
   const [manualSaving, setManualSaving] = useState(false);
 
-  // ⚠️ Audit P8: forma endi SO'MDA ko'rsatadi — server ham shu formula
-  // bo'yicha hisoblaydi, ya'ni admin ko'rgan raqam kassaga tushadigan
-  // raqam bilan bir xil. Oldin bu yerda dollar summasi turardi.
-  const manualTotal = manualSelectedItems.reduce(
-    (acc, item) => acc + Number(item.price_uzs || 0) * item.quantity,
+  // Qo'lda buyurtma summasi ($ va so'mda)
+  const manualTotalDollars = manualSelectedItems.reduce(
+    (acc, item) => acc + (Number(item.price_at_purchase) || 0) * (Number(item.quantity) || 1),
     0
   );
+  const manualTotalUzs = manualTotalDollars * 12100;
 
   const fetchOrders = useCallback(async () => {
     // Audit X7: admin tekshiruvi bo'lgan server route orqali.
@@ -74,7 +91,7 @@ export default function OrdersPage() {
 
   const calculateTotal = (order: Order) => {
     if (!order.items || !Array.isArray(order.items)) return 0;
-    return order.items.reduce((sum, item) => sum + (item.price_at_purchase * item.quantity), 0);
+    return order.items.reduce((sum, item) => sum + ((item.price_at_purchase || 0) * item.quantity), 0);
   };
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
@@ -82,10 +99,6 @@ export default function OrdersPage() {
     // Optimistik ko'rsatish
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus as Order["status"] } : o));
 
-    // ⚠️ Audit X7/P8/U4: stok kamaytirish, daromad yozish va holat
-    // o'zgartirish endi SERVER tomonda, bitta joyda. Oldin bu mantiq
-    // brauzerda, ikki joyda takrorlangan holda ishlardi va xatolar
-    // e'tiborsiz qolardi.
     try {
       const res = await fetch("/api/dashboard/orders", {
         method: "POST",
@@ -102,6 +115,7 @@ export default function OrdersPage() {
       setOrders(prevOrders); // orqaga qaytaramiz
     }
   };
+
   const handleDeleteOrder = async (orderId: string) => {
     if (!window.confirm("Bu buyurtmani o'chirishni xohlaysizmi? Bu amalni ortga qaytarib bo'lmaydi!")) return;
 
@@ -123,17 +137,102 @@ export default function OrdersPage() {
       setOrders(prevOrders);
     }
   };
+
+  // Yangi qo'lda buyurtma oynasini ochish
+  const handleOpenManualModal = () => {
+    setManualName("");
+    setManualPhone("+998 ");
+    setManualStatus("delivered");
+    setManualSelectedItems([
+      {
+        id: "item-" + Date.now(),
+        product_id: "",
+        title: "",
+        quantity: 1,
+        price_at_purchase: 45,
+        product_type: "lux_copy",
+      },
+    ]);
+    setShowManualModal(true);
+  };
+
+  // Yangi qator qo'shish
+  const handleAddManualRow = () => {
+    setManualSelectedItems((prev) => [
+      ...prev,
+      {
+        id: "item-" + Date.now() + Math.random().toString(36).slice(2, 6),
+        product_id: "",
+        title: "",
+        quantity: 1,
+        price_at_purchase: 45,
+        product_type: "lux_copy",
+      },
+    ]);
+  };
+
+  // Qatordagi istalgan maydonni erkin o'zgartirish (Nomi, Soni, Narxi, Turi)
+  const handleUpdateManualItem = (
+    index: number,
+    field: keyof ManualItem,
+    value: string | number
+  ) => {
+    setManualSelectedItems((prev) => {
+      const next = [...prev];
+      const current = { ...next[index] };
+
+      if (field === "title") {
+        current.title = String(value);
+        // Catalogda bor-yo'qligini tekshirib, agar to'liq mos kelsa narxini va id sini moslaymiz
+        const cleanVal = String(value).trim().toLowerCase();
+        const match = products.find((p) => p.title.trim().toLowerCase() === cleanVal);
+        if (match) {
+          current.product_id = match.id;
+          current.product_type = match.product_type || "lux_copy";
+          if (!current.price_at_purchase || current.price_at_purchase === 45) {
+            current.price_at_purchase = match.price_usd || 45;
+          }
+        }
+      } else if (field === "price_at_purchase") {
+        current.price_at_purchase = Number(value) >= 0 ? Number(value) : 0;
+      } else if (field === "quantity") {
+        current.quantity = Math.max(1, Math.floor(Number(value) || 1));
+      } else if (field === "product_type") {
+        current.product_type = value as "lux_copy" | "original";
+      }
+
+      next[index] = current;
+      return next;
+    });
+  };
+
+  // Qatorni o'chirish
+  const handleRemoveManualItem = (index: number) => {
+    setManualSelectedItems((prev) => {
+      if (prev.length <= 1) {
+        return [
+          {
+            id: "item-" + Date.now(),
+            product_id: "",
+            title: "",
+            quantity: 1,
+            price_at_purchase: 45,
+            product_type: "lux_copy",
+          },
+        ];
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
   const handleManualSave = async () => {
-    if (!manualName.trim() || !manualPhone.trim() || manualSelectedItems.length === 0) {
-      alert("Mijoz ismi, telefon va kamida 1 ta mahsulot kiritilishi shart!");
+    const validItems = manualSelectedItems.filter((i) => i.title.trim().length > 0);
+    if (!manualName.trim() || !manualPhone.trim() || validItems.length === 0) {
+      alert("Mijoz ismi, telefon raqami va kamida 1 ta atir nomi kiritilishi shart!");
       return;
     }
     setManualSaving(true);
 
-    // ⚠️ Audit X7/P8: buyurtma va uning stok/daromad ta'siri SERVER
-    // tomonda hisoblanadi. Narx do'kondagi bilan bir xil formula
-    // bo'yicha, SO'MDA. Oldin bu yerda price_usd (masalan 25) yozilib,
-    // kassaga dollar so'm sifatida tushardi.
     try {
       const res = await fetch("/api/dashboard/orders", {
         method: "POST",
@@ -141,35 +240,38 @@ export default function OrdersPage() {
         credentials: "same-origin",
         body: JSON.stringify({
           action: "create",
-          items: manualSelectedItems.map((i) => ({
-            product_id: i.product_id,
-            quantity: i.quantity,
+          items: validItems.map((i) => ({
+            product_id: i.product_id || undefined,
+            title: i.title.trim(),
+            quantity: Number(i.quantity) || 1,
+            price_at_purchase: Number(i.price_at_purchase) || 0,
+            price_uzs: (Number(i.price_at_purchase) || 0) * 12100,
+            product_type: i.product_type || "lux_copy",
           })),
-          client_name: manualName,
-          client_phone: manualPhone,
+          client_name: manualName.trim(),
+          client_phone: manualPhone.trim(),
           status: manualStatus,
         }),
       });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error || "Buyurtma yaratilmadi");
 
-      // DM / qo'lda savdo konversiyasi Meta CAPI ga (action_source: "chat").
+      // DM / qo'lda savdo konversiyasi Meta CAPI ga
       trackDmConversion({
         eventName: "Purchase",
         eventId: `dm_pur_${j.order.id}`,
-        clientName: manualName,
-        clientPhone: manualPhone,
+        clientName: manualName.trim(),
+        clientPhone: manualPhone.trim(),
         value: Number(j.total_uzs) || 0,
         currency: "UZS",
         customData: {
-          content_ids: manualSelectedItems.map((i) => i.product_id),
+          content_ids: validItems.map((i) => i.product_id || i.title),
           content_type: "product",
-          num_items: manualSelectedItems.reduce((s, i) => s + i.quantity, 0),
+          num_items: validItems.reduce((s, i) => s + (Number(i.quantity) || 1), 0),
         },
       });
 
       setShowManualModal(false);
-      setManualName(""); setManualPhone(""); setManualSelectedItems([]); setManualStatus("pending");
       fetchOrders();
     } catch (e) {
       console.error("Qo'lda buyurtma yaratilmadi", e);
@@ -177,36 +279,6 @@ export default function OrdersPage() {
     } finally {
       setManualSaving(false);
     }
-  };
-  const addManualProduct = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const pId = e.target.value;
-    if (!pId) return;
-    const p = products.find(prod => prod.id === pId);
-    if (!p) return;
-    
-    // If already added, increment quantity instead of ignoring
-    const existing = manualSelectedItems.find(item => item.product_id === pId);
-    if (existing) {
-      setManualSelectedItems(prev => prev.map(i => 
-        i.product_id === pId ? { ...i, quantity: i.quantity + 1 } : i
-      ));
-    } else {
-      setManualSelectedItems(prev => [
-        ...prev,
-        {
-          product_id: p.id,
-          title: p.title,
-          quantity: 1,
-          price_at_purchase: p.price_usd || 0,
-          price_uzs:
-            (p.product_type || "lux_copy") === "original"
-              ? calculateOriginalPriceUzs(p.price_usd || 0)
-              : calculatePremiumPriceUzs(p.price_usd || 0),
-          product_type: p.product_type || "lux_copy",
-        }
-      ]);
-    }
-    e.target.value = ""; // reset dropdown
   };
 
   const flatItems = useMemo(() => {
@@ -248,10 +320,6 @@ export default function OrdersPage() {
     });
   }, [orders]);
 
-  const removeManualProduct = (id: string) => {
-    setManualSelectedItems(prev => prev.filter(i => i.product_id !== id));
-  };
-
   return (
     <div className="space-y-6 max-w-6xl">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -262,8 +330,8 @@ export default function OrdersPage() {
           <p className="text-sm text-muted-foreground mt-1">Yangi va avvalgi buyurtmalarni boshqarish</p>
         </div>
         <button
-          onClick={() => setShowManualModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-gold text-black font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-lg shadow-gold/20"
+          onClick={handleOpenManualModal}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-gold text-black font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-lg shadow-gold/20 cursor-pointer"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" /></svg>
           Qo&apos;lda buyurtma
@@ -297,7 +365,12 @@ export default function OrdersPage() {
                 <p className="text-xs font-semibold text-foreground leading-snug">{item.title}</p>
                 <div className="flex justify-between items-center text-[10px]">
                   <span className="text-muted-foreground uppercase font-semibold">{item.product_type} • x{item.quantity}</span>
-                  <span className="text-gold font-medium">${item.price_at_purchase} / jami: <span className="font-bold">${subtotal}</span></span>
+                  <span className="text-gold font-medium">
+                    {item.price_at_purchase ? `$${item.price_at_purchase}` : (item.price_uzs ? `${formatUzs(item.price_uzs)} so'm` : "$0")} / jami:{" "}
+                    <span className="font-bold">
+                      {item.price_at_purchase ? `$${item.price_at_purchase * item.quantity}` : (item.price_uzs ? `${formatUzs(item.price_uzs * item.quantity)} so'm` : "$0")}
+                    </span>
+                  </span>
                 </div>
               </div>
 
@@ -400,10 +473,14 @@ export default function OrdersPage() {
                       <span className="text-sm font-bold text-foreground">x{item.quantity}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm font-semibold text-muted-foreground">${item.price_at_purchase}</span>
+                      <span className="text-sm font-semibold text-muted-foreground">
+                        {item.price_at_purchase ? `$${item.price_at_purchase}` : (item.price_uzs ? `${formatUzs(item.price_uzs)} so'm` : "$0")}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm font-bold text-gradient-gold">${subtotal}</span>
+                      <span className="text-sm font-bold text-gradient-gold">
+                        {item.price_at_purchase ? `$${item.price_at_purchase * item.quantity}` : (item.price_uzs ? `${formatUzs(item.price_uzs * item.quantity)} so'm` : "$0")}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex text-xs text-muted-foreground bg-secondary/30 px-3 py-1.5 rounded-lg border border-border/50">{item.region}</span>
@@ -459,70 +536,199 @@ export default function OrdersPage() {
       {/* Manual Order Modal */}
       {showManualModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-card w-full max-w-md rounded-2xl border border-border shadow-2xl p-6 relative animate-scale-in">
-            <button onClick={() => setShowManualModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-            <h2 className="text-lg font-semibold text-foreground mb-4">Qo&apos;lda buyurtma kiritish</h2>
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-xs text-muted-foreground uppercase tracking-wider">Mijoz ismi</label>
-                <input type="text" value={manualName} onChange={e => setManualName(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
+          <div className="bg-[#141414] w-full max-w-2xl rounded-2xl border border-gold/20 shadow-2xl p-5 sm:p-6 relative animate-scale-in max-h-[92vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-border/60">
+              <div>
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                  <span className="text-gradient-gold">Qo&apos;lda buyurtma / sotuv</span>
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Atir nomi va narxini erkin yozing yoki takliflardan tez tanlang
+                </p>
               </div>
-              <div className="space-y-1">
-                <label className="text-xs text-muted-foreground uppercase tracking-wider">Telefon</label>
-                <input type="tel" value={manualPhone} onChange={e => setManualPhone(e.target.value)} placeholder="+998..." className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50" />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs text-muted-foreground uppercase tracking-wider">Mahsulot Qo&apos;shish</label>
-                <select onChange={addManualProduct} defaultValue="" className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50 appearance-none">
-                  <option value="" disabled>-- Mahsulot tanlang --</option>
-                  {products.map(p => (
-                    <option key={p.id} value={p.id}>{p.title} (${p.price_usd}) - Qoldiq: {p.stock}</option>
-                  ))}
-                </select>
-              </div>
-              
-              {manualSelectedItems.length > 0 && (
-                <div className="space-y-2 border border-border/50 rounded-lg p-3 bg-secondary/20 max-h-40 overflow-y-auto">
-                  {manualSelectedItems.map((item, idx) => (
-                    <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-2 bg-background p-2 rounded border border-border">
-                      <span className="flex-1 text-sm font-semibold truncate" title={item.title}>{item.title}</span>
-                      <div className="flex items-center gap-2">
-                        <input type="number" min="1" value={item.quantity} onChange={(e) => {
-                          const newQ = Number(e.target.value);
-                          setManualSelectedItems(prev => prev.map(i => i.product_id === item.product_id ? { ...i, quantity: newQ } : i));
-                        }} className="w-16 px-2 py-1 bg-secondary border border-border rounded text-xs focus:border-gold/50" title="Soni" />
-                        <span className="text-xs text-muted-foreground">ta</span>
-                        <input type="number" min="0" value={item.price_at_purchase} onChange={(e) => {
-                          const newP = Number(e.target.value);
-                          setManualSelectedItems(prev => prev.map(i => i.product_id === item.product_id ? { ...i, price_at_purchase: newP } : i));
-                        }} className="w-20 px-2 py-1 bg-secondary border border-border rounded text-xs focus:border-gold/50" title="Sotish narxi" />
-                        <span className="text-xs text-muted-foreground">$</span>
-                        <button type="button" onClick={() => removeManualProduct(item.product_id)} className="text-red-400 hover:text-red-300 ml-1">
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <button
+                onClick={() => setShowManualModal(false)}
+                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                title="Yopish"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3">
+            {/* Scrollable Body */}
+            <div className="space-y-4 py-4 overflow-y-auto pr-1 flex-1">
+              {/* Mijoz ma'lumotlari */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-secondary/20 p-3 rounded-xl border border-border/40">
                 <div className="space-y-1">
-                  <label className="text-xs text-muted-foreground uppercase tracking-wider">Jami (so&apos;m)</label>
-                  <input type="text" readOnly value={formatUzs(manualTotal)} className="w-full px-3 py-2 bg-secondary/50 border border-border rounded-lg text-sm font-bold text-gold focus:outline-none" />
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Mijoz ismi</label>
+                  <input
+                    type="text"
+                    value={manualName}
+                    onChange={(e) => setManualName(e.target.value)}
+                    placeholder="Masalan: Azizbek Samarqand"
+                    className="w-full px-3 py-2 bg-secondary/80 border border-border/60 rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/60 transition-colors"
+                  />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-muted-foreground uppercase tracking-wider">Status</label>
-                  <select value={manualStatus} onChange={e => setManualStatus(e.target.value)} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/50 appearance-none">
-                    <option value="pending">Kutilmoqda</option>
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Telefon raqami</label>
+                  <input
+                    type="tel"
+                    value={manualPhone}
+                    onChange={(e) => setManualPhone(e.target.value)}
+                    placeholder="+998 90 123 45 67"
+                    className="w-full px-3 py-2 bg-secondary/80 border border-border/60 rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/60 transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Datalist for autocomplete suggestions */}
+              <datalist id="perfume-catalog-list">
+                {products.map((p) => (
+                  <option key={p.id} value={p.title}>
+                    {p.title} (${p.price_usd})
+                  </option>
+                ))}
+              </datalist>
+
+              {/* Mahsulotlar ro'yxati */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                    <span>Atirlar / Mahsulotlar</span>
+                    <span className="text-[10px] lowercase text-gold/80 font-normal">(nom va narx erkin o&apos;zgartiriladi)</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAddManualRow}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-gold hover:text-gold/80 px-2.5 py-1 rounded-lg bg-gold/10 hover:bg-gold/20 border border-gold/30 transition-all cursor-pointer"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" /></svg>
+                    + Yangi atir qo&apos;shish
+                  </button>
+                </div>
+
+                <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                  {manualSelectedItems.map((item, idx) => {
+                    const rowTotal = (Number(item.price_at_purchase) || 0) * (Number(item.quantity) || 1);
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-secondary/30 p-2.5 rounded-xl border border-border/60 hover:border-gold/30 transition-all"
+                      >
+                        {/* Atir nomi (erkin yozish + datalist takliflari) */}
+                        <div className="flex-1 min-w-[170px]">
+                          <input
+                            type="text"
+                            list="perfume-catalog-list"
+                            value={item.title}
+                            onChange={(e) => handleUpdateManualItem(idx, "title", e.target.value)}
+                            placeholder="Atir nomini yozing (masalan: Ganymede)..."
+                            className="w-full px-2.5 py-1.5 bg-background border border-border/60 rounded-lg text-xs sm:text-sm font-medium text-foreground focus:outline-none focus:border-gold/60 placeholder:text-muted-foreground/50"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-2 justify-between sm:justify-start">
+                          {/* Soni */}
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              min="1"
+                              value={item.quantity}
+                              onChange={(e) => handleUpdateManualItem(idx, "quantity", e.target.value)}
+                              className="w-14 px-2 py-1.5 bg-background border border-border/60 rounded-lg text-xs font-semibold text-center text-foreground focus:outline-none focus:border-gold/60"
+                              title="Soni"
+                            />
+                            <span className="text-[11px] text-muted-foreground">ta</span>
+                          </div>
+
+                          {/* Narxi ($) - Qo'lda erkin yozish */}
+                          <div className="flex items-center gap-1">
+                            <div className="relative flex items-center">
+                              <span className="absolute left-2 text-muted-foreground text-xs font-bold">$</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="any"
+                                value={item.price_at_purchase === 0 ? "" : item.price_at_purchase}
+                                onChange={(e) => handleUpdateManualItem(idx, "price_at_purchase", e.target.value)}
+                                placeholder="0"
+                                className="w-20 pl-5 pr-2 py-1.5 bg-background border border-border/60 rounded-lg text-xs font-semibold text-foreground focus:outline-none focus:border-gold/60"
+                                title="Bitta atir narxi ($)"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Turi */}
+                          <select
+                            value={item.product_type}
+                            onChange={(e) => handleUpdateManualItem(idx, "product_type", e.target.value)}
+                            className="text-[11px] px-2 py-1.5 bg-background border border-border/60 rounded-lg text-foreground focus:outline-none focus:border-gold/60 cursor-pointer"
+                          >
+                            <option value="lux_copy">Lux</option>
+                            <option value="original">Original</option>
+                          </select>
+
+                          {/* Qator summasi */}
+                          <div className="min-w-[50px] text-right font-bold text-xs text-gradient-gold">
+                            ${rowTotal}
+                          </div>
+
+                          {/* O'chirish */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveManualItem(idx)}
+                            className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-colors cursor-pointer"
+                            title="O'chirish"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Status va Jami */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Holat (Status)</label>
+                  <select
+                    value={manualStatus}
+                    onChange={(e) => setManualStatus(e.target.value)}
+                    className="w-full px-3 py-2 bg-secondary/80 border border-border/60 rounded-lg text-sm text-foreground focus:outline-none focus:border-gold/60 cursor-pointer"
+                  >
+                    <option value="delivered">Yetkazildi (Savdo va daromad yoziladi)</option>
                     <option value="accepted">Qabul qilindi</option>
-                    <option value="delivered">Yetkazildi (Savdo qiling)</option>
+                    <option value="pending">Kutilmoqda</option>
                   </select>
                 </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Jami Summa</label>
+                  <div className="px-3 py-2 bg-secondary/80 border border-border/60 rounded-lg flex items-center justify-between">
+                    <span className="text-sm font-bold text-gradient-gold">${manualTotalDollars}</span>
+                    <span className="text-xs text-muted-foreground font-medium">≈ {formatUzs(manualTotalUzs)} so&apos;m</span>
+                  </div>
+                </div>
               </div>
-              <button onClick={handleManualSave} disabled={manualSaving || !manualName.trim() || !manualPhone.trim()} className="w-full py-3 mt-2 rounded-xl bg-gradient-gold text-black font-bold uppercase tracking-wider text-sm hover:opacity-90 transition-all shadow-lg shadow-gold/20 disabled:opacity-50">
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="flex items-center gap-3 pt-3 border-t border-border/60">
+              <button
+                type="button"
+                onClick={() => setShowManualModal(false)}
+                className="flex-1 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-semibold text-xs uppercase tracking-wider transition-all cursor-pointer"
+              >
+                Bekor qilish
+              </button>
+              <button
+                type="button"
+                onClick={handleManualSave}
+                disabled={manualSaving || !manualName.trim() || !manualPhone.trim() || manualSelectedItems.every((i) => !i.title.trim())}
+                className="flex-1 py-2.5 rounded-xl bg-gradient-gold text-black font-bold uppercase tracking-wider text-xs hover:opacity-90 transition-all shadow-lg shadow-gold/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
                 {manualSaving ? "Saqlanmoqda..." : "Saqlash"}
               </button>
             </div>
