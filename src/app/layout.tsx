@@ -37,13 +37,34 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.siteUrl),
   title: siteConfig.seoTitle,
   description: siteConfig.seoDescription,
   keywords: [...siteConfig.seoKeywords],
+  alternates: {
+    canonical: "https://parfumelux.uz/",
+  },
   openGraph: {
     title: siteConfig.seoTitle,
     description: siteConfig.seoDescription,
+    url: siteConfig.siteUrl,
+    siteName: siteConfig.siteName,
+    images: [
+      {
+        url: "/hero.webp",
+        width: 1200,
+        height: 630,
+        alt: siteConfig.siteName,
+      },
+    ],
+    locale: "uz_UZ",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.seoTitle,
+    description: siteConfig.seoDescription,
+    images: ["/hero.webp"],
   },
   verification: {
     google: "3CAgz1XkqiojYhPFeqPz52IlpY03fJUlMzchSDJ8XcY",
@@ -56,6 +77,31 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
     title: siteConfig.siteName,
+  },
+};
+
+const onlineStoreSchema = {
+  "@context": "https://schema.org",
+  "@type": "OnlineStore",
+  "name": siteConfig.siteName,
+  "alternateName": ["Parfume Lux", "Elore Parfume", "Parfume Lux Toshkent"],
+  "url": siteConfig.siteUrl,
+  "logo": `${siteConfig.siteUrl}${siteConfig.logoMark}`,
+  "image": `${siteConfig.siteUrl}/hero.webp`,
+  "description": siteConfig.seoDescription,
+  "telephone": siteConfig.phone,
+  "currenciesAccepted": "UZS, USD",
+  "paymentAccepted": "Cash, Credit Card, Payme, Click, Uzum Nasiya",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": siteConfig.location,
+    "addressLocality": "Toshkent",
+    "addressCountry": "UZ",
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": `${siteConfig.siteUrl}/catalog?q={search_term_string}`,
+    "query-input": "required name=search_term_string",
   },
 };
 
@@ -72,6 +118,10 @@ export default function RootLayout({
       className={`${jakarta.variable} ${inter.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(onlineStoreSchema) }}
+        />
         <SettingsProvider>
           <I18nProvider>
             <CartProvider>

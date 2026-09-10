@@ -67,7 +67,6 @@ export default function Home() {
       />
       <Header />
       <main className="flex-1">
-        <h1 className="sr-only">Lux atir — original atirlar va parfyumeriya</h1>
         {/* Hero Section */}
         <HeroSection />
 

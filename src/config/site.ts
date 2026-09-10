@@ -6,10 +6,10 @@
  */
 export const siteConfig = {
   // ── Brend ────────────────────────────────────────
-  siteName: "Elore Parfume",
-  siteDescription: "Premium parfyumeriya — Original va Super Klon atirlar",
+  siteName: "Parfume Lux (Elore)",
+  siteDescription: "Premium parfyumeriya — Original va Super Klon atirlar do'koni",
   siteUrl: "https://parfumelux.uz",
-  logoInitial: "E",        // Rasm yuklanmasa ko'rinadigan harf
+  logoInitial: "P",        // Rasm yuklanmasa ko'rinadigan harf
   // Logotip loyiha ichida — sozlamalardagi havola faqat qo'shimcha.
   // Ilgari u faqat admin brauzerining localStorage'ida turardi va
   // mijozlarga umuman ko'rinmasdi.
@@ -31,26 +31,30 @@ export const siteConfig = {
   depositAmount: 605000, // Original atirlar uchun zaklad summasi (UZS)
 
   // ── SEO ──────────────────────────────────────────
-  seoTitle: "Elore Parfume — Toshkentda Original Atirlar va Super Klon Parfyumeriya Do'koni",
+  seoTitle: "Parfume Lux (Elore) — Toshkentda Original Atirlar va Super Klon Parfyumeriya",
   seoDescription:
-    "Premium original va eng sifatli super klon atirlarni hamyonbop narxlarda sotib oling. Toshkent va O'zbekiston bo'ylab tez yetkazib berish. Dior, Chanel, Tom Ford va boshqa brendlar.",
+    "Toshkentda 100% original va premium super klon atirlar do'koni. Tom Ford, Chanel, Dior, Creed va boshqa jahon brendlari. 0-0-6 muddatli to'lov va O'zbekiston bo'ylab tez yetkazib berish.",
   seoKeywords: [
+    "Parfume Lux",
+    "parfume lux",
+    "parfumelux.uz",
     "Elore Parfume",
     "elore parfume",
     "элор парфюм",
+    "парфюм люкс",
     "atir",
     "atirlar",
     "parfyumeriya",
     "parfyum",
     "Toshkent",
     "original atir",
-    "original atirlar",
+    "original atirlar toshkent",
     "super klon",
     "super clone",
     "atir do'koni",
     "duxi toshkent",
     "духи ташкент",
-    "купить духи",
+    "купить духи в ташкенте",
     "парфюмерия ташкент",
     "оригинальные духи",
     "atir narxlari",

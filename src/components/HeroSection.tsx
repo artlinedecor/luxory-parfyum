@@ -78,6 +78,7 @@ export default function HeroSection() {
           {t("hero_title_1")} <span className="italic">{t("hero_title_2")}</span>
           <br />
           {t("hero_title_3")}
+          <span className="sr-only"> — Toshkentda Original Atirlar va Brend Parfyumeriya Do&#39;koni | Parfume Lux (Elore)</span>
         </h1>
 
         <div {...rise(0.3)} className="hero-rise gold-hairline mx-auto mt-7 w-20" />
