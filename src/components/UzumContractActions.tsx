@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   contractId: number;
   /** cancel uchun kerak (paymart_client.order) */
   orderNo?: number;
+  /** uzum_contracts.status === "signed" — shartnoma imzolangan, holat yuklanguncha ko'rsatiladi. */
+  initiallySigned?: boolean;
 }
 
 const CONTRACT_STATUS: Record<number, { text: string; color: string }> = {
@@ -26,15 +28,17 @@ const CONTRACT_STATUS: Record<number, { text: string; color: string }> = {
  * bosgandan keyingina shartnoma AKTIV bo'ladi va tovarni berish mumkin.
  * Bu out-of-stock holatining oldini oladi.
  */
-export default function UzumContractActions({ contractId, orderNo }: Props) {
+export default function UzumContractActions({ contractId, orderNo, initiallySigned }: Props) {
   const [status, setStatus] = useState<number | null>(null);
   const [signed, setSigned] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const call = async (action: "status" | "confirm" | "cancel") => {
     setBusy(true);
     setMsg("");
+    setSessionExpired(false);
     try {
       const body: Record<string, unknown> = { action };
       if (action === "cancel") body.order = orderNo ?? contractId;
@@ -42,9 +46,20 @@ export default function UzumContractActions({ contractId, orderNo }: Props) {
 
       const r = await fetch("/api/uzumnasiya/contracts", {
         method: "POST",
+        // ⚠️ Sessiya cookie'si yuborilishi SHART — busiz admin
+        // tekshiruvidan o'tmay, tugma "ishlamayapti"dek ko'rinardi.
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+
+      if (r.status === 401) {
+        // Eski, tushunarsiz "⚠️ Ruxsat yo'q" o'rniga — aniq sabab va
+        // keyingi qadam. Bu holat sessiya muddati tugaganda yuz beradi.
+        setSessionExpired(true);
+        return;
+      }
+
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || "Xatolik");
 
@@ -64,7 +79,27 @@ export default function UzumContractActions({ contractId, orderNo }: Props) {
     }
   };
 
+  // Shartnoma imzolangan bo'lsa, holatni HAR SAFAR qo'lda tekshirish
+  // shart bo'lmasin — sahifa ochilganda o'zi yuklaydi.
+  useEffect(() => {
+    if (initiallySigned) call("status");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contractId]);
+
   const st = status !== null ? CONTRACT_STATUS[status] : null;
+
+  if (sessionExpired) {
+    return (
+      <div className="mt-2 p-2.5 rounded-lg bg-destructive/8 border border-destructive/25 space-y-1.5">
+        <p className="text-[11px] font-bold text-destructive">
+          Sessiya tugagan — qayta kiring
+        </p>
+        <a href="/login" className="text-[10px] text-destructive underline">
+          Kirish sahifasiga o&apos;tish
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-2 p-2.5 rounded-lg bg-[#6100FF]/8 border border-[#6100FF]/25 space-y-2">
@@ -72,6 +107,11 @@ export default function UzumContractActions({ contractId, orderNo }: Props) {
         <span className="text-[11px] font-bold text-[#a97bff]">
           Uzum Nasiya · #{contractId}
         </span>
+        {!st && busy && (
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-500/15 text-gray-400">
+            Yuklanmoqda...
+          </span>
+        )}
         {st && (
           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${st.color}`}>
             {st.text}

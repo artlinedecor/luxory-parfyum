@@ -27,15 +27,23 @@ async function call<T>(url: string, init?: RequestInit): Promise<T> {
   return j as T;
 }
 
-export type DashboardData<P = Record<string, unknown>, O = Record<string, unknown>, T = Record<string, unknown>> = {
+export type DashboardData<
+  P = Record<string, unknown>,
+  O = Record<string, unknown>,
+  T = Record<string, unknown>,
+  U = Record<string, unknown>
+> = {
   products: P[];
   orders: O[];
   transactions: T[];
+  uzumContracts: U[];
 };
 
 /** Barcha dashboard ma'lumotlari — bitta so'rovda. */
-export function dashLoad<P = never, O = never, T = never>(): Promise<DashboardData<P, O, T>> {
-  return call<DashboardData<P, O, T>>("/api/dashboard/data");
+export function dashLoad<P = never, O = never, T = never, U = never>(): Promise<
+  DashboardData<P, O, T, U>
+> {
+  return call<DashboardData<P, O, T, U>>("/api/dashboard/data");
 }
 
 type Values = Record<string, unknown>;

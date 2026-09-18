@@ -50,7 +50,8 @@ export interface Order {
   region: string;
   receipt_url?: string;
   order_type: "full_payment" | "deposit_50";
-  status: "pending" | "accepted" | "delivered" | "cancelled";
+  /** "processing" — Uzum Nasiya shartnomasi tasdiqlangan, jo'natishga tayyor. */
+  status: "pending" | "processing" | "accepted" | "delivered" | "cancelled";
   created_at: string;
 }
 

@@ -8,23 +8,42 @@ import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "
 import { trackDmConversion } from "@/lib/meta-tracker";
 import UzumContractActions from "@/components/UzumContractActions";
 
+/** `uzum_contracts` jadvalidan bitta qator (dashboard-data qaytargan shakli). */
+interface UzumContractRow {
+  contract_id: number;
+  order_row_id: string | null;
+  uzum_order_id: number | null;
+  status: string;
+}
+
 /**
  * Buyurtmadan Uzum Nasiya shartnoma ma'lumotini oladi.
- * Migratsiya bajarilgan bo'lsa — ustunlardan, aks holda items[0]._uzum dan.
+ *
+ * ⚠️ Bu yerda oldin `order.uzum_contract_id` ustuni yoki
+ * `items[0]._uzum` metama'lumoti tekshirilardi — ikkalasi ham ESKI
+ * sxema qoldig'i edi. `orders.uzum_contract_id` ustuni bazada UMUMAN
+ * YO'Q (tekshirildi), yangi buyurtmalar esa items ichida _uzum
+ * yozmaydi (pricing-server.ts PricedLine shakli). Natijada HAR BIR
+ * yangi Uzum buyurtmasida bu funksiya har doim `null` qaytarardi va
+ * "Tasdiqlash" tugmasi dashboard'da HECH QACHON ko'rinmasdi.
+ *
+ * Shartnoma endi alohida `uzum_contracts` jadvalida, `order_row_id`
+ * orqali bog'langan (audit D4) — shu yerdan qidiramiz.
  */
-function getUzumInfo(order: unknown): { contract_id: number; order?: number } | null {
-  const o = order as Record<string, unknown> | null;
-  if (!o) return null;
-  if (o.uzum_contract_id) {
-    return { contract_id: Number(o.uzum_contract_id), order: Number(o.uzum_order_id) || undefined };
-  }
-  const items = (o.items as { _uzum?: { contract_id: number; order?: number } }[]) || [];
-  const meta = items.map((i) => i?._uzum).find(Boolean);
-  return meta?.contract_id ? { contract_id: Number(meta.contract_id), order: Number(meta.order) || undefined } : null;
+function getUzumInfo(
+  orderId: string,
+  contracts: UzumContractRow[]
+): { contract_id: number; order?: number; status: string } | null {
+  const c = contracts.find((row) => row.order_row_id === orderId);
+  if (!c) return null;
+  return { contract_id: c.contract_id, order: c.uzum_order_id ?? undefined, status: c.status };
 }
 
 const statusLabels: Record<string, { text: string; color: string }> = {
   pending: { text: "Kutilmoqda", color: "text-yellow-400 bg-yellow-400/10 border border-yellow-400/20" },
+  // Uzum Nasiya shartnomasi tasdiqlangach avtomatik shu holatga o'tadi
+  // (uzum-order-sync.ts) — oddiy "Kutilmoqda"dan ajralib turishi uchun.
+  processing: { text: "Tasdiqlangan — jo'natish kerak", color: "text-[#a97bff] bg-[#6100FF]/10 border border-[#6100FF]/25" },
   accepted: { text: "Qabul qilindi", color: "text-blue-400 bg-blue-400/10 border border-blue-400/20" },
   delivered: { text: "Yetkazildi", color: "text-green-400 bg-green-400/10 border border-green-400/20" },
   cancelled: { text: "Bekor qilindi", color: "text-red-400 bg-red-400/10 border border-red-400/20" },
@@ -33,6 +52,7 @@ const statusLabels: Record<string, { text: string; color: string }> = {
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [uzumContracts, setUzumContracts] = useState<UzumContractRow[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showManualModal, setShowManualModal] = useState(false);
@@ -73,9 +93,10 @@ export default function OrdersPage() {
   const fetchOrders = useCallback(async () => {
     // Audit X7: admin tekshiruvi bo'lgan server route orqali.
     try {
-      const d = await dashLoad();
-      setOrders(d.orders as Order[]);
-      setProducts(d.products as Product[]);
+      const d = await dashLoad<Product, Order, Record<string, unknown>, UzumContractRow>();
+      setOrders(d.orders);
+      setProducts(d.products);
+      setUzumContracts(d.uzumContracts ?? []);
     } catch (e) {
       console.error("Buyurtmalarni yuklab bo'lmadi", e);
       alert(e instanceof Error ? e.message : "Ma'lumot yuklanmadi");
@@ -397,6 +418,7 @@ export default function OrdersPage() {
                   className={`text-[11px] font-bold px-3 py-1.5 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-gold/50 transition-colors ${status.color}`}
                 >
                   <option value="pending">Kutilmoqda</option>
+                  <option value="processing">Tasdiqlangan — jo&apos;natish kerak</option>
                   <option value="accepted">Qabul qilindi</option>
                   <option value="delivered">Yetkazildi</option>
                   <option value="cancelled">Bekor qilindi</option>
@@ -414,9 +436,13 @@ export default function OrdersPage() {
 
               {/* Uzum Nasiya shartnomasi (2-bosqichli tasdiqlash) */}
               {(() => {
-                const uz = getUzumInfo(item.parentOrder);
+                const uz = getUzumInfo(item.parentOrder.id, uzumContracts);
                 return uz ? (
-                  <UzumContractActions contractId={uz.contract_id} orderNo={uz.order} />
+                  <UzumContractActions
+                    contractId={uz.contract_id}
+                    orderNo={uz.order}
+                    initiallySigned={uz.status === "signed"}
+                  />
                 ) : null;
               })()}
             </div>
@@ -505,6 +531,7 @@ export default function OrdersPage() {
                           className={`text-xs font-semibold px-3 py-1.5 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gold/50 transition-colors ${status.color}`}
                         >
                           <option value="pending">Kutilmoqda</option>
+                          <option value="processing">Tasdiqlangan — jo&apos;natish kerak</option>
                           <option value="accepted">Qabul qilindi</option>
                           <option value="delivered">Yetkazildi</option>
                           <option value="cancelled">Bekor qilindi</option>

@@ -5,6 +5,7 @@ import {
   getAdminChatIds,
 } from "@/lib/telegram";
 import { confirmContract, cancelContract, uzumErrorPayload } from "@/lib/uzumnasiya";
+import { syncOrderAfterContractAction } from "@/lib/uzum-order-sync";
 
 export async function POST(req: NextRequest) {
   try {
@@ -52,8 +53,17 @@ export async function POST(req: NextRequest) {
 
       try {
         // confirm -> contract_id, cancel -> order (Uzum shunday talab qiladi)
-        if (isConfirm) await confirmContract(id);
-        else await cancelContract(id);
+        if (isConfirm) {
+          await confirmContract(id);
+          await syncOrderAfterContractAction({ contractId: id }, "confirm").catch((e) =>
+            console.error("[telegram-webhook] sync (confirm)", e)
+          );
+        } else {
+          await cancelContract(id);
+          await syncOrderAfterContractAction({ orderNo: id }, "cancel").catch((e) =>
+            console.error("[telegram-webhook] sync (cancel)", e)
+          );
+        }
 
         await answerCallback(cbId, isConfirm ? "Tasdiqlandi ✅" : "Bekor qilindi");
         if (chatId && messageId) {

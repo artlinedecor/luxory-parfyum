@@ -7,6 +7,7 @@ import {
   checkContractStatus,
   uzumErrorPayload,
 } from "@/lib/uzumnasiya";
+import { syncOrderAfterContractAction } from "@/lib/uzum-order-sync";
 
 /**
  * 4-bosqich: shartnomani boshqarish.
@@ -56,6 +57,12 @@ export async function POST(req: Request) {
         );
       }
       res = await cancelContract(id);
+      // ⚠️ Buyurtma qatorini ham moslashtiramiz — busiz Uzum tomonida
+      // bekor qilingan shartnoma bizning ro'yxatimizda "Kutilmoqda"
+      // bo'lib qolaverardi.
+      await syncOrderAfterContractAction({ orderNo: id }, "cancel").catch((e) =>
+        console.error("[uzum/contracts] sync (cancel)", e)
+      );
     } else {
       const id = Number(contract_id);
       if (!id) {
@@ -65,6 +72,11 @@ export async function POST(req: Request) {
         );
       }
       res = action === "confirm" ? await confirmContract(id) : await checkContractStatus(id);
+      if (action === "confirm") {
+        await syncOrderAfterContractAction({ contractId: id }, "confirm").catch((e) =>
+          console.error("[uzum/contracts] sync (confirm)", e)
+        );
+      }
     }
 
     return NextResponse.json({
