@@ -66,9 +66,8 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
       />
       <Header />
-      <main
-      <h1 className="sr-only">Original Atirlar va Parfyumeriya Kosmetikasi - Sifatli Mahsulotlar</h1>
- className="flex-1">
+      <main className="flex-1">
+        <h1 className="sr-only">Original Atirlar va Parfyumeriya Kosmetikasi - Sifatli Mahsulotlar</h1>
         {/* Hero Section */}
         <HeroSection />
 
