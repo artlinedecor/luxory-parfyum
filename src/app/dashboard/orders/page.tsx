@@ -39,6 +39,34 @@ function getUzumInfo(
   return { contract_id: c.contract_id, order: c.uzum_order_id ?? undefined, status: c.status };
 }
 
+/**
+ * Click orqali to'lov URINISHI muvaffaqiyatsiz bo'lgan buyurtmalarni
+ * belgilaydi — mijoz Click sahifasiga o'tgan (prepare chaqirilgan),
+ * lekin to'lovni yakunlamagan yoki Click uni rad etgan.
+ *
+ * ⚠️ Uzum Nasiya uchun bunday belgi YO'Q: agar mijoz OTP kiritmasdan
+ * modalni yopib chiqib ketsa, order UMUMAN yaratilmaydi (joriy
+ * arxitektura — /api/uzumnasiya/finalize faqat shartnoma imzolangach
+ * chaqiriladi), ya'ni hech qanday iz qolmaydi.
+ */
+function paymentAttemptLabel(order: unknown): { text: string; color: string } | null {
+  const o = order as Record<string, unknown> | null;
+  if (!o) return null;
+  if (o.payment_status === "waiting") {
+    return {
+      text: "Click: to'lov tugallanmadi",
+      color: "text-orange-400 bg-orange-400/10 border border-orange-400/20",
+    };
+  }
+  if (o.payment_status === "cancelled") {
+    return {
+      text: "Click: to'lov rad etildi",
+      color: "text-red-400 bg-red-400/10 border border-red-400/20",
+    };
+  }
+  return null;
+}
+
 const statusLabels: Record<string, { text: string; color: string }> = {
   pending: { text: "Kutilmoqda", color: "text-yellow-400 bg-yellow-400/10 border border-yellow-400/20" },
   // Uzum Nasiya shartnomasi tasdiqlangach avtomatik shu holatga o'tadi
@@ -410,6 +438,16 @@ export default function OrdersPage() {
                 )}
               </div>
 
+              {/* Click orqali urinilgan, lekin tugallanmagan to'lov */}
+              {(() => {
+                const pay = paymentAttemptLabel(item.parentOrder);
+                return pay ? (
+                  <div className={`text-[10px] font-bold px-2.5 py-1 rounded-full inline-block ${pay.color}`}>
+                    {pay.text}
+                  </div>
+                ) : null;
+              })()}
+
               {/* Status and Action bar */}
               <div className="flex items-center justify-between pt-3 border-t border-border/50">
                 <select
@@ -525,6 +563,14 @@ export default function OrdersPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        {(() => {
+                          const pay = paymentAttemptLabel(item.parentOrder);
+                          return pay ? (
+                            <span className={`text-[10px] font-bold px-2 py-1 rounded-full whitespace-nowrap ${pay.color}`}>
+                              {pay.text}
+                            </span>
+                          ) : null;
+                        })()}
                         <select
                           value={item.status}
                           onChange={(e) => handleStatusChange(item.orderId, e.target.value)}
