@@ -67,8 +67,20 @@ export default function Home() {
       />
       <Header />
       <main className="flex-1">
-        <h1 className="sr-only">Original Atirlar va Parfyumeriya Kosmetikasi - Sifatli Mahsulotlar</h1>
-        {/* Hero Section */}
+        {/*
+          ⚠️ SEO: bu yerda h1 QO'SHMANG. HeroSection.tsx ichida
+          allaqachon sahifaning yagona h1 tegi bor (matn + sr-only
+          kalit so'zlar). Ikkinchi h1 qo'shilsa — duplikat H1 xatosi.
+
+          Bu xato "AI Smart SEO Agent" (uzumbot.uz, GPT-4 asosida,
+          har 6 soatda ishlaydi) tomonidan ikki marta avtomatik
+          qo'shilgan edi (fbcb008, a0f72e3) — u HeroSection.tsx dagi
+          h1 ni ko'rmay, "h1 yo'q" deb xato xulosa chiqargan va uni
+          matn sifatida <main> tegi ICHIGA joylashtirib, JSX
+          sintaksisini ham buzgan (butun sayt bir hafta deploy
+          bo'lmadi). Bot yana ishga tushsa, xuddi shu xatoni yana
+          qilishi mumkin — shuning uchun bu ogohlantirish qoldirilgan.
+        */}
         <HeroSection />
 
         {/* Bo'lib to'lash taklifi — hero'dan keyingi asosiy blok */}
