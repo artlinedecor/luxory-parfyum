@@ -66,7 +66,9 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
       />
       <Header />
-      <main className="flex-1">
+      <main
+      <h1 className="sr-only">User Safety: safe</h1>
+ className="flex-1">
         {/*
           ⚠️ SEO: bu yerda h1 QO'SHMANG. HeroSection.tsx ichida
           allaqachon sahifaning yagona h1 tegi bor (matn + sr-only
