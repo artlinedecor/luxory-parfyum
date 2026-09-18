@@ -80,9 +80,23 @@ export async function POST(req: Request) {
     ];
 
     const ids = await getAdminChatIds();
-    for (const id of ids) await sendTelegram(id, text, buttons);
+    if (!ids.length) {
+      console.error("[uzum/notify] admin chat_id topilmadi — xabar hech kimga yuborilmadi", {
+        contract_id,
+      });
+    }
+    // ⚠️ Oldin `sent: ids.length` qaytarilardi — chaqiruv soniga qarab,
+    // haqiqiy Telegram natijasiga qaramasdan. Endi FAQAT chindan
+    // yetib borgan xabarlar sanaladi.
+    let delivered = 0;
+    for (const id of ids) {
+      if (await sendTelegram(id, text, buttons)) delivered++;
+    }
+    if (delivered === 0 && ids.length > 0) {
+      console.error("[uzum/notify] hech bir chatga yetib bormadi", { contract_id, tried: ids });
+    }
 
-    return NextResponse.json({ ok: true, sent: ids.length });
+    return NextResponse.json({ ok: true, sent: delivered, tried: ids.length });
   } catch (error) {
     console.error("Uzum telegram notify error:", error);
     return NextResponse.json({ ok: true, error: "notify_failed" });
