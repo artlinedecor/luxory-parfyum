@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { dashLoad } from "@/lib/dashboard-api";
 import { Order, Product, Transaction } from "@/lib/types";
+import { totalRevenueUzs, orderRevenueUzs } from "@/lib/accounting";
 
 const statusLabels: Record<string, { text: string; color: string }> = {
   pending: { text: "Kutilmoqda", color: "text-yellow-400 bg-yellow-400/10 border border-yellow-400/20" },
@@ -64,7 +65,7 @@ export default function DashboardPage() {
     const deliveredOrders = orders.filter(o => o.status === "delivered");
 
     // ── SOTUVLAR (faqat yetkazilgan buyurtmalar) ──
-    let totalSoldRevenue = 0;
+    const totalSoldRevenue = totalRevenueUzs(deliveredOrders);
     let totalSoldCOGS = 0;
     let totalSoldItems = 0;
     let totalPendingItems = 0;
@@ -72,7 +73,6 @@ export default function DashboardPage() {
     deliveredOrders.forEach(o => {
       if (o.items && Array.isArray(o.items)) {
         o.items.forEach(item => {
-          totalSoldRevenue += item.price_at_purchase * item.quantity;
           totalSoldCOGS += (costPriceMap[item.product_id] || 0) * item.quantity;
           totalSoldItems += item.quantity;
         });
@@ -113,7 +113,7 @@ export default function DashboardPage() {
 
     const recentOrders = orders.map(o => {
       const items = o.items || [];
-      const totalAmount = items.reduce((sum, item) => sum + (item.price_at_purchase * item.quantity), 0);
+      const totalAmount = orderRevenueUzs({ items });
 
       return {
         id: o.id,

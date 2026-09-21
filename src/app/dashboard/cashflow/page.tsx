@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Transaction, Order, Product } from "@/lib/types";
 import { dashLoad, dashInsert, dashDelete } from "@/lib/dashboard-api";
+import { totalRevenueUzs } from "@/lib/accounting";
 
 export default function CashflowPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -44,14 +45,17 @@ export default function CashflowPage() {
 
     // Savdodan tushgan jami summa (faqat yetkazilgan)
     const deliveredOrders = orders.filter(o => o.status === "delivered");
-    let totalSalesRevenue = 0;
+    // ⚠️ Audit: item.price_at_purchase * item.quantity to'g'ridan-to'g'ri
+    // ishlatilganda, price_at_purchase yo'q buyurtmalarda (Uzum/Click)
+    // NaN qaytarardi va butun yig'indini buzardi. Endi accounting.ts
+    // dagi yagona, NaN'dan himoyalangan hisoblash ishlatiladi.
+    const totalSalesRevenue = totalRevenueUzs(deliveredOrders);
     let totalCOGS = 0;
     let totalSoldItems = 0;
 
     deliveredOrders.forEach(o => {
       if (o.items && Array.isArray(o.items)) {
         o.items.forEach(item => {
-          totalSalesRevenue += item.price_at_purchase * item.quantity;
           totalCOGS += (costPriceMap[item.product_id] || 0) * item.quantity;
           totalSoldItems += item.quantity;
         });

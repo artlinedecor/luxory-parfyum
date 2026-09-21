@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Product, Order, Transaction } from "@/lib/types";
 import { dashLoad } from "@/lib/dashboard-api";
 import { useI18n } from "@/lib/i18n-context";
+import { totalRevenueUzs } from "@/lib/accounting";
 
 export default function AccountingPage() {
   const { lang } = useI18n();
@@ -100,7 +101,6 @@ export default function AccountingPage() {
 
     // ── SOTILGAN (Delivered Orders) ──────────────
     let totalSold = 0;
-    let totalSoldRevenue = 0;
     let totalSoldCOGS = 0; // Cost of goods sold
 
     const costPriceMap: Record<string, number> = {};
@@ -108,11 +108,17 @@ export default function AccountingPage() {
       costPriceMap[p.id] = (p as any).cost_price_usd || 0;
     });
 
-    orders.forEach(o => {
-      if (o.status === "delivered" && o.items && Array.isArray(o.items)) {
+    const deliveredOrders = orders.filter(o => o.status === "delivered");
+    // ⚠️ Audit: item.price_at_purchase * item.quantity to'g'ridan-to'g'ri
+    // ishlatilganda, price_at_purchase yo'q buyurtmalarda (Uzum/Click)
+    // NaN qaytarardi va butun yig'indini buzardi. Endi accounting.ts
+    // dagi yagona, NaN'dan himoyalangan hisoblash ishlatiladi.
+    const totalSoldRevenue = totalRevenueUzs(deliveredOrders);
+
+    deliveredOrders.forEach(o => {
+      if (o.items && Array.isArray(o.items)) {
         o.items.forEach(item => {
           totalSold += item.quantity;
-          totalSoldRevenue += item.price_at_purchase * item.quantity;
           totalSoldCOGS += (costPriceMap[item.product_id] || 0) * item.quantity;
         });
       }
