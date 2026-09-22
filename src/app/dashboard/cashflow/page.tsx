@@ -13,6 +13,7 @@ export default function CashflowPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [type, setType] = useState<"income" | "expense">("expense");
   const [amount, setAmount] = useState("");
+  const [expenseCategory, setExpenseCategory] = useState<"inventory" | "operating" | "">("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [activeView, setActiveView] = useState<"all" | "sales" | "expenses">("all");
@@ -123,9 +124,19 @@ export default function CashflowPage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (type === "expense" && !expenseCategory) {
+      alert("Iltimos, rasxod kategoriyasini tanlang: Tovar xaridi yoki Operatsion xarajat");
+      return;
+    }
+
     try {
       const data = await dashInsert("transactions", [
-        { type, amount: Number(amount), description },
+        {
+          type,
+          amount: Number(amount),
+          description,
+          expense_category: type === "expense" ? expenseCategory : null,
+        },
       ]);
 
       if (data && data[0]) {
@@ -136,6 +147,7 @@ export default function CashflowPage() {
       setIsModalOpen(false);
       setAmount("");
       setDescription("");
+      setExpenseCategory("");
     } catch (err) {
       console.error("Error saving transaction:", err);
       alert("Tranzaksiyani saqlashda xatolik yuz berdi!");
@@ -393,6 +405,31 @@ export default function CashflowPage() {
                 </button>
               </div>
 
+              {type === "expense" && (
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground uppercase tracking-wider">Kategoriya</label>
+                  <div className="flex gap-2 p-1 bg-secondary rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setExpenseCategory("inventory")}
+                      className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        expenseCategory === "inventory" ? "bg-orange-500/20 text-orange-400" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      Tovar xaridi
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExpenseCategory("operating")}
+                      className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        expenseCategory === "operating" ? "bg-red-500/20 text-red-400" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      Operatsion xarajat
+                    </button>
+                  </div>
+                </div>
+              )}
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground uppercase tracking-wider">Summa ($)</label>
                 <input required type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-lg font-bold text-foreground focus:outline-none focus:border-gold/50" />
