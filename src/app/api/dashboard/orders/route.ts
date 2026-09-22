@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/api-guard";
 import { serverSupabase } from "@/lib/supabase-server";
 import { computeOrderTotal } from "@/lib/pricing-server";
+import { orderRevenueUzs } from "@/lib/accounting";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
@@ -24,17 +25,15 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 /** Buyurtmaning summasi — kassa va tranzaksiyalar uchun. */
 function orderTotalAmount(order: OrderRow): number {
+  // ⚠️ total_amount ustuniga endi FAQAT so'm yoziladi (4-vazifa,
+  // 1-qadam). Shuning uchun uni to'g'ridan-to'g'ri ishonib bo'ladi —
+  // lekin ustun bo'sh/0 bo'lgan eski buyurtmalar uchun items dan
+  // qayta hisoblash kerak bo'lishi mumkin, shuning uchun accounting.ts
+  // dagi yagona, NaN'dan himoyalangan funksiyaga tayanamiz.
   if (order.total_amount != null && Number(order.total_amount) > 0) {
     return Number(order.total_amount);
   }
-  // Eski buyurtmalar: qatorlardan narx bo'yicha yig'amiz.
-  const items = order.items ?? [];
-  const sumDollar = items.reduce((s, i) => s + Number(i.price_at_purchase || 0) * Number(i.quantity || 0), 0);
-  if (sumDollar > 0) return sumDollar;
-  const sumUzs = items.reduce((s, i) => s + Number(i.price_uzs || 0) * Number(i.quantity || 0), 0);
-  if (sumUzs > 0) return sumUzs;
-  console.warn("[dashboard/orders] summani aniqlab bo'lmadi", { id: order.id });
-  return 0;
+  return orderRevenueUzs(order);
 }
 
 async function shiftStock(
@@ -156,7 +155,6 @@ export async function POST(req: Request) {
         };
       });
 
-      const totalDollars = lines.reduce((acc, l) => acc + l.price_at_purchase * l.quantity, 0);
       const totalUzs = lines.reduce((acc, l) => acc + l.price_uzs * l.quantity, 0);
 
       const orderStatus = status || "pending";
@@ -168,7 +166,11 @@ export async function POST(req: Request) {
         order_type: "full_payment",
         status: orderStatus,
         payment_status: orderStatus === "delivered" ? "paid" : "unpaid",
-        total_amount: totalDollars,
+        // ⚠️ SO'M yozilishi shart — bu ustun butun loyihada SO'M deb
+        // ishlatiladi (Click, Uzum Nasiya). Oldin bu yerda totalDollars
+        // yozilardi va tranzaksiyalar jadvalida $49, $52 kabi qiymatlar
+        // so'm sifatida saqlanib qolgandi.
+        total_amount: totalUzs,
       }).select().single();
 
       if (error || !created) throw new Error(`Buyurtma yaratilmadi: ${error?.message}`);
@@ -177,13 +179,13 @@ export async function POST(req: Request) {
         await shiftStock(supabase, lines, -1);
         const { error: tErr } = await supabase.from("transactions").insert({
           type: "income",
-          amount: totalDollars,
+          amount: totalUzs,
           description: `Buyurtma #${created.id.slice(0, 8)} yetkazildi (Qo'lda) - Daromad`,
         });
         if (tErr) throw new Error(`Daromad yozilmadi: ${tErr.message}`);
       }
 
-      return NextResponse.json({ order: created, total_dollars: totalDollars, total_uzs: totalUzs, lines });
+      return NextResponse.json({ order: created, total_uzs: totalUzs, lines });
     }
 
     throw new Error(`Noma'lum amal: ${action}`);
