@@ -88,8 +88,10 @@ export default function CashflowPage() {
     return {
       totalSalesRevenue,
       totalCOGS,
+      totalCOGSUzs,
       totalIncome,
       totalExpenses,
+      operatingExpensesUzs,
       kassaBalance,
       netProfit,
       incomeTransactions,
@@ -165,8 +167,9 @@ export default function CashflowPage() {
     // Summary
     csv += "XULOSA\n";
     csv += `Jami Savdo (Tushum),${accounting.totalSalesRevenue} so'm\n`;
-    csv += `Tan Narx (COGS),$${accounting.totalCOGS}\n`;
+    csv += `Tan Narx (COGS),$${accounting.totalCOGS} (${accounting.totalCOGSUzs} so'm)\n`;
     csv += `Jami Rasxodlar,$${accounting.totalExpenses}\n`;
+    csv += `Operatsion Rasxodlar (Sof Foydaga kiruvchi),${accounting.operatingExpensesUzs} so'm\n`;
     csv += `Sof Foyda,${accounting.netProfit} so'm\n`;
     csv += `Kassa Qoldigi,$${accounting.kassaBalance}\n\n`;
 
