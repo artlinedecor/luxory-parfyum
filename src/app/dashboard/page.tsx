@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { dashLoad } from "@/lib/dashboard-api";
 import { Order, Product, Transaction } from "@/lib/types";
-import { totalRevenueUzs, orderRevenueUzs } from "@/lib/accounting";
+import { totalRevenueUzs, orderRevenueUzs, usdToUzs } from "@/lib/accounting";
 
 const statusLabels: Record<string, { text: string; color: string }> = {
   pending: { text: "Kutilmoqda", color: "text-yellow-400 bg-yellow-400/10 border border-yellow-400/20" },
@@ -99,9 +99,20 @@ export default function DashboardPage() {
 
     const operatingExpenses = totalExpenses - capitalExpenses;
 
+    // ⚠️ Audit: totalSoldRevenue endi SO'M (accounting.ts), lekin
+    // totalSoldCOGS (cost_price_usd'dan) va operatingExpenses
+    // (tranzaksiyalar jadvalidan — bu yerga har doim $ kiritiladi,
+    // "Yangi Tranzaksiya" formasi "Summa ($)" deb belgilangan) DOLLARDA.
+    // So'mdan dollarni to'g'ridan-to'g'ri ayirish noto'g'ri (masshtab
+    // ~12100x farq qiladi) — Sof Foyda avval NaN edi, endi tuzatilgach
+    // ishonchsiz katta musbat son bo'lib qolardi. Ikkalasini ham so'mga
+    // aylantirib keyin ayiramiz.
+    const totalSoldCOGSUzs = usdToUzs(totalSoldCOGS);
+    const operatingExpensesUzs = usdToUzs(operatingExpenses);
+
     // SOF FOYDA = Savdo - Sotilgan tovarlarning tan narxi (COGS) - Operatsion Rasxodlar (target, chatgpt va h.k.)
     // Bu yerda wholesale tovar xaridlari (Tavar oldik) ayirilmaydi, chunki ular allaqachon Tan Narx (COGS) sifatida ayirilmoqda!
-    const netProfit = totalSoldRevenue - totalSoldCOGS - operatingExpenses;
+    const netProfit = totalSoldRevenue - totalSoldCOGSUzs - operatingExpensesUzs;
 
     // ── KASSA ─────────────────────────────────
     const kassaIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
@@ -204,7 +215,7 @@ export default function DashboardPage() {
 
             {/* Sof Foyda */}
             <div className="glass-card rounded-xl p-4 text-center space-y-1 border border-gold/20">
-              <p className={`text-2xl font-bold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.netProfit)}</p>
+              <p className={`text-2xl font-bold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(stats.netProfit)} so&apos;m</p>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Sof Foyda</p>
               <p className="text-[10px] text-muted-foreground">tan narx + oper. rasxod ayirilgan</p>
             </div>
@@ -232,7 +243,7 @@ export default function DashboardPage() {
             <div className="glass-card rounded-2xl p-6 space-y-4 bg-secondary/5 border border-secondary">
               <div className="flex items-center justify-between border-b border-border/50 pb-3">
                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">💰 Sof Foyda Tarkibi</h3>
-                <span className={`text-xl font-bold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.netProfit)}</span>
+                <span className={`text-xl font-bold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(stats.netProfit)} so&apos;m</span>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
@@ -241,15 +252,15 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Sotilganlar Tan Narxi (COGS)</span>
-                  <span className="text-orange-400 font-semibold">-${fmt(stats.totalSoldCOGS)}</span>
+                  <span className="text-orange-400 font-semibold">-{fmt(usdToUzs(stats.totalSoldCOGS))} so&apos;m</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Operatsion Rasxodlar (Target, ChatGPT...)</span>
-                  <span className="text-red-400 font-semibold">-${fmt(stats.operatingExpenses)}</span>
+                  <span className="text-red-400 font-semibold">-{fmt(usdToUzs(stats.operatingExpenses))} so&apos;m</span>
                 </div>
                 <div className="border-t border-border/50 pt-2 flex items-center justify-between text-sm font-bold">
                   <span className="text-foreground">= Sof Foyda</span>
-                  <span className={stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}>${fmt(stats.netProfit)}</span>
+                  <span className={stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}>{fmt(stats.netProfit)} so&apos;m</span>
                 </div>
               </div>
               <p className="text-[10px] text-muted-foreground leading-relaxed pt-1">
@@ -309,12 +320,12 @@ export default function DashboardPage() {
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Tan Narx (Tovar xaridi)</span>
-                  <span className="text-orange-400 font-semibold">${fmt(stats.totalSoldCOGS)}</span>
+                  <span className="text-orange-400 font-semibold">{fmt(usdToUzs(stats.totalSoldCOGS))} so&apos;m</span>
                 </div>
                 <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-1000"
-                    style={{ width: `${stats.totalSoldCOGS > 0 ? Math.min(100, (stats.totalSoldCOGS / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
+                    style={{ width: `${stats.totalSoldCOGS > 0 ? Math.min(100, (usdToUzs(stats.totalSoldCOGS) / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
                   />
                 </div>
               </div>
@@ -323,12 +334,12 @@ export default function DashboardPage() {
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Operatsion Rasxodlar (Target, ChatGPT...)</span>
-                  <span className="text-red-400 font-semibold">${fmt(stats.operatingExpenses)}</span>
+                  <span className="text-red-400 font-semibold">{fmt(usdToUzs(stats.operatingExpenses))} so&apos;m</span>
                 </div>
                 <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full transition-all duration-1000"
-                    style={{ width: `${stats.operatingExpenses > 0 ? Math.min(100, (stats.operatingExpenses / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
+                    style={{ width: `${stats.operatingExpenses > 0 ? Math.min(100, (usdToUzs(stats.operatingExpenses) / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
                   />
                 </div>
               </div>
@@ -337,7 +348,7 @@ export default function DashboardPage() {
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground font-semibold">Sof Foyda</span>
-                  <span className={`font-semibold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.netProfit)}</span>
+                  <span className={`font-semibold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(stats.netProfit)} so&apos;m</span>
                 </div>
                 <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
                   <div

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Transaction, Order, Product } from "@/lib/types";
 import { dashLoad, dashInsert, dashDelete } from "@/lib/dashboard-api";
-import { totalRevenueUzs } from "@/lib/accounting";
+import { totalRevenueUzs, usdToUzs } from "@/lib/accounting";
 
 export default function CashflowPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -76,8 +76,14 @@ export default function CashflowPage() {
       .reduce((s, t) => s + Number(t.amount), 0);
     const operatingExpenses = totalExpenses - capitalExpenses;
 
+    // ⚠️ Audit: totalSalesRevenue so'mda, totalCOGS (cost_price_usd) va
+    // operatingExpenses (tranzaksiyalar — har doim $ kiritiladi) dollarda.
+    // So'mga aylantirmasdan ayirsa Sof Foyda xato chiqadi.
+    const totalCOGSUzs = usdToUzs(totalCOGS);
+    const operatingExpensesUzs = usdToUzs(operatingExpenses);
+
     // Sof Foyda = Savdo - Tan narx - Operatsion Rasxodlar
-    const netProfit = totalSalesRevenue - totalCOGS - operatingExpenses;
+    const netProfit = totalSalesRevenue - totalCOGSUzs - operatingExpensesUzs;
 
     return {
       totalSalesRevenue,
@@ -161,7 +167,7 @@ export default function CashflowPage() {
     csv += `Jami Savdo (Tushum),${accounting.totalSalesRevenue} so'm\n`;
     csv += `Tan Narx (COGS),$${accounting.totalCOGS}\n`;
     csv += `Jami Rasxodlar,$${accounting.totalExpenses}\n`;
-    csv += `Sof Foyda,$${accounting.netProfit}\n`;
+    csv += `Sof Foyda,${accounting.netProfit} so'm\n`;
     csv += `Kassa Qoldigi,$${accounting.kassaBalance}\n\n`;
 
     // Savdo (Kirim) jadvali
@@ -251,7 +257,7 @@ export default function CashflowPage() {
         </div>
         <div className="glass-card rounded-xl p-5 border-l-4 border-l-green-500/50">
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Sof Foyda</p>
-          <p className={`text-2xl font-bold ${accounting.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(accounting.netProfit)}</p>
+          <p className={`text-2xl font-bold ${accounting.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(accounting.netProfit)} so&apos;m</p>
           <p className="text-[10px] text-muted-foreground mt-1">savdo − tan narx − rasxod</p>
         </div>
         <div className="glass-card rounded-xl p-5 border-l-4 border-l-gold/50">

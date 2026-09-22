@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Product, Order, Transaction } from "@/lib/types";
 import { dashLoad } from "@/lib/dashboard-api";
 import { useI18n } from "@/lib/i18n-context";
-import { totalRevenueUzs } from "@/lib/accounting";
+import { totalRevenueUzs, usdToUzs } from "@/lib/accounting";
 
 export default function AccountingPage() {
   const { lang } = useI18n();
@@ -134,7 +134,15 @@ export default function AccountingPage() {
       .reduce((s, t) => s + Number(t.amount), 0);
     const operatingExpense = kassaExpense - capitalExpense;
 
-    const realizedProfit = totalSoldRevenue - totalSoldCOGS - operatingExpense;
+    // ⚠️ Audit: totalSoldRevenue so'mda (accounting.ts), lekin
+    // totalSoldCOGS (cost_price_usd) va operatingExpense (tranzaksiyalar
+    // jadvali — "Yangi Tranzaksiya" formasi har doim $ da) dollarda.
+    // So'mga aylantirmasdan ayirsa, Sof Foyda ishonchsiz katta/xato son
+    // chiqadi (masshtab ~12100x farq qiladi).
+    const totalSoldCOGSUzs = usdToUzs(totalSoldCOGS);
+    const operatingExpenseUzs = usdToUzs(operatingExpense);
+
+    const realizedProfit = totalSoldRevenue - totalSoldCOGSUzs - operatingExpenseUzs;
     const savdoQoldiq = kassaIncome - kassaExpense;
 
     // ── UMUMIY BALANS ────────────────────────────
@@ -231,7 +239,7 @@ export default function AccountingPage() {
               </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-gold/60">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.netProfit}</p>
-                <p className={`text-2xl font-bold ${stats.realizedProfit >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>${fmt(stats.realizedProfit)}</p>
+                <p className={`text-2xl font-bold ${stats.realizedProfit >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>{fmt(stats.realizedProfit)} so&apos;m</p>
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { itemPriceUzs, orderRevenueUzs, totalRevenueUzs } from "./accounting";
+import { itemPriceUzs, orderRevenueUzs, totalRevenueUzs, usdToUzs } from "./accounting";
 
 describe("itemPriceUzs", () => {
   it("price_uzs mavjud bo'lsa — shuni qaytaradi", () => {
@@ -83,5 +83,24 @@ describe("totalRevenueUzs", () => {
 
   it("bo'sh ro'yxat uchun 0 qaytaradi", () => {
     expect(totalRevenueUzs([])).toBe(0);
+  });
+});
+
+describe("usdToUzs", () => {
+  // ⚠️ cost_price_usd (COGS) va tranzaksiyalar jadvalidagi rasxod
+  // yozuvlari ($ da kiritiladi) so'mdagi daromad bilan to'g'ridan-to'g'ri
+  // ayirilganda Sof Foyda xato chiqadi (masshtab ~12100x farq qiladi).
+  // Bu funksiya shu ikkalasini bitta valyutaga keltiradi.
+  it("dollar summasini 12100 ga ko'paytirib so'mga aylantiradi", () => {
+    expect(usdToUzs(45)).toBe(45 * 12100);
+  });
+
+  it("0 uchun 0 qaytaradi", () => {
+    expect(usdToUzs(0)).toBe(0);
+  });
+
+  it("noto'g'ri/undefined qiymat uchun NaN emas, 0 qaytaradi", () => {
+    expect(usdToUzs(undefined as any)).toBe(0);
+    expect(Number.isNaN(usdToUzs(undefined as any))).toBe(false);
   });
 });

@@ -14,7 +14,12 @@
  * 0 qaytaradi.
  */
 
-const USD_TO_UZS = 12100;
+export const USD_TO_UZS = 12100;
+
+/** Dollar summasini so'mga aylantiradi (masalan cost_price_usd yoki $-dagi rasxod tranzaksiyalari uchun). */
+export function usdToUzs(usd: number): number {
+  return (Number(usd) || 0) * USD_TO_UZS;
+}
 
 export interface OrderItemLike {
   product_id: string;
