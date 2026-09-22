@@ -219,7 +219,7 @@ export default function AccountingPage() {
               </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-green-500">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.revenue}</p>
-                <p className="text-2xl font-bold text-green-400">${fmt(stats.totalSoldRevenue)}</p>
+                <p className="text-2xl font-bold text-green-400">{fmt(stats.totalSoldRevenue)} so'm</p>
               </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-red-500">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.cogs}</p>

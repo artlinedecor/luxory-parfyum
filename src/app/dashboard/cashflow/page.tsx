@@ -158,7 +158,7 @@ export default function CashflowPage() {
 
     // Summary
     csv += "XULOSA\n";
-    csv += `Jami Savdo (Tushum),$${accounting.totalSalesRevenue}\n`;
+    csv += `Jami Savdo (Tushum),${accounting.totalSalesRevenue} so'm\n`;
     csv += `Tan Narx (COGS),$${accounting.totalCOGS}\n`;
     csv += `Jami Rasxodlar,$${accounting.totalExpenses}\n`;
     csv += `Sof Foyda,$${accounting.netProfit}\n`;
@@ -241,7 +241,7 @@ export default function CashflowPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="glass-card rounded-xl p-5 border-l-4 border-l-blue-500/50">
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Jami Savdo</p>
-          <p className="text-2xl font-bold text-blue-400">${fmt(accounting.totalSalesRevenue)}</p>
+          <p className="text-2xl font-bold text-blue-400">{fmt(accounting.totalSalesRevenue)} so'm</p>
           <p className="text-[10px] text-muted-foreground mt-1">{accounting.totalSoldItems} ta atir ({accounting.deliveredOrdersCount} ta buyurtma)</p>
         </div>
         <div className="glass-card rounded-xl p-5 border-l-4 border-l-red-500/50">

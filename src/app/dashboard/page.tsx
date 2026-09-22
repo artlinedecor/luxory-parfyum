@@ -183,7 +183,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {/* Jami Savdo */}
             <div className="glass-card rounded-xl p-4 text-center space-y-1">
-              <p className="text-2xl font-bold text-blue-400">${fmt(stats.totalSoldRevenue)}</p>
+              <p className="text-2xl font-bold text-blue-400">{fmt(stats.totalSoldRevenue)} so'm</p>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Jami Savdo</p>
               <p className="text-[10px] text-muted-foreground">yetkazilganlardan</p>
             </div>
@@ -237,7 +237,7 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Jami Savdo (Tushum)</span>
-                  <span className="text-blue-400 font-semibold">+${fmt(stats.totalSoldRevenue)}</span>
+                  <span className="text-blue-400 font-semibold">+{fmt(stats.totalSoldRevenue)} so'm</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Sotilganlar Tan Narxi (COGS)</span>
@@ -295,7 +295,7 @@ export default function DashboardPage() {
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Jami Savdo (Tushum)</span>
-                  <span className="text-blue-400 font-semibold">${fmt(stats.totalSoldRevenue)}</span>
+                  <span className="text-blue-400 font-semibold">{fmt(stats.totalSoldRevenue)} so'm</span>
                 </div>
                 <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
                   <div
@@ -479,7 +479,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex justify-between items-center pt-1 text-xs">
                       <span className="text-muted-foreground font-medium">Jami summa:</span>
-                      <span className="text-gold font-bold">${order.amount}</span>
+                      <span className="text-gold font-bold">{fmt(order.amount)} so'm</span>
                     </div>
                   </div>
                 );
@@ -519,7 +519,7 @@ export default function DashboardPage() {
                             ))}
                           </div>
                         </td>
-                        <td className="px-6 py-3 text-sm text-gold font-semibold whitespace-nowrap">${order.amount}</td>
+                        <td className="px-6 py-3 text-sm text-gold font-semibold whitespace-nowrap">{fmt(order.amount)} so'm</td>
                         <td className="px-6 py-3 whitespace-nowrap">
                           <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${status.color}`}>{status.text}</span>
                         </td>
