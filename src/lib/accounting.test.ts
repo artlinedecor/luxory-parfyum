@@ -54,6 +54,16 @@ describe("orderRevenueUzs", () => {
     };
     expect(orderRevenueUzs(order)).toBe(800000 + 2 * 45 * 12100);
   });
+
+  it("item.quantity yo'q (undefined) bo'lsa — NaN emas, 0 sifatida hisoblanadi", () => {
+    const order = {
+      items: [
+        { product_id: "p1", quantity: undefined as any, price_uzs: 800000 },
+      ],
+    };
+    expect(Number.isNaN(orderRevenueUzs(order))).toBe(false);
+    expect(orderRevenueUzs(order)).toBe(0);
+  });
 });
 
 describe("totalRevenueUzs", () => {

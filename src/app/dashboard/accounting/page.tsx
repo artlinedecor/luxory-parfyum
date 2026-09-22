@@ -158,7 +158,7 @@ export default function AccountingPage() {
     };
   }, [products, orders, transactions]);
 
-  const fmt = (n: number) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmt = (n: number) => n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   return (
     <div className="space-y-8 max-w-6xl pb-10">

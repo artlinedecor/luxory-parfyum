@@ -43,7 +43,7 @@ export function itemPriceUzs(item: OrderItemLike): number {
 /** Bitta buyurtmaning jami so'mdagi summasi. */
 export function orderRevenueUzs(order: OrderLike): number {
   const items = order.items ?? [];
-  return items.reduce((sum, item) => sum + itemPriceUzs(item) * item.quantity, 0);
+  return items.reduce((sum, item) => sum + itemPriceUzs(item) * (Number(item.quantity) || 0), 0);
 }
 
 /** Bir nechta buyurtmaning jami so'mdagi summasi. */
