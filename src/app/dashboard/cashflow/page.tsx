@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Transaction, Order, Product } from "@/lib/types";
 import { dashLoad, dashInsert, dashDelete } from "@/lib/dashboard-api";
-import { totalRevenueUzs, usdToUzs } from "@/lib/accounting";
+import { usdToUzs } from "@/lib/accounting";
 
 export default function CashflowPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -43,13 +43,22 @@ export default function CashflowPage() {
       costPriceMap[p.id] = (p as any).cost_price_usd || 0;
     });
 
-    // Savdodan tushgan jami summa (faqat yetkazilgan)
     const deliveredOrders = orders.filter(o => o.status === "delivered");
-    // ⚠️ Audit: item.price_at_purchase * item.quantity to'g'ridan-to'g'ri
-    // ishlatilganda, price_at_purchase yo'q buyurtmalarda (Uzum/Click)
-    // NaN qaytarardi va butun yig'indini buzardi. Endi accounting.ts
-    // dagi yagona, NaN'dan himoyalangan hisoblash ishlatiladi.
-    const totalSalesRevenue = totalRevenueUzs(deliveredOrders);
+
+    // Kassadagi tranzaksiyalar — YAGONA haqiqiy manba
+    // ⚠️ Har bir buyurtma "Yetkazildi" deb belgilanganda, aynan shu
+    // summada "income" tranzaksiyasi yoziladi (src/app/api/dashboard/orders/route.ts).
+    // "Jami Savdo" endi shu tranzaksiyalar yig'indisidan olinadi — buyurtma
+    // items'idan qayta hisoblanmaydi.
+    const incomeTransactions = transactions.filter(t => t.type === "income");
+    const expenseTransactions = transactions.filter(t => t.type === "expense");
+
+    const totalIncome = incomeTransactions.reduce((s, t) => s + Number(t.amount), 0);
+    const totalExpenses = expenseTransactions.reduce((s, t) => s + Number(t.amount), 0);
+    const kassaBalance = totalIncome - totalExpenses;
+
+    // Savdodan tushgan jami summa (faqat yetkazilgan)
+    const totalSalesRevenue = totalIncome;
     let totalCOGS = 0;
     let totalSoldItems = 0;
 
@@ -61,14 +70,6 @@ export default function CashflowPage() {
         });
       }
     });
-
-    // Kassadagi tranzaksiyalar
-    const incomeTransactions = transactions.filter(t => t.type === "income");
-    const expenseTransactions = transactions.filter(t => t.type === "expense");
-
-    const totalIncome = incomeTransactions.reduce((s, t) => s + Number(t.amount), 0);
-    const totalExpenses = expenseTransactions.reduce((s, t) => s + Number(t.amount), 0);
-    const kassaBalance = totalIncome - totalExpenses;
 
     // Ajratib olamiz: tovar xaridi/cargo (capital) va operatsion xarajatlar (operating)
     const capitalExpenses = expenseTransactions

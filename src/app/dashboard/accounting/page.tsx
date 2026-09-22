@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Product, Order, Transaction } from "@/lib/types";
 import { dashLoad } from "@/lib/dashboard-api";
 import { useI18n } from "@/lib/i18n-context";
-import { totalRevenueUzs, usdToUzs } from "@/lib/accounting";
+import { usdToUzs } from "@/lib/accounting";
 
 export default function AccountingPage() {
   const { lang } = useI18n();
@@ -109,11 +109,17 @@ export default function AccountingPage() {
     });
 
     const deliveredOrders = orders.filter(o => o.status === "delivered");
-    // ⚠️ Audit: item.price_at_purchase * item.quantity to'g'ridan-to'g'ri
-    // ishlatilganda, price_at_purchase yo'q buyurtmalarda (Uzum/Click)
-    // NaN qaytarardi va butun yig'indini buzardi. Endi accounting.ts
-    // dagi yagona, NaN'dan himoyalangan hisoblash ishlatiladi.
-    const totalSoldRevenue = totalRevenueUzs(deliveredOrders);
+
+    // ── KASSA (Transactions) — YAGONA haqiqiy manba ──
+    // ⚠️ Har bir buyurtma "Yetkazildi" deb belgilanganda, aynan shu
+    // summada "income" tranzaksiyasi yoziladi (src/app/api/dashboard/orders/route.ts).
+    // "Jami Savdo" endi shu tranzaksiyalar yig'indisidan olinadi — buyurtma
+    // items'idan qayta hisoblanmaydi.
+    const kassaIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
+    const kassaExpense = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
+    const kassaBalance = kassaIncome - kassaExpense;
+
+    const totalSoldRevenue = kassaIncome;
 
     deliveredOrders.forEach(o => {
       if (o.items && Array.isArray(o.items)) {
@@ -123,11 +129,6 @@ export default function AccountingPage() {
         });
       }
     });
-
-    // ── KASSA (Transactions) ─────────────────────
-    const kassaIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
-    const kassaExpense = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
-    const kassaBalance = kassaIncome - kassaExpense;
 
     const capitalExpense = transactions
       .filter(t => t.type === "expense" && t.description && /tavar|tovar|mahsulot|xarid|oldik|yulkira|cargo|kargo|turkiya|prixod/i.test(t.description))

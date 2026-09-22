@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { dashLoad } from "@/lib/dashboard-api";
 import { Order, Product, Transaction } from "@/lib/types";
-import { totalRevenueUzs, orderRevenueUzs, usdToUzs } from "@/lib/accounting";
+import { orderRevenueUzs, usdToUzs } from "@/lib/accounting";
 
 const statusLabels: Record<string, { text: string; color: string }> = {
   pending: { text: "Kutilmoqda", color: "text-yellow-400 bg-yellow-400/10 border border-yellow-400/20" },
@@ -64,8 +64,17 @@ export default function DashboardPage() {
     const pendingOrdersCount = orders.filter(o => o.status === "pending" || o.status === "accepted").length;
     const deliveredOrders = orders.filter(o => o.status === "delivered");
 
+    // ── KASSA (tranzaksiyalar jadvali — YAGONA haqiqiy manba) ──
+    // ⚠️ Har bir buyurtma "Yetkazildi" deb belgilanganda, aynan shu
+    // summada "income" tranzaksiyasi yoziladi (src/app/api/dashboard/orders/route.ts).
+    // "Jami Savdo" endi shu tranzaksiyalar yig'indisidan olinadi — buyurtma
+    // items'idan qayta hisoblanmaydi. Ikkala usul ham to'g'ri hisoblasa bir
+    // xil natija beradi, lekin tranzaksiyalar — kassaning o'zi, "prikhod"
+    // yozilgan joy — shuning uchun bu yagona ishonchli manba deb belgilandi.
+    const kassaIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
+
     // ── SOTUVLAR (faqat yetkazilgan buyurtmalar) ──
-    const totalSoldRevenue = totalRevenueUzs(deliveredOrders);
+    const totalSoldRevenue = kassaIncome;
     let totalSoldCOGS = 0;
     let totalSoldItems = 0;
     let totalPendingItems = 0;
@@ -115,7 +124,6 @@ export default function DashboardPage() {
     const netProfit = totalSoldRevenue - totalSoldCOGSUzs - operatingExpensesUzs;
 
     // ── KASSA ─────────────────────────────────
-    const kassaIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
     const kassaExpense = totalExpenses;
     const kassaBalance = kassaIncome - kassaExpense;
 
