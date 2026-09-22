@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Unit tests
+        run: npx vitest run
+
+      - name: Production build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ADMIN_SESSION_SECRET: ${{ secrets.ADMIN_SESSION_SECRET }}
+          INTERNAL_API_SECRET: ${{ secrets.INTERNAL_API_SECRET }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          NEXT_PUBLIC_CLICK_SERVICE_ID: ${{ secrets.NEXT_PUBLIC_CLICK_SERVICE_ID }}
+          NEXT_PUBLIC_CLICK_MERCHANT_ID: ${{ secrets.NEXT_PUBLIC_CLICK_MERCHANT_ID }}
+          CLICK_SERVICE_ID: ${{ secrets.CLICK_SERVICE_ID }}
+          CLICK_SECRET_KEY: ${{ secrets.CLICK_SECRET_KEY }}
+          CLICK_MERCHANT_USER_ID: ${{ secrets.CLICK_MERCHANT_USER_ID }}
+          UZUM_PARTNER_TOKEN: ${{ secrets.UZUM_PARTNER_TOKEN }}
+          NEXT_PUBLIC_UZUM_ENABLED: ${{ secrets.NEXT_PUBLIC_UZUM_ENABLED }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
