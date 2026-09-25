@@ -51,6 +51,24 @@ export default function CartPage() {
   const [dynPaymentCardHolder, setDynPaymentCardHolder] = useState<string>(siteConfig.paymentCardHolder);
   const [dynTelegramAdminUsername, setDynTelegramAdminUsername] = useState<string>(siteConfig.telegramAdminUsername);
 
+  // Atir sahifasidagi "Bo'lib to'lash" / "Karta bilan" → /cart?pay=uzum|card.
+  // Mijoz qayerdan davom etishini bilsin: birinchi bo'sh maydonga fokus.
+  const [payHint, setPayHint] = useState<"uzum" | "card" | null>(null);
+  useEffect(() => {
+    const pay = new URLSearchParams(window.location.search).get("pay");
+    if (pay !== "uzum" && pay !== "card") return;
+    const timer = window.setTimeout(() => {
+      setPayHint(pay);
+      const empty = ["client-name", "client-phone", "client-region", "client-address"]
+        .map((id) => document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null)
+        .find((el) => el && !el.value);
+      const target = empty ?? document.getElementById(pay === "uzum" ? "uzum-checkout-btn" : "checkout-btn");
+      target?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (empty) empty.focus({ preventScroll: true });
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     const s = localStorage.getItem("shop_settings");
     if (s) {
@@ -452,17 +470,26 @@ export default function CartPage() {
               )}
             </button>
 
+            {payHint && (
+              <p className="text-xs text-muted-foreground text-center">
+                {payHint === "uzum"
+                  ? "Ma'lumotlarni to'ldiring va binafsha «Uzum Nasiya — bo'lib to'lash» tugmasini bosing"
+                  : "Ma'lumotlarni to'ldiring va buyurtmani tasdiqlang"}
+              </p>
+            )}
+
             {/* Uzum Nasiya Checkout Button — faqat kalit sozlanganda ko'rinadi */}
             {process.env.NEXT_PUBLIC_UZUM_ENABLED === "true" && (
             <button
               id="uzum-checkout-btn"
               onClick={handleUzumCheckout}
               disabled={loading || !clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion}
-              className="btn btn-uzum btn-block
+              className={`btn btn-uzum btn-block
                          hover:bg-[#5000E0] active:scale-[0.98] transition-all duration-300
                          shadow-lg shadow-[#6100FF]/25
                          disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
-                         flex items-center justify-center gap-2 mt-2"
+                         flex items-center justify-center gap-2 mt-2
+                         ${payHint === "uzum" ? "ring-2 ring-[#6100FF]/35 ring-offset-2 ring-offset-background" : ""}`}
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
