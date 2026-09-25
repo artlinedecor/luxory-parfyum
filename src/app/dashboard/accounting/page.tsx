@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import { Product, Order, Transaction } from "@/lib/types";
 import { dashLoad } from "@/lib/dashboard-api";
 import { useI18n } from "@/lib/i18n-context";
-import { usdToUzs } from "@/lib/accounting";
+import { usdToUzs, summarizeFinances } from "@/lib/accounting";
+import { priceOfProductUzs } from "@/lib/pricing-server";
 
 export default function AccountingPage() {
   const { lang } = useI18n();
@@ -18,7 +19,7 @@ export default function AccountingPage() {
     subtitle: "Склад, продажи, касса и общее финансовое состояние — всё в одном месте",
     stockSection: "Состояние Склада",
     totalStock: "Общий Остаток",
-    invested: "Вложено",
+    invested: "Себестоимость склада",
     ta: "шт",
     revenueIfSold: "Сумма при продаже",
     expectedProfit: "Ожидаемая Прибыль",
@@ -30,11 +31,11 @@ export default function AccountingPage() {
     savdoQoldiq: "Остаток Продаж",
     tableSection: "Таблица Товаров (Подробно)",
     name: "Название",
-    sellPrice: "Цена ($)",
+    sellPrice: "Цена на сайте",
     stock: "Остаток",
-    investedCol: "Вложено ($)",
-    revenueCol: "Выручка ($)",
-    profitCol: "Прибыль ($)",
+    investedCol: "Себестоимость",
+    revenueCol: "При продаже",
+    profitCol: "Прибыль",
     noItems: "Нет товаров на складе",
     total: "ИТОГО",
   } : {
@@ -42,7 +43,7 @@ export default function AccountingPage() {
     subtitle: "Ombor, sotuvlar, kassa va umumiy moliyaviy holat — barchasi bitta joyda",
     stockSection: "Ombor Holati",
     totalStock: "Jami Qoldiq",
-    invested: "Tikilgan pul",
+    invested: "Ombor tan narxi",
     ta: "ta",
     revenueIfSold: "Sotilgandagi Summa",
     expectedProfit: "Kutilayotgan Foyda",
@@ -54,11 +55,11 @@ export default function AccountingPage() {
     savdoQoldiq: "Savdo Qoldig'i",
     tableSection: "Tovarlar Jadvali (Batafsil)",
     name: "Nomi",
-    sellPrice: "Sotish Narxi ($)",
+    sellPrice: "Saytdagi narx",
     stock: "Qoldiq",
-    investedCol: "Tikilgan Pul ($)",
-    revenueCol: "Sotilgandagi ($)",
-    profitCol: "Foyda ($)",
+    investedCol: "Tan narxi",
+    revenueCol: "Sotilgandagi",
+    profitCol: "Foyda",
     noItems: "Omborda tovar yo'q",
     total: "JAMI",
   };
@@ -81,99 +82,26 @@ export default function AccountingPage() {
   }, []);
 
   const stats = useMemo(() => {
-    // ── OMBOR (Stock) ────────────────────────────
-    let totalStock = 0;
-    let totalCostInvested = 0;   // Tikilgan pul (tan narxi × qoldiq)
-    let expectedRevenue = 0;      // Sotilganda bo'ladigan jami summa (narx × qoldiq)
-    let expectedProfit = 0;       // Kutilayotgan foyda (revenue - cost)
-
-    products.forEach((p) => {
-      const stock = p.stock || 0;
-      const price = p.price_usd || 0;
-      const costPrice = (p as any).cost_price_usd || 0;
-
-      totalStock += stock;
-      totalCostInvested += stock * costPrice;
-      expectedRevenue += stock * price;
-    });
-
-    expectedProfit = expectedRevenue - totalCostInvested;
-
-    // ── SOTILGAN (Delivered Orders) ──────────────
-    let totalSold = 0;
-    let totalSoldCOGS = 0; // Cost of goods sold
-
-    const costPriceMap: Record<string, number> = {};
-    products.forEach(p => {
-      costPriceMap[p.id] = (p as any).cost_price_usd || 0;
-    });
-
     const deliveredOrders = orders.filter(o => o.status === "delivered");
+    const fin = summarizeFinances({ transactions, deliveredOrders, products });
 
-    // ── KASSA (Transactions) — YAGONA haqiqiy manba ──
-    // ⚠️ Har bir buyurtma "Yetkazildi" deb belgilanganda, aynan shu
-    // summada "income" tranzaksiyasi yoziladi (src/app/api/dashboard/orders/route.ts).
-    // "Jami Savdo" endi shu tranzaksiyalar yig'indisidan olinadi — buyurtma
-    // items'idan qayta hisoblanmaydi.
-    const kassaIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
-    const kassaExpense = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
-    const kassaBalance = kassaIncome - usdToUzs(kassaExpense);
+    // Omborni sotsak qancha tushadi — saytdagi haqiqiy narx bilan.
+    let expectedSalesUzs = 0;
+    for (const p of products) {
+      const stock = p.stock || 0;
+      if (stock > 0) expectedSalesUzs += stock * priceOfProductUzs(p);
+    }
 
-    const totalSoldRevenue = kassaIncome;
+    const totalSold = deliveredOrders.reduce(
+      (sum, o) => sum + (o.items ?? []).reduce((acc, i) => acc + (Number(i.quantity) || 0), 0),
+      0
+    );
 
-    deliveredOrders.forEach(o => {
-      if (o.items && Array.isArray(o.items)) {
-        o.items.forEach(item => {
-          totalSold += item.quantity;
-          totalSoldCOGS += (costPriceMap[item.product_id] || 0) * item.quantity;
-        });
-      }
-    });
-
-    // ⚠️ Ilgari regex bilan taxmin qilinardi — endi admin "Yangi
-    // Tranzaksiya" formasida ANIQ tanlagan kategoriyaga tayanamiz.
-    const capitalExpense = transactions
-      .filter(t => t.type === "expense" && t.expense_category === "inventory")
-      .reduce((s, t) => s + Number(t.amount), 0);
-    const operatingExpense = kassaExpense - capitalExpense;
-
-    // ⚠️ Audit: totalSoldRevenue so'mda (accounting.ts), lekin
-    // totalSoldCOGS (cost_price_usd) va operatingExpense (tranzaksiyalar
-    // jadvali — "Yangi Tranzaksiya" formasi har doim $ da) dollarda.
-    // So'mga aylantirmasdan ayirsa, Sof Foyda ishonchsiz katta/xato son
-    // chiqadi (masshtab ~12100x farq qiladi).
-    const totalSoldCOGSUzs = usdToUzs(totalSoldCOGS);
-    const operatingExpenseUzs = usdToUzs(operatingExpense);
-
-    const realizedProfit = totalSoldRevenue - totalSoldCOGSUzs - operatingExpenseUzs;
-    // ⚠️ kassaIncome so'mda, kassaExpense dollarda — usdToUzs bilan
-    // aylantirmasdan ayirilsa, Savdo Qoldig'i deyarli o'zgarmagandek
-    // ko'rinardi (kichik $ summa millionlab so'm oldida yo'qolib ketadi).
-    const savdoQoldiq = kassaIncome - usdToUzs(kassaExpense);
-
-    // ── UMUMIY BALANS ────────────────────────────
-    // Ombordagi mol qiymati + Kassa qoldig'i
-    const totalAssets = totalCostInvested + kassaBalance;
-
-    return {
-      totalStock,
-      totalCostInvested,
-      expectedRevenue,
-      expectedProfit,
-      totalSold,
-      totalSoldRevenue,
-      totalSoldCOGS,
-      realizedProfit,
-      capitalExpense,
-      savdoQoldiq,
-      kassaIncome,
-      kassaExpense,
-      kassaBalance,
-      totalAssets,
-    };
+    return { fin, expectedSalesUzs, expectedProfitUzs: expectedSalesUzs - fin.warehouseUzs, totalSold };
   }, [products, orders, transactions]);
 
   const fmt = (n: number) => n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const inStock = products.filter(p => (p.stock || 0) > 0);
 
   return (
     <div className="space-y-8 max-w-6xl pb-10">
@@ -205,16 +133,16 @@ export default function AccountingPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-blue-500">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.totalStock}</p>
-                <p className="text-2xl font-bold text-foreground">{stats.totalStock.toLocaleString()} <span className="text-sm text-muted-foreground font-normal">{L.ta}</span></p>
-                <p className="text-[10px] text-red-400 mt-1 font-medium">{L.invested}: ${fmt(stats.totalCostInvested)}</p>
+                <p className="text-2xl font-bold text-foreground">{stats.fin.warehouseItems.toLocaleString()} <span className="text-sm text-muted-foreground font-normal">{L.ta}</span></p>
+                <p className="text-[10px] text-red-400 mt-1 font-medium">{L.invested}: {fmt(stats.fin.warehouseUzs)} so&apos;m</p>
               </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-green-500">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.revenueIfSold}</p>
-                <p className="text-2xl font-bold text-green-400">${fmt(stats.expectedRevenue)}</p>
+                <p className="text-2xl font-bold text-green-400">{fmt(stats.expectedSalesUzs)} so&apos;m</p>
               </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-gold/60">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.expectedProfit}</p>
-                <p className="text-2xl font-bold text-gradient-gold">${fmt(stats.expectedProfit)}</p>
+                <p className="text-2xl font-bold text-gradient-gold">{fmt(stats.expectedProfitUzs)} so&apos;m</p>
               </div>
             </div>
           </div>
@@ -227,34 +155,46 @@ export default function AccountingPage() {
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-green-400"><path strokeLinecap="round" strokeLinejoin="round" d="M16 3h5v5M8 3H3v5M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3m12 6 6-6" /></svg>
               {L.salesSection}
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-purple-500">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.soldItems}</p>
-                <p className="text-2xl font-bold text-foreground">{stats.totalSold.toLocaleString()} <span className="text-sm text-muted-foreground font-normal">{L.ta}</span></p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{lang === "ru" ? "Вложенный капитал" : "Tikilgan pul (sarmoya)"}</p>
+                <p className={"text-xl lg:text-2xl font-bold break-words " + ("text-purple-400")}>{fmt(stats.fin.capitalUzs)} so&apos;m</p>
               </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-green-500">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.revenue}</p>
-                <p className="text-2xl font-bold text-green-400">{fmt(stats.totalSoldRevenue)} so'm</p>
+                <p className={"text-xl lg:text-2xl font-bold break-words " + ("text-green-400")}>{fmt(stats.fin.salesUzs)} so&apos;m</p>
+              </div>
+              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-orange-500">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{lang === "ru" ? "Закупка товара" : "Tovar xaridi"}</p>
+                <p className={"text-xl lg:text-2xl font-bold break-words " + ("text-orange-400")}>{fmt(stats.fin.inventoryPurchasesUzs)} so&apos;m</p>
+              </div>
+              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-red-500">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{lang === "ru" ? "Операционные расходы" : "Operatsion rasxod"}</p>
+                <p className={"text-xl lg:text-2xl font-bold break-words " + ("text-red-400")}>{fmt(stats.fin.operatingExpensesUzs)} so&apos;m</p>
               </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-red-500">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.cogs}</p>
-                <p className="text-2xl font-bold text-red-400">${fmt(stats.totalSoldCOGS)}</p>
-              </div>
-              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-orange-500">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Tikilgan Pul</p>
-                <p className="text-2xl font-bold text-orange-400">{fmt(usdToUzs(stats.capitalExpense))} so&apos;m</p>
-              </div>
-              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-blue-500">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.savdoQoldiq}</p>
-                <p className={`text-2xl font-bold ${stats.savdoQoldiq >= 0 ? 'text-blue-400' : 'text-red-400'}`}>{fmt(stats.savdoQoldiq)} so&apos;m</p>
+                <p className={"text-xl lg:text-2xl font-bold break-words " + ("text-red-400")}>{fmt(stats.fin.cogsUzs)} so&apos;m</p>
               </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-gold/60">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.netProfit}</p>
-                <p className={`text-2xl font-bold ${stats.realizedProfit >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>{fmt(stats.realizedProfit)} so&apos;m</p>
+                <p className={"text-xl lg:text-2xl font-bold break-words " + (stats.fin.netProfitUzs >= 0 ? "text-gradient-gold" : "text-red-400")}>{fmt(stats.fin.netProfitUzs)} so&apos;m</p>
+              </div>
+              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-blue-500">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{lang === "ru" ? "Касса" : "Kassa"}</p>
+                <p className={"text-xl lg:text-2xl font-bold break-words " + (stats.fin.cashUzs >= 0 ? "text-blue-400" : "text-red-400")}>{fmt(stats.fin.cashUzs)} so&apos;m</p>
+              </div>
+              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-gold/60">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{lang === "ru" ? "Всего активов" : "Jami boylik"}</p>
+                <p className={"text-xl lg:text-2xl font-bold break-words " + ("text-gradient-gold")}>{fmt(stats.fin.totalWorthUzs)} so&apos;m</p>
               </div>
             </div>
+            <p className="text-[10px] text-muted-foreground mt-2">
+              {lang === "ru"
+                ? "Фактическая прибыль (активы − капитал): " + fmt(stats.fin.realProfitUzs) + " сум · Расхождение склада: " + fmt(stats.fin.warehouseGapUzs) + " сум"
+                : "Haqiqiy foyda (jami boylik − tikilgan pul): " + fmt(stats.fin.realProfitUzs) + " so'm · Ombor sverka farqi: " + fmt(stats.fin.warehouseGapUzs) + " so'm"}
+            </p>
           </div>
-
 
           {/* ═══════════════════════════════════════════════════════ */}
           {/* SECTION 4: TOVARLAR JADVALI                           */}
@@ -279,7 +219,7 @@ export default function AccountingPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {products.length === 0 ? (
+                    {inStock.length === 0 ? (
                       <tr>
                         <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground text-sm">
                           {L.noItems}
@@ -287,10 +227,10 @@ export default function AccountingPage() {
                       </tr>
                     ) : (
                       <>
-                        {products.map((product, index) => {
+                        {inStock.map((product, index) => {
                           const stock = product.stock || 0;
-                          const price = product.price_usd || 0;
-                          const costPrice = (product as any).cost_price_usd || 0;
+                          const price = priceOfProductUzs(product);
+                          const costPrice = usdToUzs((product as { cost_price_usd?: number }).cost_price_usd || 0);
                           const invested = stock * costPrice;
                           const revenue = stock * price;
                           const profit = revenue - invested;
@@ -300,19 +240,19 @@ export default function AccountingPage() {
                               <td className="px-4 py-3 text-sm font-medium text-foreground max-w-[200px] truncate" title={product.title}>
                                 {lang === "ru" && product.title_ru ? product.title_ru : product.title}
                               </td>
-                              <td className="px-4 py-3 text-sm text-foreground text-right">${fmt(price)}</td>
+                              <td className="px-4 py-3 text-sm text-foreground text-right">{fmt(price)} so&apos;m</td>
                               <td className="px-4 py-3 text-sm text-right">
                                 <span className={`font-semibold px-2.5 py-1 rounded-full text-xs ${stock > 0 ? 'bg-blue-500/10 text-blue-400' : 'bg-red-500/10 text-red-400'}`}>
                                   {stock} ta
                                 </span>
                               </td>
                               <td className="px-4 py-3 text-right">
-                                <span className="text-sm text-red-400 font-semibold">${fmt(invested)}</span>
+                                <span className="text-sm text-red-400 font-semibold">{fmt(invested)} so&apos;m</span>
                                 <span className="block text-[10px] text-muted-foreground">({fmt(costPrice)} × {stock})</span>
                               </td>
-                              <td className="px-4 py-3 text-sm text-green-400 text-right font-semibold">${fmt(revenue)}</td>
+                              <td className="px-4 py-3 text-sm text-green-400 text-right font-semibold">{fmt(revenue)} so&apos;m</td>
                               <td className={`px-4 py-3 text-sm font-bold text-right ${profit >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>
-                                ${fmt(profit)}
+                                {fmt(profit)} so&apos;m
                               </td>
                             </tr>
                           );
@@ -321,10 +261,10 @@ export default function AccountingPage() {
                         <tr className="bg-secondary/40 border-t-2 border-gold/30">
                           <td className="px-4 py-4 text-sm font-bold text-foreground" colSpan={2}>{L.total}</td>
                           <td className="px-4 py-4 text-sm text-foreground text-right font-bold">—</td>
-                          <td className="px-4 py-4 text-sm text-blue-400 text-right font-bold">{stats.totalStock} {L.ta}</td>
-                          <td className="px-4 py-4 text-sm text-red-400 text-right font-bold">${fmt(stats.totalCostInvested)}</td>
-                          <td className="px-4 py-4 text-sm text-green-400 text-right font-bold">${fmt(stats.expectedRevenue)}</td>
-                          <td className="px-4 py-4 text-sm font-bold text-right text-gradient-gold">${fmt(stats.expectedProfit)}</td>
+                          <td className="px-4 py-4 text-sm text-blue-400 text-right font-bold">{stats.fin.warehouseItems} {L.ta}</td>
+                          <td className="px-4 py-4 text-sm text-red-400 text-right font-bold">{fmt(stats.fin.warehouseUzs)} so&apos;m</td>
+                          <td className="px-4 py-4 text-sm text-green-400 text-right font-bold">{fmt(stats.expectedSalesUzs)} so&apos;m</td>
+                          <td className="px-4 py-4 text-sm font-bold text-right text-gradient-gold">{fmt(stats.expectedProfitUzs)} so&apos;m</td>
                         </tr>
                       </>
                     )}

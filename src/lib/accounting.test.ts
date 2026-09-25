@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { itemPriceUzs, orderRevenueUzs, totalRevenueUzs, usdToUzs } from "./accounting";
+import { itemPriceUzs, orderRevenueUzs, totalRevenueUzs, usdToUzs, summarizeFinances } from "./accounting";
 
 describe("itemPriceUzs", () => {
   it("price_uzs mavjud bo'lsa — shuni qaytaradi", () => {
@@ -102,5 +102,70 @@ describe("usdToUzs", () => {
   it("noto'g'ri/undefined qiymat uchun NaN emas, 0 qaytaradi", () => {
     expect(usdToUzs(undefined as any)).toBe(0);
     expect(Number.isNaN(usdToUzs(undefined as any))).toBe(false);
+  });
+});
+
+describe("summarizeFinances", () => {
+  // Sarmoya va savdo SO'MDA, rasxod DOLLARDA (forma "Summa ($)"), tan narx
+  // mahsulotning cost_price_usd'idan — hammasi so'mga keltirilib hisoblanadi.
+  const transactions = [
+    { type: "capital", amount: 12_772_120 },
+    { type: "income", amount: 800_000 },
+    { type: "income", amount: 544_500 },
+    { type: "expense", amount: 100, expense_category: "inventory" },
+    { type: "expense", amount: 20, expense_category: "operating" },
+    { type: "expense", amount: 5, expense_category: null },
+  ];
+  const products = [
+    { id: "a", stock: 2, cost_price_usd: 10 },
+    { id: "b", stock: 0, cost_price_usd: 30 },
+    { id: "c", stock: 1, cost_price_usd: null },
+  ];
+  const deliveredOrders = [
+    { items: [{ product_id: "b", quantity: 1 }] },
+    { items: [{ product_id: "a", quantity: 1 }] },
+  ];
+  const s = summarizeFinances({ transactions, deliveredOrders, products });
+
+  it("sarmoya savdoga qo'shilmaydi, alohida turadi", () => {
+    expect(s.capitalUzs).toBe(12_772_120);
+    expect(s.salesUzs).toBe(1_344_500);
+  });
+
+  it("rasxodni so'mga aylantiradi va tovar xaridini operatsiondan ajratadi (kategoriyasiz = operatsion)", () => {
+    expect(s.expensesUzs).toBe(125 * 12100);
+    expect(s.inventoryPurchasesUzs).toBe(100 * 12100);
+    expect(s.operatingExpensesUzs).toBe(25 * 12100);
+  });
+
+  it("sotilganlar tan narxi va sof foyda", () => {
+    expect(s.cogsUzs).toBe(40 * 12100);
+    expect(s.netProfitUzs).toBe(1_344_500 - 40 * 12100 - 25 * 12100);
+  });
+
+  it("kassa = sarmoya + savdo − barcha rasxod; savdo qoldig'i sarmoyasiz", () => {
+    expect(s.cashUzs).toBe(12_772_120 + 1_344_500 - 125 * 12100);
+    expect(s.salesBalanceUzs).toBe(1_344_500 - 125 * 12100);
+  });
+
+  it("ombor faqat qoldig'i bor mahsulotlardan, jami boylik va haqiqiy foyda", () => {
+    expect(s.warehouseItems).toBe(3);
+    expect(s.warehouseUzs).toBe(20 * 12100);
+    expect(s.totalWorthUzs).toBe(s.cashUzs + s.warehouseUzs);
+    expect(s.realProfitUzs).toBe(s.totalWorthUzs - s.capitalUzs);
+  });
+
+  it("sverka: hisob bo'yicha ombor (xarid − sotilgan tan narx) va haqiqiy ombor farqi", () => {
+    expect(s.expectedWarehouseUzs).toBe(60 * 12100);
+    expect(s.warehouseGapUzs).toBe(40 * 12100);
+  });
+
+  it("bo'sh yoki buzuq ma'lumotda NaN qaytarmaydi", () => {
+    const e = summarizeFinances({
+      transactions: [{ type: "income", amount: null }, { type: "expense", amount: "abc" }],
+      deliveredOrders: [{ items: null }, { items: [{ product_id: "x", quantity: undefined as any }] }],
+      products: [{ id: "x", stock: null, cost_price_usd: undefined }],
+    });
+    for (const v of Object.values(e)) expect(Number.isNaN(v)).toBe(false);
   });
 });

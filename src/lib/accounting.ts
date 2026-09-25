@@ -55,3 +55,96 @@ export function orderRevenueUzs(order: OrderLike): number {
 export function totalRevenueUzs(orders: OrderLike[]): number {
   return orders.reduce((sum, order) => sum + orderRevenueUzs(order), 0);
 }
+
+export interface LedgerTx {
+  type: string;
+  amount: number | string | null;
+  expense_category?: string | null;
+}
+
+export interface StockProduct {
+  id: string;
+  stock?: number | null;
+  cost_price_usd?: number | null;
+}
+
+export interface CostOrder {
+  items: { product_id: string; quantity: number }[] | null;
+}
+
+const num = (v: unknown) => Number(v) || 0;
+
+/**
+ * Butun moliyaviy holat — dashboard'ning YAGONA hisob manbasi.
+ *
+ * Tranzaksiyalar jadvalida uch xil yozuv bor, valyutasi ham har xil:
+ *  - capital (sarmoya, tikilgan pul) — SO'MDA; savdo emas, foydaga kirmaydi
+ *  - income (savdo tushumi) — SO'MDA
+ *  - expense (rasxod) — DOLLARDA ("Yangi Tranzaksiya" formasi "Summa ($)")
+ * Tan narx esa mahsulotning cost_price_usd'idan (DOLLAR). Ilgari bu
+ * hisob 3 ta sahifada alohida takrorlanib, har biri boshqacha xato
+ * qilardi — endi hammasi shu yerdan olinadi.
+ */
+export function summarizeFinances(input: {
+  transactions: LedgerTx[];
+  deliveredOrders: CostOrder[];
+  products: StockProduct[];
+}) {
+  const { transactions, deliveredOrders, products } = input;
+
+  const sumOf = (pred: (t: LedgerTx) => boolean) =>
+    transactions.filter(pred).reduce((s, t) => s + num(t.amount), 0);
+
+  const capitalUzs = sumOf((t) => t.type === "capital");
+  const salesUzs = sumOf((t) => t.type === "income");
+  const expensesUsd = sumOf((t) => t.type === "expense");
+  const inventoryUsd = sumOf((t) => t.type === "expense" && t.expense_category === "inventory");
+
+  const expensesUzs = usdToUzs(expensesUsd);
+  const inventoryPurchasesUzs = usdToUzs(inventoryUsd);
+  const operatingExpensesUzs = usdToUzs(expensesUsd - inventoryUsd);
+
+  const costOf: Record<string, number> = {};
+  for (const p of products) costOf[p.id] = num(p.cost_price_usd);
+
+  let cogsUsd = 0;
+  for (const o of deliveredOrders) {
+    for (const i of o.items ?? []) cogsUsd += (costOf[i.product_id] || 0) * num(i.quantity);
+  }
+  const cogsUzs = usdToUzs(cogsUsd);
+
+  let warehouseItems = 0;
+  let warehouseUsd = 0;
+  for (const p of products) {
+    const stock = num(p.stock);
+    if (stock <= 0) continue;
+    warehouseItems += stock;
+    warehouseUsd += stock * num(p.cost_price_usd);
+  }
+  const warehouseUzs = usdToUzs(warehouseUsd);
+
+  const cashUzs = capitalUzs + salesUzs - expensesUzs;
+  const totalWorthUzs = cashUzs + warehouseUzs;
+  const expectedWarehouseUzs = inventoryPurchasesUzs - cogsUzs;
+
+  return {
+    capitalUzs,
+    salesUzs,
+    expensesUsd,
+    expensesUzs,
+    inventoryPurchasesUzs,
+    operatingExpensesUzs,
+    cogsUzs,
+    netProfitUzs: salesUzs - cogsUzs - operatingExpensesUzs,
+    salesBalanceUzs: salesUzs - expensesUzs,
+    cashUzs,
+    warehouseItems,
+    warehouseUzs,
+    totalWorthUzs,
+    realProfitUzs: totalWorthUzs - capitalUzs,
+    expectedWarehouseUzs,
+    warehouseGapUzs: expectedWarehouseUzs - warehouseUzs,
+  };
+}
+
+export type FinanceSummary = ReturnType<typeof summarizeFinances>;

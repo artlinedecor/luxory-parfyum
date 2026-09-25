@@ -3,7 +3,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { dashLoad } from "@/lib/dashboard-api";
 import { Order, Product, Transaction } from "@/lib/types";
-import { orderRevenueUzs, usdToUzs } from "@/lib/accounting";
+import { orderRevenueUzs, usdToUzs, summarizeFinances } from "@/lib/accounting";
+import { priceOfProductUzs } from "@/lib/pricing-server";
 
 const statusLabels: Record<string, { text: string; color: string }> = {
   pending: { text: "Kutilmoqda", color: "text-yellow-400 bg-yellow-400/10 border border-yellow-400/20" },
@@ -42,102 +43,21 @@ export default function DashboardPage() {
   }, []);
 
   const stats = useMemo(() => {
-    // ── OMBOR ──────────────────────────────────
-    let totalStock = 0;
-    let totalCostInvested = 0;
-    let expectedRevenue = 0;
-
-    const costPriceMap: Record<string, number> = {};
-    products.forEach(p => {
-      const cost = (p as any).cost_price_usd || 0;
-      costPriceMap[p.id] = cost;
-      const stock = p.stock || 0;
-      totalStock += stock;
-      totalCostInvested += stock * cost;
-      expectedRevenue += stock * (p.price_usd || 0);
-    });
-
-    const expectedProfit = expectedRevenue - totalCostInvested;
-
-    // ── BUYURTMALAR ───────────────────────────
-    const totalOrdersCount = orders.length;
-    const pendingOrdersCount = orders.filter(o => o.status === "pending" || o.status === "accepted").length;
     const deliveredOrders = orders.filter(o => o.status === "delivered");
+    const pendingOrders = orders.filter(o => o.status === "pending" || o.status === "accepted");
 
-    // ── KASSA (tranzaksiyalar jadvali — YAGONA haqiqiy manba) ──
-    // ⚠️ Har bir buyurtma "Yetkazildi" deb belgilanganda, aynan shu
-    // summada "income" tranzaksiyasi yoziladi (src/app/api/dashboard/orders/route.ts).
-    // "Jami Savdo" endi shu tranzaksiyalar yig'indisidan olinadi — buyurtma
-    // items'idan qayta hisoblanmaydi. Ikkala usul ham to'g'ri hisoblasa bir
-    // xil natija beradi, lekin tranzaksiyalar — kassaning o'zi, "prikhod"
-    // yozilgan joy — shuning uchun bu yagona ishonchli manba deb belgilandi.
-    const kassaIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
+    const fin = summarizeFinances({ transactions, deliveredOrders, products });
 
-    // ── SOTUVLAR (faqat yetkazilgan buyurtmalar) ──
-    const totalSoldRevenue = kassaIncome;
-    let totalSoldCOGS = 0;
-    let totalSoldItems = 0;
-    let totalPendingItems = 0;
+    // Omborni sotsak qancha tushadi — saytdagi haqiqiy narx bilan (pricing-server
+    // bilan bir xil formula), price_usd bilan emas.
+    let expectedSalesUzs = 0;
+    for (const p of products) {
+      const stock = p.stock || 0;
+      if (stock > 0) expectedSalesUzs += stock * priceOfProductUzs(p);
+    }
 
-    deliveredOrders.forEach(o => {
-      if (o.items && Array.isArray(o.items)) {
-        o.items.forEach(item => {
-          totalSoldCOGS += (costPriceMap[item.product_id] || 0) * item.quantity;
-          totalSoldItems += item.quantity;
-        });
-      }
-    });
-
-    orders.filter(o => o.status === "pending" || o.status === "accepted").forEach(o => {
-      if (o.items && Array.isArray(o.items)) {
-        o.items.forEach(item => {
-          totalPendingItems += item.quantity;
-        });
-      }
-    });
-
-    // ── RASXODLAR (kassadan chiqimlar: target, yetkazish, arenda...) ──
-    const totalExpenses = transactions
-      .filter(t => t.type === "expense")
-      .reduce((s, t) => s + Number(t.amount), 0);
-
-    // Ajratib olamiz: tovar xaridi (capital/aktiv) va operatsion xarajatlar (operating).
-    // ⚠️ Ilgari bu description matnidan regex bilan taxmin qilinardi —
-    // endi admin "Yangi Tranzaksiya" formasida ANIQ tanlaydi
-    // (transactions.expense_category ustuni, migrations/06).
-    const capitalExpenses = transactions
-      .filter(t => t.type === "expense" && t.expense_category === "inventory")
-      .reduce((s, t) => s + Number(t.amount), 0);
-
-    const operatingExpenses = totalExpenses - capitalExpenses;
-
-    // ⚠️ Audit: totalSoldRevenue endi SO'M (accounting.ts), lekin
-    // totalSoldCOGS (cost_price_usd'dan) va operatingExpenses
-    // (tranzaksiyalar jadvalidan — bu yerga har doim $ kiritiladi,
-    // "Yangi Tranzaksiya" formasi "Summa ($)" deb belgilangan) DOLLARDA.
-    // So'mdan dollarni to'g'ridan-to'g'ri ayirish noto'g'ri (masshtab
-    // ~12100x farq qiladi) — Sof Foyda avval NaN edi, endi tuzatilgach
-    // ishonchsiz katta musbat son bo'lib qolardi. Ikkalasini ham so'mga
-    // aylantirib keyin ayiramiz.
-    const totalSoldCOGSUzs = usdToUzs(totalSoldCOGS);
-    const operatingExpensesUzs = usdToUzs(operatingExpenses);
-
-    // SOF FOYDA = Savdo - Sotilgan tovarlarning tan narxi (COGS) - Operatsion Rasxodlar (target, chatgpt va h.k.)
-    // Bu yerda wholesale tovar xaridlari (Tavar oldik) ayirilmaydi, chunki ular allaqachon Tan Narx (COGS) sifatida ayirilmoqda!
-    const netProfit = totalSoldRevenue - totalSoldCOGSUzs - operatingExpensesUzs;
-
-    // ── KASSA ─────────────────────────────────
-    // ⚠️ Audit: kassaIncome endi to'liq SO'M (tranzaksiyalar reestridan
-    // to'g'ridan-to'g'ri), lekin kassaExpense/totalExpenses hali ham
-    // DOLLARDA (tranzaksiyalar jadvalidagi "Yangi Tranzaksiya" formasi
-    // rasxodni har doim $ da yozadi). So'mga aylantirmasdan ayirilsa,
-    // kichik dollar summasi millionlab so'm oldida deyarli yo'qolib
-    // ketardi — Kassa Qoldig'i "deyarli o'zgarmayotgandek" ko'rinardi.
-    const kassaExpense = totalExpenses;
-    const kassaBalance = kassaIncome - usdToUzs(kassaExpense);
-
-    // Savdoning qoldiq puli = Barcha Kirim - Barcha Chiqim
-    const savdoQoldiq = kassaIncome - usdToUzs(totalExpenses);
+    const countItems = (list: typeof orders) =>
+      list.reduce((s, o) => s + (o.items ?? []).reduce((a, i) => a + (Number(i.quantity) || 0), 0), 0);
 
     const recentOrders = orders.map(o => {
       const items = o.items || [];
@@ -158,30 +78,20 @@ export default function DashboardPage() {
     });
 
     return {
-      totalStock,
-      totalCostInvested,
-      expectedRevenue,
-      expectedProfit,
-      totalOrdersCount,
-      pendingOrdersCount,
-      totalSoldItems,
-      totalPendingItems,
-      productsCount: products.length,
-      totalSoldRevenue,
-      totalSoldCOGS,
-      totalExpenses,
-      operatingExpenses,
-      capitalExpenses,
-      savdoQoldiq,
-      netProfit,
-      kassaIncome,
-      kassaExpense,
-      kassaBalance,
+      fin,
+      expectedSalesUzs,
+      expectedProfitUzs: expectedSalesUzs - fin.warehouseUzs,
+      totalOrdersCount: orders.length,
+      pendingOrdersCount: pendingOrders.length,
+      totalSoldItems: countItems(deliveredOrders),
+      totalPendingItems: countItems(pendingOrders),
       recentOrders,
     };
   }, [products, orders, transactions]);
 
   const fmt = (n: number) => n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const fin = stats.fin;
+  const inStock = products.filter(p => (p.stock || 0) > 0);
 
   if (!mounted) return null;
 
@@ -208,55 +118,15 @@ export default function DashboardPage() {
           {/* ═══════════════════════════════════════════════════════ */}
           {/* ROW 1: ASOSIY KO'RSATKICHLAR                          */}
           {/* ═══════════════════════════════════════════════════════ */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {/* Jami Savdo */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1">
-              <p className="text-2xl font-bold text-blue-400">{fmt(stats.totalSoldRevenue)} so'm</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Jami Savdo</p>
-              <p className="text-[10px] text-muted-foreground">yetkazilganlardan</p>
-            </div>
-
-            {/* Jami Rasxod */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1">
-              <p className="text-2xl font-bold text-red-400">{fmt(usdToUzs(stats.totalExpenses))} so&apos;m</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Jami Rasxod</p>
-              <p className="text-[10px] text-muted-foreground">kassadan chiqimlar</p>
-            </div>
-
-            {/* Savdo Qoldig'i */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1">
-              <p className={`text-2xl font-bold ${stats.savdoQoldiq >= 0 ? 'text-blue-400' : 'text-red-400'}`}>{fmt(stats.savdoQoldiq)} so&apos;m</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Savdo Qoldig&apos;i</p>
-              <p className="text-[10px] text-muted-foreground">barcha kirim − chiqim</p>
-            </div>
-
-            {/* Sof Foyda */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1 border border-gold/20">
-              <p className={`text-2xl font-bold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(stats.netProfit)} so&apos;m</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Sof Foyda</p>
-              <p className="text-[10px] text-muted-foreground">tan narx + oper. rasxod ayirilgan</p>
-            </div>
-
-            {/* Ombordagi Mol */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1">
-              <p className="text-2xl font-bold text-foreground">{stats.totalStock}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Qoldiq (ta)</p>
-              <p className="text-[10px] text-red-400 font-medium">${fmt(stats.totalCostInvested)} tikilgan</p>
-            </div>
-
-            {/* Sotilgan atirlar */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1 border border-gold/20">
-              <p className="text-2xl font-bold text-gradient-gold">{stats.totalSoldItems} ta</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Sotilgan Atirlar</p>
-              <p className="text-[10px] text-muted-foreground">{stats.totalOrdersCount} ta buyurtma ({stats.totalPendingItems} ta kutilmoqda)</p>
-            </div>
-
-            {/* Tikilgan Pul (Tovar xaridi) */}
-            <div className="glass-card rounded-xl p-4 text-center space-y-1">
-              <p className="text-2xl font-bold text-orange-400">{fmt(usdToUzs(stats.capitalExpenses))} so&apos;m</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Tikilgan Pul</p>
-              <p className="text-[10px] text-muted-foreground">tovar xaridiga (Sof Foydaga kirmaydi)</p>
-            </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard label="Tikilgan pul" hint="biznesga kiritilgan sarmoya" value={`${fmt(fin.capitalUzs)} so'm`} tone="text-purple-400" />
+            <StatCard label="Jami Savdo" hint="yetkazilgan buyurtmalardan" value={`${fmt(fin.salesUzs)} so'm`} tone="text-blue-400" />
+            <StatCard label="Jami Rasxod" hint="tovar xaridi + operatsion" value={`${fmt(fin.expensesUzs)} so'm`} tone="text-red-400" />
+            <StatCard label="Kassa" hint="qo'lda va kartada bo'lishi kerak" value={`${fmt(fin.cashUzs)} so'm`} tone={fin.cashUzs >= 0 ? "text-gradient-gold" : "text-red-400"} />
+            <StatCard label="Ombor" hint={`${fin.warehouseItems} dona, tan narxda`} value={`${fmt(fin.warehouseUzs)} so'm`} tone="text-orange-400" />
+            <StatCard label="Jami boylik" hint="kassa + ombor" value={`${fmt(fin.totalWorthUzs)} so'm`} tone="text-gradient-gold" highlight />
+            <StatCard label="Sof Foyda" hint="savdo − tan narx − operatsion" value={`${fmt(fin.netProfitUzs)} so'm`} tone={fin.netProfitUzs >= 0 ? "text-green-400" : "text-red-400"} highlight />
+            <StatCard label="Sotilgan atirlar" hint={`${stats.totalOrdersCount} ta buyurtma, ${stats.totalPendingItems} ta kutilmoqda`} value={`${stats.totalSoldItems} ta`} tone="text-gradient-gold" />
           </div>
 
           {/* ═══════════════════════════════════════════════════════ */}
@@ -267,151 +137,102 @@ export default function DashboardPage() {
             <div className="glass-card rounded-2xl p-6 space-y-4 bg-secondary/5 border border-secondary">
               <div className="flex items-center justify-between border-b border-border/50 pb-3">
                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">💰 Sof Foyda Tarkibi</h3>
-                <span className={`text-xl font-bold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(stats.netProfit)} so&apos;m</span>
+                <span className={`text-xl font-bold ${fin.netProfitUzs >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(fin.netProfitUzs)} so&apos;m</span>
               </div>
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Jami Savdo (Tushum)</span>
-                  <span className="text-blue-400 font-semibold">+{fmt(stats.totalSoldRevenue)} so'm</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Sotilganlar Tan Narxi (COGS)</span>
-                  <span className="text-orange-400 font-semibold">-{fmt(usdToUzs(stats.totalSoldCOGS))} so&apos;m</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Operatsion Rasxodlar (Target, ChatGPT...)</span>
-                  <span className="text-red-400 font-semibold">-{fmt(usdToUzs(stats.operatingExpenses))} so&apos;m</span>
-                </div>
-                <div className="border-t border-border/50 pt-2 flex items-center justify-between text-sm font-bold">
-                  <span className="text-foreground">= Sof Foyda</span>
-                  <span className={stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}>{fmt(stats.netProfit)} so&apos;m</span>
-                </div>
+                <Line label="Jami Savdo (tushum)" value={`+${fmt(fin.salesUzs)} so'm`} tone="text-blue-400" />
+                <Line label="Sotilgan atirlarning tan narxi" value={`−${fmt(fin.cogsUzs)} so'm`} tone="text-orange-400" />
+                <Line label="Operatsion rasxod (reklama, ChatGPT...)" value={`−${fmt(fin.operatingExpensesUzs)} so'm`} tone="text-red-400" />
+                <Line label="= Sof Foyda" value={`${fmt(fin.netProfitUzs)} so'm`} tone={fin.netProfitUzs >= 0 ? 'text-green-400' : 'text-red-400'} total />
               </div>
               <p className="text-[10px] text-muted-foreground leading-relaxed pt-1">
-                * Sof Foyda = Savdo summasi − Sotilgan tovarlarning tan narxi − Operatsion chiqimlar (Kassadagi ulgurji tovar xaridlaridan tashqari boshqa rasxodlar). Bu tovar xarajatlarini ikki marta hisoblanishini oldini oladi.
+                * Tovar xaridi Sof Foydadan darhol ayirilmaydi — atir sotilganda uning tan narxi ayiriladi, qolgani omborda aktiv bo&apos;lib turadi. Tikilgan pul foyda emas.
               </p>
             </div>
 
-            {/* Kassa Holati */}
+            {/* Kassa hisobi */}
             <div className="glass-card rounded-2xl p-6 space-y-4 bg-secondary/5 border border-secondary">
               <div className="flex items-center justify-between border-b border-border/50 pb-3">
-                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">🏦 Kassa & Savdo Qoldig&apos;i</h3>
-                <span className={`text-xl font-bold ${stats.kassaBalance >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>{fmt(stats.kassaBalance)} so&apos;m</span>
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">🏦 Kassa hisobi</h3>
+                <span className={`text-xl font-bold ${fin.cashUzs >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>{fmt(fin.cashUzs)} so&apos;m</span>
               </div>
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Jami Kirim (Savdo + Sarmoya)</span>
-                  <span className="text-green-400 font-semibold">+{fmt(stats.kassaIncome)} so&apos;m</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Jami Chiqim (Barcha Rasxodlar)</span>
-                  <span className="text-red-400 font-semibold">-{fmt(usdToUzs(stats.totalExpenses))} so&apos;m</span>
-                </div>
-                <div className="border-t border-border/50 pt-2 flex items-center justify-between text-sm font-bold">
-                  <span className="text-foreground">= Kassa Qoldig&apos;i (Pul qoldig&apos;i)</span>
-                  <span className={stats.kassaBalance >= 0 ? 'text-green-400' : 'text-red-400'}>{fmt(stats.kassaBalance)} so&apos;m</span>
-                </div>
-                <div className="border-t border-border/20 pt-2 flex items-center justify-between text-sm font-bold text-muted-foreground">
-                  <span>Savdo Qoldiq Puli (Kirim - Chiqim)</span>
-                  <span className={stats.savdoQoldiq >= 0 ? 'text-blue-400' : 'text-red-400'}>{fmt(stats.savdoQoldiq)} so&apos;m</span>
-                </div>
+                <Line label="Tikilgan pul (sarmoya)" value={`+${fmt(fin.capitalUzs)} so'm`} tone="text-purple-400" />
+                <Line label="Savdodan tushgan" value={`+${fmt(fin.salesUzs)} so'm`} tone="text-green-400" />
+                <Line label="Tovar xaridi" value={`−${fmt(fin.inventoryPurchasesUzs)} so'm`} tone="text-orange-400" />
+                <Line label="Operatsion rasxod" value={`−${fmt(fin.operatingExpensesUzs)} so'm`} tone="text-red-400" />
+                <Line label="= Kassada bo'lishi kerak" value={`${fmt(fin.cashUzs)} so'm`} tone={fin.cashUzs >= 0 ? 'text-green-400' : 'text-red-400'} total />
+              </div>
+              <p className="text-[10px] text-muted-foreground leading-relaxed pt-1">
+                * Egalar pul olmagan bo&apos;lsa, qo&apos;ldagi va kartadagi pul shu summaga teng bo&apos;lishi kerak. Farq bo&apos;lsa — hisobga kiritilmagan xarajat yoki kirim bor.
+              </p>
+            </div>
+          </div>
+
+          {/* ═══════════════════════════════════════════════════════ */}
+          {/* BALANS VA SVERKA                                        */}
+          {/* ═══════════════════════════════════════════════════════ */}
+          <div className="glass-card rounded-2xl p-6 space-y-4 bg-secondary/5 border border-gold/20">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">⚖️ Balans va sverka</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <Line label="Kassa" value={`${fmt(fin.cashUzs)} so'm`} tone="text-foreground" />
+                <Line label="+ Ombordagi tovar (tan narxda)" value={`${fmt(fin.warehouseUzs)} so'm`} tone="text-orange-400" />
+                <Line label="= Jami boylik" value={`${fmt(fin.totalWorthUzs)} so'm`} tone="text-gradient-gold" total />
+                <Line label="− Tikilgan pul" value={`${fmt(fin.capitalUzs)} so'm`} tone="text-purple-400" />
+                <Line label="= Haqiqiy foyda (boylik o'sishi)" value={`${fmt(fin.realProfitUzs)} so'm`} tone={fin.realProfitUzs >= 0 ? 'text-green-400' : 'text-red-400'} total />
+              </div>
+              <div className="space-y-3">
+                <Line label="Hisob bo'yicha omborda bo'lishi kerak" value={`${fmt(fin.expectedWarehouseUzs)} so'm`} tone="text-foreground" />
+                <Line label="Omborda haqiqatda (tan narxda)" value={`${fmt(fin.warehouseUzs)} so'm`} tone="text-orange-400" />
+                <Line label="= Farq" value={`${fmt(fin.warehouseGapUzs)} so'm`} tone={Math.abs(fin.warehouseGapUzs) < 1 ? 'text-green-400' : 'text-yellow-400'} total />
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  * Hisob bo&apos;yicha ombor = tovar xaridi − sotilgan atirlarning tan narxi. Farq bo&apos;lsa: kargo/yo&apos;l haqi atir tan narxiga qo&apos;shilmagan, tester yoki sovg&apos;a berilgan, yoki mahsulotda tan narx noto&apos;g&apos;ri kiritilgan. Haqiqiy foyda bilan Sof Foyda o&apos;rtasidagi farq ham aynan shu.
+                </p>
               </div>
             </div>
           </div>
 
           {/* ═══════════════════════════════════════════════════════ */}
-          {/* ROW 3: MOLIYAVIY OQIM GRAFIK (Visual Bar)             */}
+          {/* SOTUVLAR OQIMI (savdoga nisbatan ulushlar)              */}
           {/* ═══════════════════════════════════════════════════════ */}
           <div className="glass-card rounded-2xl p-6 space-y-4">
-            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Sotuvlar Oqimi</h3>
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Sotuvlar oqimi</h3>
             <div className="space-y-3">
-
-              {/* Jami Savdo */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Jami Savdo (Tushum)</span>
-                  <span className="text-blue-400 font-semibold">{fmt(stats.totalSoldRevenue)} so'm</span>
-                </div>
-                <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-1000"
-                    style={{ width: `${stats.totalSoldRevenue > 0 ? Math.min(100, (stats.totalSoldRevenue / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Tan Narx */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Tan Narx (Tovar xaridi)</span>
-                  <span className="text-orange-400 font-semibold">{fmt(usdToUzs(stats.totalSoldCOGS))} so&apos;m</span>
-                </div>
-                <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-1000"
-                    style={{ width: `${stats.totalSoldCOGS > 0 ? Math.min(100, (usdToUzs(stats.totalSoldCOGS) / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Operatsion Rasxodlar */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Operatsion Rasxodlar (Target, ChatGPT...)</span>
-                  <span className="text-red-400 font-semibold">{fmt(usdToUzs(stats.operatingExpenses))} so&apos;m</span>
-                </div>
-                <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full transition-all duration-1000"
-                    style={{ width: `${stats.operatingExpenses > 0 ? Math.min(100, (usdToUzs(stats.operatingExpenses) / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Sof Foyda */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground font-semibold">Sof Foyda</span>
-                  <span className={`font-semibold ${stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(stats.netProfit)} so&apos;m</span>
-                </div>
-                <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-1000 ${stats.netProfit >= 0 ? 'bg-gradient-to-r from-green-600 to-emerald-400' : 'bg-gradient-to-r from-red-600 to-red-400'}`}
-                    style={{ width: `${Math.abs(stats.netProfit) > 0 ? Math.min(100, (Math.abs(stats.netProfit) / Math.max(stats.totalSoldRevenue, 1)) * 100) : 0}%` }}
-                  />
-                </div>
-              </div>
+              <Bar label="Jami Savdo (tushum)" value={fin.salesUzs} base={fin.salesUzs} fmt={fmt} color="from-blue-500 to-blue-400" tone="text-blue-400" />
+              <Bar label="Sotilganlar tan narxi" value={fin.cogsUzs} base={fin.salesUzs} fmt={fmt} color="from-orange-500 to-amber-400" tone="text-orange-400" />
+              <Bar label="Operatsion rasxod" value={fin.operatingExpensesUzs} base={fin.salesUzs} fmt={fmt} color="from-red-600 to-red-400" tone="text-red-400" />
+              <Bar label="Sof Foyda" value={fin.netProfitUzs} base={fin.salesUzs} fmt={fmt} color={fin.netProfitUzs >= 0 ? "from-green-600 to-emerald-400" : "from-red-600 to-red-400"} tone={fin.netProfitUzs >= 0 ? "text-green-400" : "text-red-400"} />
             </div>
           </div>
 
           {/* ═══════════════════════════════════════════════════════ */}
-          {/* ROW 4: KUTILAYOTGAN FOYDA (Agar hammasi sotilsa)      */}
+          {/* KUTILAYOTGAN (ombordagi hamma atir sotilsa)             */}
           {/* ═══════════════════════════════════════════════════════ */}
           <div className="glass-card rounded-2xl p-6 space-y-3 bg-secondary/5 border border-secondary">
-            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">📊 Kutilayotgan Ko&apos;rsatkichlar (Agar ombordagi barcha mol sotilsa)</h3>
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">📊 Ombordagi hamma atir sotilsa</h3>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <p className="text-lg font-bold text-gold">${fmt(stats.expectedRevenue)}</p>
-                <p className="text-[10px] text-muted-foreground uppercase">Kutilayotgan Daromad</p>
+                <p className="text-lg font-bold text-gold">{fmt(stats.expectedSalesUzs)} so&apos;m</p>
+                <p className="text-[10px] text-muted-foreground uppercase">Tushadigan pul (sayt narxida)</p>
               </div>
               <div className="text-center">
-                <p className="text-lg font-bold text-orange-400">${fmt(stats.totalCostInvested)}</p>
-                <p className="text-[10px] text-muted-foreground uppercase">Ombor Tan Narxi</p>
+                <p className="text-lg font-bold text-orange-400">{fmt(fin.warehouseUzs)} so&apos;m</p>
+                <p className="text-[10px] text-muted-foreground uppercase">Ombor tan narxi</p>
               </div>
               <div className="text-center">
-                <p className={`text-lg font-bold ${stats.expectedProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${fmt(stats.expectedProfit)}</p>
-                <p className="text-[10px] text-muted-foreground uppercase">Kutilayotgan Foyda</p>
+                <p className={`text-lg font-bold ${stats.expectedProfitUzs >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(stats.expectedProfitUzs)} so&apos;m</p>
+                <p className="text-[10px] text-muted-foreground uppercase">Kutilayotgan foyda</p>
               </div>
             </div>
           </div>
-
           {/* ═══════════════════════════════════════════════════════ */}
           {/* ROW 4.5: TOVARLAR JADVALI (Batafsil Hisob-kitob)         */}
           {/* ═══════════════════════════════════════════════════════ */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-gold"><path strokeLinecap="round" strokeLinejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M10.875 12c-.621 0-1.125.504-1.125 1.125M12 12c.621 0 1.125.504 1.125 1.125m0 0v1.5c0 .621-.504 1.125-1.125 1.125m0-2.625c0-.621.504-1.125 1.125-1.125" /></svg>
-              Tovarlar hisob-kitobi (Batafsil)
+              Ombordagi atirlar (so'mda)
             </h3>
             <div className="glass-card rounded-2xl overflow-hidden">
               <div className="overflow-x-auto scrollbar-hide">
@@ -420,26 +241,26 @@ export default function DashboardPage() {
                     <tr className="border-b border-border bg-secondary/20">
                       <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">№</th>
                       <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Nomi</th>
-                      <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Sotish narxi</th>
+                      <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Sotish narxi (saytda)</th>
                       <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Qoldiq</th>
-                      <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Tikilgan pul</th>
+                      <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Tan narxi</th>
                       <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Sotilgandagi</th>
                       <th className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium text-right font-semibold">Kutilayotgan foyda</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {products.length === 0 ? (
+                    {inStock.length === 0 ? (
                       <tr>
                         <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground text-sm">
-                          Omborda tovarlar topilmadi
+                          Omborda atir qolmagan
                         </td>
                       </tr>
                     ) : (
                       <>
-                        {products.map((product, index) => {
+                        {inStock.map((product, index) => {
                           const stock = product.stock || 0;
-                          const price = product.price_usd || 0;
-                          const costPrice = (product as any).cost_price_usd || 0;
+                          const price = priceOfProductUzs(product);
+                          const costPrice = usdToUzs((product as { cost_price_usd?: number }).cost_price_usd || 0);
                           const invested = stock * costPrice;
                           const revenue = stock * price;
                           const profit = revenue - invested;
@@ -449,19 +270,19 @@ export default function DashboardPage() {
                               <td className="px-4 py-3 text-sm font-medium text-foreground max-w-[200px] truncate" title={product.title}>
                                 {product.title}
                               </td>
-                              <td className="px-4 py-3 text-sm text-foreground text-right font-medium">${fmt(price)}</td>
+                              <td className="px-4 py-3 text-sm text-foreground text-right font-medium">{fmt(price)} so&apos;m</td>
                               <td className="px-4 py-3 text-sm text-right">
                                 <span className={`font-semibold px-2.5 py-1 rounded-full text-xs ${stock > 0 ? 'bg-blue-500/10 text-blue-400' : 'bg-red-500/10 text-red-400'}`}>
                                   {stock} ta
                                 </span>
                               </td>
                               <td className="px-4 py-3 text-right">
-                                <span className="text-sm text-red-400 font-semibold">${fmt(invested)}</span>
+                                <span className="text-sm text-red-400 font-semibold">{fmt(invested)} so&apos;m</span>
                                 <span className="block text-[10px] text-muted-foreground">({fmt(costPrice)} × {stock})</span>
                               </td>
-                              <td className="px-4 py-3 text-sm text-green-400 text-right font-semibold">${fmt(revenue)}</td>
+                              <td className="px-4 py-3 text-sm text-green-400 text-right font-semibold">{fmt(revenue)} so&apos;m</td>
                               <td className={`px-4 py-3 text-sm font-bold text-right ${profit >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>
-                                ${fmt(profit)}
+                                {fmt(profit)} so&apos;m
                               </td>
                             </tr>
                           );
@@ -470,10 +291,10 @@ export default function DashboardPage() {
                         <tr className="bg-secondary/40 border-t-2 border-gold/30">
                           <td className="px-4 py-4 text-sm font-bold text-foreground" colSpan={2}>JAMI</td>
                           <td className="px-4 py-4 text-sm text-foreground text-right font-bold">—</td>
-                          <td className="px-4 py-4 text-sm text-blue-400 text-right font-bold">{stats.totalStock} ta</td>
-                          <td className="px-4 py-4 text-sm text-red-400 text-right font-bold">${fmt(stats.totalCostInvested)}</td>
-                          <td className="px-4 py-4 text-sm text-green-400 text-right font-bold">${fmt(stats.expectedRevenue)}</td>
-                          <td className="px-4 py-4 text-sm font-bold text-right text-gradient-gold">${fmt(stats.expectedProfit)}</td>
+                          <td className="px-4 py-4 text-sm text-blue-400 text-right font-bold">{fin.warehouseItems} ta</td>
+                          <td className="px-4 py-4 text-sm text-red-400 text-right font-bold">{fmt(fin.warehouseUzs)} so&apos;m</td>
+                          <td className="px-4 py-4 text-sm text-green-400 text-right font-bold">{fmt(stats.expectedSalesUzs)} so&apos;m</td>
+                          <td className="px-4 py-4 text-sm font-bold text-right text-gradient-gold">{fmt(stats.expectedProfitUzs)} so&apos;m</td>
                         </tr>
                       </>
                     )}
@@ -575,6 +396,40 @@ export default function DashboardPage() {
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+function StatCard({ label, hint, value, tone, highlight }: { label: string; hint: string; value: string; tone: string; highlight?: boolean }) {
+  return (
+    <div className={`glass-card rounded-xl p-4 text-center space-y-1 ${highlight ? "border border-gold/20" : ""}`}>
+      <p className={`text-lg sm:text-xl lg:text-2xl font-bold break-words ${tone}`}>{value}</p>
+      <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{label}</p>
+      <p className="text-[10px] text-muted-foreground">{hint}</p>
+    </div>
+  );
+}
+
+function Line({ label, value, tone, total }: { label: string; value: string; tone: string; total?: boolean }) {
+  return (
+    <div className={`flex items-center justify-between gap-3 text-sm ${total ? "border-t border-border/50 pt-2 font-bold" : ""}`}>
+      <span className={total ? "text-foreground" : "text-muted-foreground"}>{label}</span>
+      <span className={`${tone} font-semibold whitespace-nowrap`}>{value}</span>
+    </div>
+  );
+}
+
+function Bar({ label, value, base, fmt, color, tone }: { label: string; value: number; base: number; fmt: (n: number) => string; color: string; tone: string }) {
+  const pct = base > 0 ? Math.min(100, (Math.abs(value) / base) * 100) : 0;
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">{label}</span>
+        <span className={`${tone} font-semibold`}>{fmt(value)} so&apos;m</span>
+      </div>
+      <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
+        <div className={`h-full bg-gradient-to-r ${color} rounded-full transition-all duration-1000`} style={{ width: `${pct}%` }} />
+      </div>
     </div>
   );
 }

@@ -58,7 +58,7 @@ export interface Order {
 export interface Transaction {
   id: string;
   merchant_id: string;
-  type: "income" | "expense";
+  type: "income" | "expense" | "capital";
   amount: number;
   description: string;
   /** Faqat type="expense" uchun ma'noli: "inventory" (tovar xaridi/aktiv) yoki "operating" (operatsion xarajat). */

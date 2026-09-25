@@ -3,7 +3,20 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Transaction, Order, Product } from "@/lib/types";
 import { dashLoad, dashInsert, dashDelete } from "@/lib/dashboard-api";
-import { usdToUzs } from "@/lib/accounting";
+import { usdToUzs, summarizeFinances } from "@/lib/accounting";
+
+type TxType = "income" | "expense" | "capital";
+
+// Savdo va sarmoya SO'MDA, rasxod DOLLARDA saqlanadi — jadval va balans uchun so'mga keltiramiz.
+const txUzs = (t: { type: string; amount: number }) =>
+  t.type === "expense" ? -usdToUzs(Number(t.amount)) : Number(t.amount) || 0;
+
+const TYPE_UI: Record<TxType, { label: string; badge: string; text: string; button: string }> = {
+  income: { label: "Savdo", badge: "bg-green-500/10 text-green-400", text: "text-green-400", button: "bg-green-400 hover:bg-green-500 shadow-green-500/20" },
+  capital: { label: "Sarmoya", badge: "bg-purple-500/10 text-purple-400", text: "text-purple-400", button: "bg-purple-400 hover:bg-purple-500 shadow-purple-500/20" },
+  expense: { label: "Rasxod", badge: "bg-red-500/10 text-red-400", text: "text-red-400", button: "bg-red-400 hover:bg-red-500 shadow-red-500/20" },
+};
+const uiOf = (type: string) => TYPE_UI[(type as TxType)] ?? TYPE_UI.expense;
 
 export default function CashflowPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -11,12 +24,12 @@ export default function CashflowPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [type, setType] = useState<"income" | "expense">("expense");
+  const [type, setType] = useState<TxType>("expense");
   const [amount, setAmount] = useState("");
   const [expenseCategory, setExpenseCategory] = useState<"inventory" | "operating" | "">("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [activeView, setActiveView] = useState<"all" | "sales" | "expenses">("all");
+  const [activeView, setActiveView] = useState<"all" | "sales" | "expenses" | "capital">("all");
 
   const fetchData = async () => {
     try {
@@ -39,70 +52,18 @@ export default function CashflowPage() {
 
   // ── HISOB-KITOB ──────────────────────────────
   const accounting = useMemo(() => {
-    const costPriceMap: Record<string, number> = {};
-    products.forEach(p => {
-      costPriceMap[p.id] = (p as any).cost_price_usd || 0;
-    });
-
     const deliveredOrders = orders.filter(o => o.status === "delivered");
-
-    // Kassadagi tranzaksiyalar — YAGONA haqiqiy manba
-    // ⚠️ Har bir buyurtma "Yetkazildi" deb belgilanganda, aynan shu
-    // summada "income" tranzaksiyasi yoziladi (src/app/api/dashboard/orders/route.ts).
-    // "Jami Savdo" endi shu tranzaksiyalar yig'indisidan olinadi — buyurtma
-    // items'idan qayta hisoblanmaydi.
-    const incomeTransactions = transactions.filter(t => t.type === "income");
-    const expenseTransactions = transactions.filter(t => t.type === "expense");
-
-    const totalIncome = incomeTransactions.reduce((s, t) => s + Number(t.amount), 0);
-    const totalExpenses = expenseTransactions.reduce((s, t) => s + Number(t.amount), 0);
-    // ⚠️ totalIncome so'mda, totalExpenses dollarda — usdToUzs bilan
-    // aylantirmasdan ayirilsa, Kassa Qoldig'i deyarli o'zgarmagandek
-    // ko'rinardi.
-    const kassaBalance = totalIncome - usdToUzs(totalExpenses);
-
-    // Savdodan tushgan jami summa (faqat yetkazilgan)
-    const totalSalesRevenue = totalIncome;
-    let totalCOGS = 0;
-    let totalSoldItems = 0;
-
-    deliveredOrders.forEach(o => {
-      if (o.items && Array.isArray(o.items)) {
-        o.items.forEach(item => {
-          totalCOGS += (costPriceMap[item.product_id] || 0) * item.quantity;
-          totalSoldItems += item.quantity;
-        });
-      }
-    });
-
-    // ⚠️ Ilgari regex bilan taxmin qilinardi — endi admin "Yangi
-    // Tranzaksiya" formasida ANIQ tanlagan kategoriyaga tayanamiz.
-    const capitalExpenses = expenseTransactions
-      .filter(t => t.expense_category === "inventory")
-      .reduce((s, t) => s + Number(t.amount), 0);
-    const operatingExpenses = totalExpenses - capitalExpenses;
-
-    // ⚠️ Audit: totalSalesRevenue so'mda, totalCOGS (cost_price_usd) va
-    // operatingExpenses (tranzaksiyalar — har doim $ kiritiladi) dollarda.
-    // So'mga aylantirmasdan ayirsa Sof Foyda xato chiqadi.
-    const totalCOGSUzs = usdToUzs(totalCOGS);
-    const operatingExpensesUzs = usdToUzs(operatingExpenses);
-
-    // Sof Foyda = Savdo - Tan narx - Operatsion Rasxodlar
-    const netProfit = totalSalesRevenue - totalCOGSUzs - operatingExpensesUzs;
+    const fin = summarizeFinances({ transactions, deliveredOrders, products });
+    const totalSoldItems = deliveredOrders.reduce(
+      (sum, o) => sum + (o.items ?? []).reduce((acc, i) => acc + (Number(i.quantity) || 0), 0),
+      0
+    );
 
     return {
-      totalSalesRevenue,
-      totalCOGS,
-      totalCOGSUzs,
-      capitalExpenses,
-      totalIncome,
-      totalExpenses,
-      operatingExpensesUzs,
-      kassaBalance,
-      netProfit,
-      incomeTransactions,
-      expenseTransactions,
+      fin,
+      incomeTransactions: transactions.filter(t => t.type === "income"),
+      expenseTransactions: transactions.filter(t => t.type === "expense"),
+      capitalTransactions: transactions.filter(t => t.type === "capital"),
       deliveredOrdersCount: deliveredOrders.length,
       totalSoldItems,
     };
@@ -110,23 +71,12 @@ export default function CashflowPage() {
 
   // Running balance for table
   const txWithBalance = useMemo(() => {
-    const filtered = activeView === "sales"
-      ? transactions.filter(t => t.type === "income")
-      : activeView === "expenses"
-        ? transactions.filter(t => t.type === "expense")
-        : transactions;
+    const wanted = activeView === "sales" ? "income" : activeView === "expenses" ? "expense" : activeView === "capital" ? "capital" : null;
+    const filtered = wanted ? transactions.filter(t => t.type === wanted) : transactions;
 
     let runningBalance = 0;
-    const reversed = [...filtered].reverse();
-    const result = reversed.map(tx => {
-      // ⚠️ income tx.amount allaqachon so'mda, expense esa hali $ da
-      // (tranzaksiyalar jadvalining ikkita mustaqil manbasi bor —
-      // buyurtma yetkazilganda avtomatik so'mda, "Yangi Tranzaksiya"
-      // formasi orqali qo'lda kiritilganda hali ham $ da). So'mga
-      // aylantirmasdan ayirilsa, natija ikkalasining aralashmasi bo'lib
-      // qolardi.
-      if (tx.type === "income") runningBalance += Number(tx.amount);
-      else runningBalance -= usdToUzs(Number(tx.amount));
+    const result = [...filtered].reverse().map(tx => {
+      runningBalance += txUzs(tx);
       return { ...tx, balance: runningBalance };
     });
     return result.reverse();
@@ -189,32 +139,35 @@ export default function CashflowPage() {
     csv += `Elore Parfume — Oylik Hisob-kitob (${monthName})\n\n`;
 
     // Summary
+    const f = accounting.fin;
     csv += "XULOSA\n";
-    csv += `Jami Savdo (Tushum),${accounting.totalSalesRevenue} so'm\n`;
-    csv += `Tan Narx (COGS),$${accounting.totalCOGS} (${accounting.totalCOGSUzs} so'm)\n`;
-    csv += `Jami Rasxodlar,$${accounting.totalExpenses} (${Math.round(accounting.totalExpenses * 12100)} so'm)\n`;
-    csv += `Tikilgan Pul (Tovar xaridi),${Math.round(accounting.capitalExpenses * 12100)} so'm\n`;
-    csv += `Operatsion Rasxodlar (Sof Foydaga kiruvchi),${accounting.operatingExpensesUzs} so'm\n`;
-    csv += `Sof Foyda,${accounting.netProfit} so'm\n`;
-    csv += `Kassa Qoldigi,${accounting.kassaBalance} so'm\n\n`;
+    csv += `Tikilgan pul (sarmoya),${Math.round(f.capitalUzs)} so'm\n`;
+    csv += `Jami Savdo (tushum),${Math.round(f.salesUzs)} so'm\n`;
+    csv += `Tovar xaridi,${Math.round(f.inventoryPurchasesUzs)} so'm\n`;
+    csv += `Operatsion rasxod,${Math.round(f.operatingExpensesUzs)} so'm\n`;
+    csv += `Jami rasxod,${Math.round(f.expensesUzs)} so'm ($${f.expensesUsd})\n`;
+    csv += `Sotilganlar tan narxi,${Math.round(f.cogsUzs)} so'm\n`;
+    csv += `Sof Foyda,${Math.round(f.netProfitUzs)} so'm\n`;
+    csv += `Kassa,${Math.round(f.cashUzs)} so'm\n`;
+    csv += `Ombor (tan narxda),${Math.round(f.warehouseUzs)} so'm\n`;
+    csv += `Jami boylik,${Math.round(f.totalWorthUzs)} so'm\n`;
+    csv += `Haqiqiy foyda (boylik - sarmoya),${Math.round(f.realProfitUzs)} so'm\n\n`;
 
-    // Savdo (Kirim) jadvali
-    csv += "SAVDO (KIRIM)\n";
-    csv += "Sana,Tavsif,Summa\n";
-    accounting.incomeTransactions.forEach(tx => {
-      const date = new Date(tx.created_at).toLocaleDateString("uz-UZ");
-      csv += `${date},"${tx.description}",+${tx.amount} so'm\n`;
-    });
-    csv += `,,Jami: +${accounting.totalIncome} so'm\n\n`;
-
-    // Rasxodlar (Chiqim) jadvali
-    csv += "RASXODLAR (CHIQIM)\n";
-    csv += "Sana,Tavsif,Summa\n";
-    accounting.expenseTransactions.forEach(tx => {
-      const date = new Date(tx.created_at).toLocaleDateString("uz-UZ");
-      csv += `${date},"${tx.description}",-${Math.round(tx.amount * 12100)} so'm\n`;
-    });
-    csv += `,,Jami: -${Math.round(accounting.totalExpenses * 12100)} so'm\n`;
+    const section = (title: string, list: Transaction[]) => {
+      csv += `${title}\n`;
+      csv += "Sana,Tavsif,Summa (so'm)\n";
+      let total = 0;
+      list.forEach(tx => {
+        const date = new Date(tx.created_at).toLocaleDateString("uz-UZ");
+        const v = Math.round(txUzs(tx));
+        total += v;
+        csv += `${date},"${tx.description}",${v}\n`;
+      });
+      csv += `,,Jami: ${total}\n\n`;
+    };
+    section("SARMOYA", accounting.capitalTransactions);
+    section("SAVDO (KIRIM)", accounting.incomeTransactions);
+    section("RASXODLAR (CHIQIM)", accounting.expenseTransactions);
 
     // Download
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -273,39 +226,28 @@ export default function CashflowPage() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* SUMMARY CARDS                                          */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="glass-card rounded-xl p-5 border-l-4 border-l-blue-500/50">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Jami Savdo</p>
-          <p className="text-2xl font-bold text-blue-400">{fmt(accounting.totalSalesRevenue)} so'm</p>
-          <p className="text-[10px] text-muted-foreground mt-1">{accounting.totalSoldItems} ta atir ({accounting.deliveredOrdersCount} ta buyurtma)</p>
-        </div>
-        <div className="glass-card rounded-xl p-5 border-l-4 border-l-red-500/50">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Jami Rasxod</p>
-          <p className="text-2xl font-bold text-red-400">{fmt(usdToUzs(accounting.totalExpenses))} so&apos;m</p>
-          <p className="text-[10px] text-muted-foreground mt-1">{accounting.expenseTransactions.length} ta chiqim</p>
-        </div>
-        <div className="glass-card rounded-xl p-5 border-l-4 border-l-orange-500/50">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Tikilgan Pul</p>
-          <p className="text-2xl font-bold text-orange-400">{fmt(usdToUzs(accounting.capitalExpenses))} so&apos;m</p>
-          <p className="text-[10px] text-muted-foreground mt-1">tovar xaridi (Sof Foydaga kirmaydi)</p>
-        </div>
-        <div className="glass-card rounded-xl p-5 border-l-4 border-l-green-500/50">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Sof Foyda</p>
-          <p className={`text-2xl font-bold ${accounting.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(accounting.netProfit)} so&apos;m</p>
-          <p className="text-[10px] text-muted-foreground mt-1">savdo − tan narx − rasxod</p>
-        </div>
-        <div className="glass-card rounded-xl p-5 border-l-4 border-l-gold/50">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Kassa Qoldig&apos;i</p>
-          <p className={`text-2xl font-bold ${accounting.kassaBalance >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>{fmt(accounting.kassaBalance)} so&apos;m</p>
-          <p className="text-[10px] text-muted-foreground mt-1">kirim − chiqim</p>
-        </div>
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { label: "Tikilgan pul (sarmoya)", value: accounting.fin.capitalUzs, tone: "text-purple-400", border: "border-l-purple-500/50", hint: `${accounting.capitalTransactions.length} ta yozuv` },
+          { label: "Jami Savdo", value: accounting.fin.salesUzs, tone: "text-blue-400", border: "border-l-blue-500/50", hint: `${accounting.totalSoldItems} ta atir (${accounting.deliveredOrdersCount} ta buyurtma)` },
+          { label: "Tovar xaridi", value: accounting.fin.inventoryPurchasesUzs, tone: "text-orange-400", border: "border-l-orange-500/50", hint: "omborga — Sof Foydaga darhol kirmaydi" },
+          { label: "Operatsion rasxod", value: accounting.fin.operatingExpensesUzs, tone: "text-red-400", border: "border-l-red-500/50", hint: "reklama, ChatGPT, yetkazish..." },
+          { label: "Sof Foyda", value: accounting.fin.netProfitUzs, tone: accounting.fin.netProfitUzs >= 0 ? "text-green-400" : "text-red-400", border: "border-l-green-500/50", hint: "savdo − tan narx − operatsion" },
+          { label: "Kassa", value: accounting.fin.cashUzs, tone: accounting.fin.cashUzs >= 0 ? "text-gradient-gold" : "text-red-400", border: "border-l-gold/50", hint: "sarmoya + savdo − barcha rasxod" },
+        ].map(c => (
+          <div key={c.label} className={`glass-card rounded-xl p-5 border-l-4 ${c.border}`}>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">{c.label}</p>
+            <p className={`text-xl lg:text-2xl font-bold break-words ${c.tone}`}>{fmt(c.value)} so&apos;m</p>
+            <p className="text-[10px] text-muted-foreground mt-1">{c.hint}</p>
+          </div>
+        ))}
       </div>
 
       {/* ═══════════════════════════════════════════════════════ */}
       {/* FILTER TABS                                            */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <div className="flex gap-1 p-1 rounded-2xl bg-secondary/50 backdrop-blur-sm w-fit">
-        {(["all", "sales", "expenses"] as const).map(v => (
+      <div className="flex flex-wrap gap-1 p-1 rounded-2xl bg-secondary/50 backdrop-blur-sm w-fit">
+        {(["all", "sales", "expenses", "capital"] as const).map(v => (
           <button
             key={v}
             onClick={() => setActiveView(v)}
@@ -315,7 +257,7 @@ export default function CashflowPage() {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {v === "all" ? "Barchasi" : v === "sales" ? "💰 Savdo" : "📉 Rasxodlar"}
+            {v === "all" ? "Barchasi" : v === "sales" ? "💰 Savdo" : v === "expenses" ? "📉 Rasxodlar" : "🏦 Sarmoya"}
           </button>
         ))}
       </div>
@@ -341,19 +283,19 @@ export default function CashflowPage() {
                 <tr key={tx.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                   <td className="px-6 py-3">
                     <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase ${
-                      tx.type === "income" ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"
+                      uiOf(tx.type).badge
                     }`}>
-                      {tx.type === "income" ? (
+                      {tx.type !== "expense" ? (
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M10 17a.75.75 0 01-.75-.75V5.612L5.29 9.77a.75.75 0 01-1.08-1.04l5.25-5.5a.75.75 0 011.08 0l5.25 5.5a.75.75 0 11-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0110 17z" clipRule="evenodd" /></svg>
                       ) : (
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z" clipRule="evenodd" /></svg>
                       )}
-                      {tx.type === "income" ? "Savdo" : "Rasxod"}
+                      {uiOf(tx.type).label}
                     </span>
                   </td>
                   <td className="px-6 py-3 text-sm text-foreground">{tx.description}</td>
-                  <td className={`px-6 py-3 text-sm font-bold ${tx.type === "income" ? "text-green-400" : "text-red-400"}`}>
-                    {tx.type === "income" ? `+${fmt(tx.amount)}` : `-${fmt(usdToUzs(tx.amount))}`} so'm
+                  <td className={`px-6 py-3 text-sm font-bold whitespace-nowrap ${uiOf(tx.type).text}`}>
+                    {txUzs(tx) >= 0 ? "+" : "−"}{fmt(Math.abs(txUzs(tx)))} so&apos;m
                   </td>
                   <td className={`px-6 py-3 text-sm font-bold ${tx.balance >= 0 ? "text-gradient-gold" : "text-red-400"}`}>
                     {fmt(tx.balance)} so'm
@@ -414,6 +356,15 @@ export default function CashflowPage() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => setType("capital")}
+                  className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${
+                    type === "capital" ? "bg-purple-500/20 text-purple-400" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Sarmoya
+                </button>
+                <button
+                  type="button"
                   onClick={() => setType("expense")}
                   className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${
                     type === "expense" ? "bg-red-500/20 text-red-400" : "text-muted-foreground hover:text-foreground"
@@ -449,17 +400,17 @@ export default function CashflowPage() {
                 </div>
               )}
               <div className="space-y-1">
-                <label className="text-xs text-muted-foreground uppercase tracking-wider">Summa ($)</label>
+                <label className="text-xs text-muted-foreground uppercase tracking-wider">{type === "expense" ? "Summa ($)" : "Summa (so'm)"}</label>
                 <input required type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-lg font-bold text-foreground focus:outline-none focus:border-gold/50" />
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground uppercase tracking-wider">Tavsif (Sabab)</label>
-                <input required type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder={type === "expense" ? "Masalan: Target reklama, Yetkazish" : "Masalan: Buyurtma #123 daromadi"} className="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-sm text-foreground focus:outline-none focus:border-gold/50" />
+                <input required type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder={type === "expense" ? "Masalan: Target reklama, Yetkazish" : type === "capital" ? "Masalan: Dilmurod tikgan pul" : "Masalan: Buyurtma #123 daromadi"} className="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-sm text-foreground focus:outline-none focus:border-gold/50" />
               </div>
 
               <button type="submit" className={`w-full py-3.5 mt-2 rounded-xl font-bold uppercase tracking-wider text-sm transition-all text-black shadow-lg ${
-                type === "income" ? "bg-green-400 hover:bg-green-500 shadow-green-500/20" : "bg-red-400 hover:bg-red-500 shadow-red-500/20"
+                uiOf(type).button
               }`}>
                 Saqlash
               </button>
