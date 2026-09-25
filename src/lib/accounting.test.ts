@@ -6,8 +6,8 @@ describe("itemPriceUzs", () => {
     expect(itemPriceUzs({ product_id: "p1", quantity: 1, price_uzs: 800000 })).toBe(800000);
   });
 
-  it("price_uzs yo'q, price_at_purchase (dollar) bor bo'lsa — 12100 ga ko'paytirib qaytaradi", () => {
-    expect(itemPriceUzs({ product_id: "p1", quantity: 1, price_at_purchase: 45 })).toBe(45 * 12100);
+  it("price_uzs yo'q, price_at_purchase (dollar) bor bo'lsa — 11870 ga ko'paytirib qaytaradi", () => {
+    expect(itemPriceUzs({ product_id: "p1", quantity: 1, price_at_purchase: 45 })).toBe(45 * 11870);
   });
 
   it("ikkalasi ham yo'q bo'lsa — 0 qaytaradi, NaN EMAS", () => {
@@ -15,7 +15,7 @@ describe("itemPriceUzs", () => {
   });
 
   it("price_uzs = 0 bo'lsa, price_at_purchase bo'lsa — dollardan hisoblaydi", () => {
-    expect(itemPriceUzs({ product_id: "p1", quantity: 1, price_uzs: 0, price_at_purchase: 45 })).toBe(45 * 12100);
+    expect(itemPriceUzs({ product_id: "p1", quantity: 1, price_uzs: 0, price_at_purchase: 45 })).toBe(45 * 11870);
   });
 });
 
@@ -38,7 +38,7 @@ describe("orderRevenueUzs", () => {
         { product_id: "p1", quantity: 2, price_at_purchase: 45 },
       ],
     };
-    expect(orderRevenueUzs(order)).toBe(2 * 45 * 12100);
+    expect(orderRevenueUzs(order)).toBe(2 * 45 * 11870);
   });
 
   it("items null bo'lsa — 0 qaytaradi", () => {
@@ -52,7 +52,7 @@ describe("orderRevenueUzs", () => {
         { product_id: "p2", quantity: 2, price_at_purchase: 45 },
       ],
     };
-    expect(orderRevenueUzs(order)).toBe(800000 + 2 * 45 * 12100);
+    expect(orderRevenueUzs(order)).toBe(800000 + 2 * 45 * 11870);
   });
 
   it("item.quantity yo'q (undefined) bo'lsa — NaN emas, 0 sifatida hisoblanadi", () => {
@@ -78,7 +78,7 @@ describe("totalRevenueUzs", () => {
     ];
     const total = totalRevenueUzs(orders);
     expect(Number.isNaN(total)).toBe(false);
-    expect(total).toBe(45 * 12100 + 800000 + 50 * 12100);
+    expect(total).toBe(45 * 11870 + 800000 + 50 * 11870);
   });
 
   it("bo'sh ro'yxat uchun 0 qaytaradi", () => {
@@ -89,10 +89,10 @@ describe("totalRevenueUzs", () => {
 describe("usdToUzs", () => {
   // ⚠️ cost_price_usd (COGS) va tranzaksiyalar jadvalidagi rasxod
   // yozuvlari ($ da kiritiladi) so'mdagi daromad bilan to'g'ridan-to'g'ri
-  // ayirilganda Sof Foyda xato chiqadi (masshtab ~12100x farq qiladi).
+  // ayirilganda Sof Foyda xato chiqadi (masshtab ~12 000x farq qiladi).
   // Bu funksiya shu ikkalasini bitta valyutaga keltiradi.
-  it("dollar summasini 12100 ga ko'paytirib so'mga aylantiradi", () => {
-    expect(usdToUzs(45)).toBe(45 * 12100);
+  it("dollar summasini 11870 ga ko'paytirib so'mga aylantiradi", () => {
+    expect(usdToUzs(45)).toBe(45 * 11870);
   });
 
   it("0 uchun 0 qaytaradi", () => {
@@ -133,31 +133,31 @@ describe("summarizeFinances", () => {
   });
 
   it("rasxodni so'mga aylantiradi va tovar xaridini operatsiondan ajratadi (kategoriyasiz = operatsion)", () => {
-    expect(s.expensesUzs).toBe(125 * 12100);
-    expect(s.inventoryPurchasesUzs).toBe(100 * 12100);
-    expect(s.operatingExpensesUzs).toBe(25 * 12100);
+    expect(s.expensesUzs).toBe(125 * 11870);
+    expect(s.inventoryPurchasesUzs).toBe(100 * 11870);
+    expect(s.operatingExpensesUzs).toBe(25 * 11870);
   });
 
   it("sotilganlar tan narxi va sof foyda", () => {
-    expect(s.cogsUzs).toBe(40 * 12100);
-    expect(s.netProfitUzs).toBe(1_344_500 - 40 * 12100 - 25 * 12100);
+    expect(s.cogsUzs).toBe(40 * 11870);
+    expect(s.netProfitUzs).toBe(1_344_500 - 40 * 11870 - 25 * 11870);
   });
 
   it("kassa = sarmoya + savdo − barcha rasxod; savdo qoldig'i sarmoyasiz", () => {
-    expect(s.cashUzs).toBe(12_772_120 + 1_344_500 - 125 * 12100);
-    expect(s.salesBalanceUzs).toBe(1_344_500 - 125 * 12100);
+    expect(s.cashUzs).toBe(12_772_120 + 1_344_500 - 125 * 11870);
+    expect(s.salesBalanceUzs).toBe(1_344_500 - 125 * 11870);
   });
 
   it("ombor faqat qoldig'i bor mahsulotlardan, jami boylik va haqiqiy foyda", () => {
     expect(s.warehouseItems).toBe(3);
-    expect(s.warehouseUzs).toBe(20 * 12100);
+    expect(s.warehouseUzs).toBe(20 * 11870);
     expect(s.totalWorthUzs).toBe(s.cashUzs + s.warehouseUzs);
     expect(s.realProfitUzs).toBe(s.totalWorthUzs - s.capitalUzs);
   });
 
   it("sverka: hisob bo'yicha ombor (xarid − sotilgan tan narx) va haqiqiy ombor farqi", () => {
-    expect(s.expectedWarehouseUzs).toBe(60 * 12100);
-    expect(s.warehouseGapUzs).toBe(40 * 12100);
+    expect(s.expectedWarehouseUzs).toBe(60 * 11870);
+    expect(s.warehouseGapUzs).toBe(40 * 11870);
   });
 
   it("bo'sh yoki buzuq ma'lumotda NaN qaytarmaydi", () => {
@@ -187,18 +187,18 @@ describe("summarizeFinances — rasxod segmentlari", () => {
 
   it("har bir segmentni so'mda beradi; eski 'operating' va kategoriyasizlar 'boshqa'ga tushadi", () => {
     expect(s.expenseSegmentsUzs).toEqual({
-      inventory: 100 * 12100,
-      cargo: 30 * 12100,
-      ads: 30 * 12100,
-      services: 9 * 12100,
+      inventory: 100 * 11870,
+      cargo: 30 * 11870,
+      ads: 30 * 11870,
+      services: 9 * 11870,
       deposit: 0,
-      other: 6 * 12100,
+      other: 6 * 11870,
     });
   });
 
   it("faqat atir xaridi aktiv; kargo, reklama, xizmat va boshqa — operatsion", () => {
-    expect(s.inventoryPurchasesUzs).toBe(100 * 12100);
-    expect(s.operatingExpensesUzs).toBe(75 * 12100);
+    expect(s.inventoryPurchasesUzs).toBe(100 * 11870);
+    expect(s.operatingExpensesUzs).toBe(75 * 11870);
   });
 
   it("segmentlar yig'indisi jami rasxodga teng", () => {
@@ -219,7 +219,7 @@ describe("summarizeFinances — sarmoya aylanmasi", () => {
       products: [],
     });
     expect(s.salesTurnover).toBe(3);
-    expect(s.worthMultiple).toBe((1_000_000 + 3_000_000 - 100 * 12100) / 1_000_000);
+    expect(s.worthMultiple).toBe((1_000_000 + 3_000_000 - 100 * 11870) / 1_000_000);
   });
 
   it("sarmoya kiritilmagan bo'lsa 0 qaytaradi, Infinity/NaN emas", () => {
@@ -242,14 +242,14 @@ describe("summarizeFinances — qaytadigan depozit (masalan Uzum)", () => {
   });
 
   it("depozit kassadan chiqadi, lekin foydani kamaytirmaydi", () => {
-    expect(s.cashUzs).toBe(1_000_000 + 2_000_000 - 110 * 12100);
-    expect(s.operatingExpensesUzs).toBe(10 * 12100);
-    expect(s.netProfitUzs).toBe(2_000_000 - 10 * 12100);
+    expect(s.cashUzs).toBe(1_000_000 + 2_000_000 - 110 * 11870);
+    expect(s.operatingExpensesUzs).toBe(10 * 11870);
+    expect(s.netProfitUzs).toBe(2_000_000 - 10 * 11870);
   });
 
   it("depozit jami boylikka qo'shiladi (qaytib keladigan pul)", () => {
-    expect(s.depositsUzs).toBe(100 * 12100);
+    expect(s.depositsUzs).toBe(100 * 11870);
     expect(s.totalWorthUzs).toBe(s.cashUzs + s.warehouseUzs + s.depositsUzs);
-    expect(s.realProfitUzs).toBe(2_000_000 - 10 * 12100);
+    expect(s.realProfitUzs).toBe(2_000_000 - 10 * 11870);
   });
 });

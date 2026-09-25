@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/api-guard";
 import { serverSupabase } from "@/lib/supabase-server";
 import { computeOrderTotal } from "@/lib/pricing-server";
-import { orderRevenueUzs } from "@/lib/accounting";
+import { orderRevenueUzs, USD_TO_UZS } from "@/lib/accounting";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
@@ -142,7 +142,7 @@ export async function POST(req: Request) {
       const lines = items.map((i) => {
         const qty = Math.max(1, Math.floor(Number(i.quantity) || 1));
         const priceDollar = Math.max(0, Number(i.price_at_purchase) || 0);
-        const priceUzs = Number(i.price_uzs) || Math.round(priceDollar * 12100);
+        const priceUzs = Number(i.price_uzs) || Math.round(priceDollar * USD_TO_UZS);
         const isValidUuid = i.product_id && UUID_RE.test(i.product_id);
 
         return {

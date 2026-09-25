@@ -46,3 +46,23 @@ where type = 'expense' and trim(description) in (
   '212 attr',
   'Attirla+kargo 3.2kg'
 );
+
+-- 4) Barcha $ summalar uchun bitta kurs — 11 870 (egasi).
+--    Narxi dollarda kiritilgan 38 ta buyurtmaning kirim yozuvlari 12 100
+--    bilan hisoblangan edi — buyurtmadagi $ narxlardan 11 870 bilan qayta
+--    hisoblanadi. Qayta bajarilsa ham natija o'zgarmaydi. So'mda sotilgan
+--    (Uzum, Click) buyurtmalarga tegmaydi — ularda $ narx yo'q.
+update transactions t
+set amount = s.uzs
+from (
+  select o.id,
+         round(sum(coalesce((i->>'price_at_purchase')::numeric, 0)
+                   * coalesce((i->>'quantity')::numeric, 0)) * 11870) as uzs
+  from orders o
+  cross join lateral jsonb_array_elements(o.items::jsonb) as i
+  where o.status = 'delivered'
+  group by o.id
+) s
+where s.uzs > 0
+  and t.type = 'income'
+  and t.description like ('Buyurtma #' || left(s.id::text, 8) || '%');

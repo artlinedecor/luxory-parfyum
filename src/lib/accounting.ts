@@ -14,7 +14,9 @@
  * 0 qaytaradi.
  */
 
-export const USD_TO_UZS = 12100;
+// Egasi belgilagan kurs — buxgalteriyadagi barcha $ → so'm hisoblari shu bilan.
+// Saytdagi sotuv narxlari (utils.ts, EXCHANGE_RATE) bunga bog'liq emas.
+export const USD_TO_UZS = 11_870;
 
 /** Dollar summasini so'mga aylantiradi (masalan cost_price_usd yoki $-dagi rasxod tranzaksiyalari uchun). */
 export function usdToUzs(usd: number): number {

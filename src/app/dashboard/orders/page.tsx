@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { Order, Product } from "@/lib/types";
 import { dashLoad } from "@/lib/dashboard-api";
+import { USD_TO_UZS } from "@/lib/accounting";
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 import { trackDmConversion } from "@/lib/meta-tracker";
 import UzumContractActions from "@/components/UzumContractActions";
@@ -116,7 +117,7 @@ export default function OrdersPage() {
     (acc, item) => acc + (Number(item.price_at_purchase) || 0) * (Number(item.quantity) || 1),
     0
   );
-  const manualTotalUzs = manualTotalDollars * 12100;
+  const manualTotalUzs = manualTotalDollars * USD_TO_UZS;
 
   const fetchOrders = useCallback(async () => {
     // Audit X7: admin tekshiruvi bo'lgan server route orqali.
@@ -294,7 +295,7 @@ export default function OrdersPage() {
             title: i.title.trim(),
             quantity: Number(i.quantity) || 1,
             price_at_purchase: Number(i.price_at_purchase) || 0,
-            price_uzs: (Number(i.price_at_purchase) || 0) * 12100,
+            price_uzs: Math.round((Number(i.price_at_purchase) || 0) * USD_TO_UZS),
             product_type: i.product_type || "lux_copy",
           })),
           client_name: manualName.trim(),
