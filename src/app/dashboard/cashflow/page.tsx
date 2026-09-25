@@ -251,7 +251,7 @@ export default function CashflowPage() {
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Rasxodlar tarkibi</p>
           <p className="text-sm font-bold text-red-400">Jami: {fmt(accounting.fin.expensesUzs)} so&apos;m</p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {EXPENSE_SEGMENTS.map(seg => (
             <div key={seg} className="rounded-lg bg-secondary/40 px-3 py-2">
               <p className="text-[10px] text-muted-foreground">{EXPENSE_SEGMENT_LABELS[seg]}</p>
@@ -409,7 +409,7 @@ export default function CashflowPage() {
                       </button>
                     ))}
                   </div>
-                  <p className="text-[10px] text-muted-foreground">Faqat &quot;Atir xaridi&quot; omborga (aktiv) yoziladi — qolganlari darhol foydadan ayiriladi.</p>
+                  <p className="text-[10px] text-muted-foreground">&quot;Atir xaridi&quot; omborga, &quot;Qaytadigan pul&quot; esa qaytadigan aktiv bo&apos;lib yoziladi — ular foydani kamaytirmaydi. Qolganlari darhol foydadan ayiriladi.</p>
                 </div>
               )}
               <div className="space-y-1">

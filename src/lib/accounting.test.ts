@@ -191,6 +191,7 @@ describe("summarizeFinances — rasxod segmentlari", () => {
       cargo: 30 * 12100,
       ads: 30 * 12100,
       services: 9 * 12100,
+      deposit: 0,
       other: 6 * 12100,
     });
   });
@@ -225,5 +226,30 @@ describe("summarizeFinances — sarmoya aylanmasi", () => {
     const s = summarizeFinances({ transactions: [{ type: "income", amount: 5 }], deliveredOrders: [], products: [] });
     expect(s.salesTurnover).toBe(0);
     expect(s.worthMultiple).toBe(0);
+  });
+});
+
+describe("summarizeFinances — qaytadigan depozit (masalan Uzum)", () => {
+  const s = summarizeFinances({
+    transactions: [
+      { type: "capital", amount: 1_000_000 },
+      { type: "income", amount: 2_000_000 },
+      { type: "expense", amount: 10, expense_category: "ads" },
+      { type: "expense", amount: 100, expense_category: "deposit" },
+    ],
+    deliveredOrders: [],
+    products: [],
+  });
+
+  it("depozit kassadan chiqadi, lekin foydani kamaytirmaydi", () => {
+    expect(s.cashUzs).toBe(1_000_000 + 2_000_000 - 110 * 12100);
+    expect(s.operatingExpensesUzs).toBe(10 * 12100);
+    expect(s.netProfitUzs).toBe(2_000_000 - 10 * 12100);
+  });
+
+  it("depozit jami boylikka qo'shiladi (qaytib keladigan pul)", () => {
+    expect(s.depositsUzs).toBe(100 * 12100);
+    expect(s.totalWorthUzs).toBe(s.cashUzs + s.warehouseUzs + s.depositsUzs);
+    expect(s.realProfitUzs).toBe(2_000_000 - 10 * 12100);
   });
 });

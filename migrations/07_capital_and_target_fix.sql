@@ -31,7 +31,11 @@ update transactions set expense_category = 'cargo'
 where type = 'expense' and trim(description) in ('turkiyadan yulkira 26kg*6', 'kargo 11 ta atir');
 
 update transactions set expense_category = 'services'
-where type = 'expense' and trim(description) in ('ChatGPT', 'YTT Davlat hizmatlari', 'Узум насияга бердик');
+where type = 'expense' and trim(description) in ('ChatGPT', 'YTT Davlat hizmatlari');
+
+-- Egasi: Uzum'ga berilgan depozit, qaytadi — rasxod emas, qaytadigan aktiv.
+update transactions set expense_category = 'deposit'
+where type = 'expense' and trim(description) = 'Узум насияга бердик';
 
 update transactions set expense_category = 'inventory'
 where type = 'expense' and trim(description) in (

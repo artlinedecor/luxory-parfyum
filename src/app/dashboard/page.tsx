@@ -126,9 +126,9 @@ export default function DashboardPage() {
                 <p className="text-xl font-bold text-purple-400">{fmt(fin.capitalUzs)} so&apos;m</p>
               </div>
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Hozir jami (kassa + ombor)</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Hozir jami (pul + atirlar + qaytadigan)</p>
                 <p className="text-2xl sm:text-3xl font-bold text-gradient-gold">{fmt(fin.totalWorthUzs)} so&apos;m</p>
-                <p className="text-[10px] text-muted-foreground">pul: {fmt(fin.cashUzs)} · atirlar: {fmt(fin.warehouseUzs)}</p>
+                <p className="text-[10px] text-muted-foreground">pul: {fmt(fin.cashUzs)} · atirlar: {fmt(fin.warehouseUzs)}{fin.depositsUzs > 0 ? ` · qaytadigan: ${fmt(fin.depositsUzs)}` : ""}</p>
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider">O&apos;sish (haqiqiy foyda)</p>
@@ -153,7 +153,7 @@ export default function DashboardPage() {
             <StatCard label="Jami Rasxod" hint="tovar xaridi + operatsion" value={`${fmt(fin.expensesUzs)} so'm`} tone="text-red-400" />
             <StatCard label="Kassa" hint="qo'lda va kartada bo'lishi kerak" value={`${fmt(fin.cashUzs)} so'm`} tone={fin.cashUzs >= 0 ? "text-gradient-gold" : "text-red-400"} />
             <StatCard label="Ombor" hint={`${fin.warehouseItems} dona, tan narxda`} value={`${fmt(fin.warehouseUzs)} so'm`} tone="text-orange-400" />
-            <StatCard label="Jami boylik" hint="kassa + ombor" value={`${fmt(fin.totalWorthUzs)} so'm`} tone="text-gradient-gold" highlight />
+            <StatCard label="Jami boylik" hint="kassa + ombor + depozit" value={`${fmt(fin.totalWorthUzs)} so'm`} tone="text-gradient-gold" highlight />
             <StatCard label="Sof Foyda" hint="savdo − tan narx − operatsion" value={`${fmt(fin.netProfitUzs)} so'm`} tone={fin.netProfitUzs >= 0 ? "text-green-400" : "text-red-400"} highlight />
             <StatCard label="Sotilgan atirlar" hint={`${stats.totalOrdersCount} ta buyurtma, ${stats.totalPendingItems} ta kutilmoqda`} value={`${stats.totalSoldItems} ta`} tone="text-gradient-gold" />
           </div>
@@ -171,7 +171,7 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <Line label="Jami Savdo (tushum)" value={`+${fmt(fin.salesUzs)} so'm`} tone="text-blue-400" />
                 <Line label="Sotilgan atirlarning tan narxi" value={`−${fmt(fin.cogsUzs)} so'm`} tone="text-orange-400" />
-                {EXPENSE_SEGMENTS.filter(seg => seg !== "inventory").map(seg => (
+                {EXPENSE_SEGMENTS.filter(seg => seg !== "inventory" && seg !== "deposit").map(seg => (
                   <Line key={seg} label={EXPENSE_SEGMENT_LABELS[seg]} value={`−${fmt(fin.expenseSegmentsUzs[seg])} so'm`} tone="text-red-400" />
                 ))}
                 <Line label="= Sof Foyda" value={`${fmt(fin.netProfitUzs)} so'm`} tone={fin.netProfitUzs >= 0 ? 'text-green-400' : 'text-red-400'} total />
@@ -210,6 +210,7 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <Line label="Kassa" value={`${fmt(fin.cashUzs)} so'm`} tone="text-foreground" />
                 <Line label="+ Ombordagi tovar (tan narxda)" value={`${fmt(fin.warehouseUzs)} so'm`} tone="text-orange-400" />
+                <Line label="+ Qaytadigan pul (depozit)" value={`${fmt(fin.depositsUzs)} so'm`} tone="text-cyan-400" />
                 <Line label="= Jami boylik" value={`${fmt(fin.totalWorthUzs)} so'm`} tone="text-gradient-gold" total />
                 <Line label="− Tikilgan pul" value={`${fmt(fin.capitalUzs)} so'm`} tone="text-purple-400" />
                 <Line label="= Haqiqiy foyda (boylik o'sishi)" value={`${fmt(fin.realProfitUzs)} so'm`} tone={fin.realProfitUzs >= 0 ? 'text-green-400' : 'text-red-400'} total />

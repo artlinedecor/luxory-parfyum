@@ -74,8 +74,12 @@ export interface CostOrder {
 
 const num = (v: unknown) => Number(v) || 0;
 
-/** Rasxod segmentlari. Faqat "inventory" (atir xaridi) aktiv — qolganlari darhol foydadan ayiriladi. */
-export const EXPENSE_SEGMENTS = ["inventory", "cargo", "ads", "services", "other"] as const;
+/**
+ * Rasxod segmentlari. "inventory" (atir xaridi) omborga aktiv bo'lib yoziladi,
+ * "deposit" (qaytadigan pul, masalan Uzum depoziti) ham aktiv — ikkalasi ham
+ * foydani kamaytirmaydi. Qolganlari darhol foydadan ayiriladi.
+ */
+export const EXPENSE_SEGMENTS = ["inventory", "cargo", "ads", "services", "deposit", "other"] as const;
 export type ExpenseSegment = (typeof EXPENSE_SEGMENTS)[number];
 
 export const EXPENSE_SEGMENT_LABELS: Record<ExpenseSegment, string> = {
@@ -83,6 +87,7 @@ export const EXPENSE_SEGMENT_LABELS: Record<ExpenseSegment, string> = {
   cargo: "Kargo va yo'l",
   ads: "Reklama (Target)",
   services: "Xizmat va obunalar",
+  deposit: "Qaytadigan pul (depozit)",
   other: "Boshqa",
 };
 
@@ -125,7 +130,8 @@ export function summarizeFinances(input: {
 
   const expensesUzs = usdToUzs(expensesUsd);
   const inventoryPurchasesUzs = expenseSegmentsUzs.inventory;
-  const operatingExpensesUzs = expensesUzs - inventoryPurchasesUzs;
+  const depositsUzs = expenseSegmentsUzs.deposit;
+  const operatingExpensesUzs = expensesUzs - inventoryPurchasesUzs - depositsUzs;
 
   const costOf: Record<string, number> = {};
   for (const p of products) costOf[p.id] = num(p.cost_price_usd);
@@ -147,7 +153,7 @@ export function summarizeFinances(input: {
   const warehouseUzs = usdToUzs(warehouseUsd);
 
   const cashUzs = capitalUzs + salesUzs - expensesUzs;
-  const totalWorthUzs = cashUzs + warehouseUzs;
+  const totalWorthUzs = cashUzs + warehouseUzs + depositsUzs;
   const expectedWarehouseUzs = inventoryPurchasesUzs - cogsUzs;
 
   return {
@@ -160,6 +166,7 @@ export function summarizeFinances(input: {
     salesTurnover: capitalUzs > 0 ? salesUzs / capitalUzs : 0,
     worthMultiple: capitalUzs > 0 ? totalWorthUzs / capitalUzs : 0,
     inventoryPurchasesUzs,
+    depositsUzs,
     operatingExpensesUzs,
     cogsUzs,
     netProfitUzs: salesUzs - cogsUzs - operatingExpensesUzs,
