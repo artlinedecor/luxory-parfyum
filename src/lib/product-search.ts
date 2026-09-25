@@ -78,7 +78,8 @@ const STOPWORDS = new Set([
 ]);
 
 export function normalizeQuery(q: string): string {
-  const lower = (q || "").toLowerCase();
+  // Apostrof so'zni bo'lmasin (J'adore → jadore); "дж" o'zbekcha j
+  const lower = (q || "").toLowerCase().replace(/['’`ʼ]/g, "").replace(/дж/g, "ж");
   const latin = [...lower].map((ch) => CYR[ch] ?? ch).join("");
   const plain = latin.normalize("NFD").replace(/[̀-ͯ]/g, "");
   return plain

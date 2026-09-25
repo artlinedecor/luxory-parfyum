@@ -17,6 +17,11 @@ describe("normalizeQuery", () => {
     expect(normalizeQuery("диор саваж")).toBe("dior sauvage");
   });
 
+  it("apostrof so'zni bo'lmaydi, дж — j", () => {
+    expect(normalizeQuery("J'adore")).toBe("jadore");
+    expect(normalizeQuery("джадор")).toBe("jadore");
+  });
+
   it("katta harf, urg'u va belgilarni olib tashlaydi", () => {
     expect(normalizeQuery("  BACCARAT!! ")).toBe("baccarat");
     expect(normalizeQuery("Bois Impérial")).toBe("bois imperial");
