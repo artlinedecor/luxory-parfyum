@@ -117,7 +117,7 @@ export default function AccountingPage() {
     // items'idan qayta hisoblanmaydi.
     const kassaIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
     const kassaExpense = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
-    const kassaBalance = kassaIncome - kassaExpense;
+    const kassaBalance = kassaIncome - usdToUzs(kassaExpense);
 
     const totalSoldRevenue = kassaIncome;
 
@@ -130,8 +130,10 @@ export default function AccountingPage() {
       }
     });
 
+    // ⚠️ Ilgari regex bilan taxmin qilinardi — endi admin "Yangi
+    // Tranzaksiya" formasida ANIQ tanlagan kategoriyaga tayanamiz.
     const capitalExpense = transactions
-      .filter(t => t.type === "expense" && t.description && /tavar|tovar|mahsulot|xarid|oldik|yulkira|cargo|kargo|turkiya|prixod/i.test(t.description))
+      .filter(t => t.type === "expense" && t.expense_category === "inventory")
       .reduce((s, t) => s + Number(t.amount), 0);
     const operatingExpense = kassaExpense - capitalExpense;
 
@@ -144,7 +146,10 @@ export default function AccountingPage() {
     const operatingExpenseUzs = usdToUzs(operatingExpense);
 
     const realizedProfit = totalSoldRevenue - totalSoldCOGSUzs - operatingExpenseUzs;
-    const savdoQoldiq = kassaIncome - kassaExpense;
+    // ⚠️ kassaIncome so'mda, kassaExpense dollarda — usdToUzs bilan
+    // aylantirmasdan ayirilsa, Savdo Qoldig'i deyarli o'zgarmagandek
+    // ko'rinardi (kichik $ summa millionlab so'm oldida yo'qolib ketadi).
+    const savdoQoldiq = kassaIncome - usdToUzs(kassaExpense);
 
     // ── UMUMIY BALANS ────────────────────────────
     // Ombordagi mol qiymati + Kassa qoldig'i
@@ -159,6 +164,7 @@ export default function AccountingPage() {
       totalSoldRevenue,
       totalSoldCOGS,
       realizedProfit,
+      capitalExpense,
       savdoQoldiq,
       kassaIncome,
       kassaExpense,
@@ -234,9 +240,13 @@ export default function AccountingPage() {
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.cogs}</p>
                 <p className="text-2xl font-bold text-red-400">${fmt(stats.totalSoldCOGS)}</p>
               </div>
+              <div className="glass-card rounded-2xl p-5 border-l-4 border-l-orange-500">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Tikilgan Pul</p>
+                <p className="text-2xl font-bold text-orange-400">{fmt(usdToUzs(stats.capitalExpense))} so&apos;m</p>
+              </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-blue-500">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.savdoQoldiq}</p>
-                <p className={`text-2xl font-bold ${stats.savdoQoldiq >= 0 ? 'text-blue-400' : 'text-red-400'}`}>${fmt(stats.savdoQoldiq)}</p>
+                <p className={`text-2xl font-bold ${stats.savdoQoldiq >= 0 ? 'text-blue-400' : 'text-red-400'}`}>{fmt(stats.savdoQoldiq)} so&apos;m</p>
               </div>
               <div className="glass-card rounded-2xl p-5 border-l-4 border-l-gold/60">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{L.netProfit}</p>
