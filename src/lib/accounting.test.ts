@@ -14,6 +14,10 @@ describe("itemPriceUzs", () => {
     expect(itemPriceUzs({ product_id: "p1", quantity: 1 })).toBe(0);
   });
 
+  it("ikkalasi bo'lsa — dollar narx ustuvor (eski price_uzs 12 100 kurs bilan saqlangan)", () => {
+    expect(itemPriceUzs({ product_id: "p1", quantity: 1, price_uzs: 605000, price_at_purchase: 50 })).toBe(593500);
+  });
+
   it("price_uzs = 0 bo'lsa, price_at_purchase bo'lsa — dollardan hisoblaydi", () => {
     expect(itemPriceUzs({ product_id: "p1", quantity: 1, price_uzs: 0, price_at_purchase: 45 })).toBe(45 * 11870);
   });

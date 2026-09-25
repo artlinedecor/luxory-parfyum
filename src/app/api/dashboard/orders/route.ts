@@ -23,17 +23,15 @@ type OrderRow = { id: string; status: string; items: OrderItem[] | null; total_a
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Buyurtmaning summasi — kassa va tranzaksiyalar uchun. */
+/** Buyurtmaning summasi — kassa va tranzaksiyalar uchun, SO'MDA. */
 function orderTotalAmount(order: OrderRow): number {
-  // ⚠️ total_amount ustuniga endi FAQAT so'm yoziladi (4-vazifa,
-  // 1-qadam). Shuning uchun uni to'g'ridan-to'g'ri ishonib bo'ladi —
-  // lekin ustun bo'sh/0 bo'lgan eski buyurtmalar uchun items dan
-  // qayta hisoblash kerak bo'lishi mumkin, shuning uchun accounting.ts
-  // dagi yagona, NaN'dan himoyalangan funksiyaga tayanamiz.
-  if (order.total_amount != null && Number(order.total_amount) > 0) {
-    return Number(order.total_amount);
-  }
-  return orderRevenueUzs(order);
+  // Avval qatorlardan: dollar narxlar USD_TO_UZS (11 870) bilan so'mga
+  // o'giriladi. total_amount'ga ishonib bo'lmaydi — eski qo'lda
+  // buyurtmalarda u yerda DOLLAR turibdi (52, 232…), va holat qayta
+  // "yetkazildi" qilinsa kassaga 52 so'm yozilib qolardi.
+  const fromItems = orderRevenueUzs(order);
+  if (fromItems > 0) return fromItems;
+  return Number(order.total_amount) || 0;
 }
 
 async function shiftStock(
@@ -142,7 +140,8 @@ export async function POST(req: Request) {
       const lines = items.map((i) => {
         const qty = Math.max(1, Math.floor(Number(i.quantity) || 1));
         const priceDollar = Math.max(0, Number(i.price_at_purchase) || 0);
-        const priceUzs = Number(i.price_uzs) || Math.round(priceDollar * USD_TO_UZS);
+        // Dollar narx bo'lsa — so'm faqat server kursidan (11 870), brauzer yuborganidan emas
+        const priceUzs = priceDollar > 0 ? Math.round(priceDollar * USD_TO_UZS) : Math.max(0, Number(i.price_uzs) || 0);
         const isValidUuid = i.product_id && UUID_RE.test(i.product_id);
 
         return {

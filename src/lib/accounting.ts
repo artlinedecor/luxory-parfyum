@@ -36,13 +36,20 @@ export interface OrderLike {
   items: OrderItemLike[] | null;
 }
 
-/** Bitta mahsulot qatorining BIR DONASINING so'mdagi narxi. */
+/**
+ * Bitta mahsulot qatorining BIR DONASINING so'mdagi narxi.
+ *
+ * Narx dollarda kiritilgan bo'lsa (qo'lda buyurtma) — doim USD_TO_UZS
+ * bilan qayta hisoblanadi: eski buyurtmalarning price_uzs'i 12 100 kurs
+ * bilan saqlangan, egasi esa barcha $ uchun bitta kurs (11 870) belgilagan.
+ * Faqat so'mda sotilganlar (Uzum, Click — dollar narxi yo'q) price_uzs'dan.
+ */
 export function itemPriceUzs(item: OrderItemLike): number {
+  if (item.price_at_purchase != null && item.price_at_purchase > 0) {
+    return Math.round(item.price_at_purchase * USD_TO_UZS);
+  }
   if (item.price_uzs != null && item.price_uzs > 0) {
     return item.price_uzs;
-  }
-  if (item.price_at_purchase != null && item.price_at_purchase > 0) {
-    return item.price_at_purchase * USD_TO_UZS;
   }
   return 0;
 }
