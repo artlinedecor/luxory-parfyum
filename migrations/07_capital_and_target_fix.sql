@@ -1,6 +1,11 @@
 -- 2026-09-25: to'liq sverka (egasi bilan kelishilgan).
 -- Supabase SQL Editor'da BIR MARTA bajariladi.
 
+-- 0) Jadval qoidasi faqat 'income'/'expense' ga ruxsat berardi — 'capital' qo'shiladi.
+alter table transactions drop constraint if exists transactions_type_check;
+alter table transactions add constraint transactions_type_check
+  check (type in ('income', 'expense', 'capital'));
+
 -- 1) Boshlang'ich sarmoya savdo (income) sifatida, dollarni so'mga
 --    aylantirmasdan (1026) yozilgan edi. Egasi: $1076, kurs 11 870.
 --    Sarmoya savdo ham, foyda ham emas — alohida "capital" turi.

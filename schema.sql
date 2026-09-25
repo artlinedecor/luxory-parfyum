@@ -49,7 +49,7 @@ CREATE TABLE orders (
 CREATE TABLE transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     merchant_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    type TEXT CHECK (type IN ('income', 'expense')) NOT NULL,
+    type TEXT CHECK (type IN ('income', 'expense', 'capital')) NOT NULL,
     amount NUMERIC(10, 2) NOT NULL,
     description TEXT NOT NULL, -- Masalan: "Turkiyadan tovar keldi", "Atir sotildi"
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
