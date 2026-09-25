@@ -14,13 +14,25 @@
  * 0 qaytaradi.
  */
 
-// Egasi belgilagan kurs — buxgalteriyadagi barcha $ → so'm hisoblari shu bilan.
+// Boshlang'ich kurs (egasi, 2026-09-25). Joriy kurs dashboard'da o'zgartiriladi
+// (app_settings.usd_to_uzs) — bu qiymat faqat sozlama yo'q bo'lganda va kursi
+// yozilmagan eski rasxodlar uchun ishlatiladi.
 // Saytdagi sotuv narxlari (utils.ts, EXCHANGE_RATE) bunga bog'liq emas.
 export const USD_TO_UZS = 11_870;
 
+/** Dashboard'da kiritiladigan kurs chegaralari — xato bilan 118 yoki 1 187 000 yozilmasin. */
+export const USD_RATE_MIN = 5_000;
+export const USD_RATE_MAX = 50_000;
+
+export function isValidUsdRate(rate: unknown): rate is number {
+  if (rate == null || rate === "") return false;
+  const n = Number(rate);
+  return Number.isFinite(n) && n >= USD_RATE_MIN && n <= USD_RATE_MAX;
+}
+
 /** Dollar summasini so'mga aylantiradi (masalan cost_price_usd yoki $-dagi rasxod tranzaksiyalari uchun). */
-export function usdToUzs(usd: number): number {
-  return (Number(usd) || 0) * USD_TO_UZS;
+export function usdToUzs(usd: number, rate: number = USD_TO_UZS): number {
+  return (Number(usd) || 0) * rate;
 }
 
 export interface OrderItemLike {
@@ -39,36 +51,48 @@ export interface OrderLike {
 /**
  * Bitta mahsulot qatorining BIR DONASINING so'mdagi narxi.
  *
- * Narx dollarda kiritilgan bo'lsa (qo'lda buyurtma) — doim USD_TO_UZS
- * bilan qayta hisoblanadi: eski buyurtmalarning price_uzs'i 12 100 kurs
- * bilan saqlangan, egasi esa barcha $ uchun bitta kurs (11 870) belgilagan.
- * Faqat so'mda sotilganlar (Uzum, Click — dollar narxi yo'q) price_uzs'dan.
+ * price_uzs — buyurtma kiritilgan paytdagi kurs bilan muzlatilgan summa:
+ * kurs keyin o'zgarsa ham tushgan pul o'zgarmaydi. U yo'q bo'lsa —
+ * dollar narx `rate` bilan o'giriladi.
+ * ⚠️ Eski qo'lda buyurtmalarning price_uzs'i 12 100 bilan saqlangan —
+ * migrations/08 ularni 11 870 ga keltiradi.
  */
-export function itemPriceUzs(item: OrderItemLike): number {
-  if (item.price_at_purchase != null && item.price_at_purchase > 0) {
-    return Math.round(item.price_at_purchase * USD_TO_UZS);
-  }
+export function itemPriceUzs(item: OrderItemLike, rate: number = USD_TO_UZS): number {
   if (item.price_uzs != null && item.price_uzs > 0) {
     return item.price_uzs;
+  }
+  if (item.price_at_purchase != null && item.price_at_purchase > 0) {
+    return Math.round(item.price_at_purchase * rate);
   }
   return 0;
 }
 
 /** Bitta buyurtmaning jami so'mdagi summasi. */
-export function orderRevenueUzs(order: OrderLike): number {
+export function orderRevenueUzs(order: OrderLike, rate: number = USD_TO_UZS): number {
   const items = order.items ?? [];
-  return items.reduce((sum, item) => sum + itemPriceUzs(item) * (Number(item.quantity) || 0), 0);
+  return items.reduce((sum, item) => sum + itemPriceUzs(item, rate) * (Number(item.quantity) || 0), 0);
 }
 
 /** Bir nechta buyurtmaning jami so'mdagi summasi. */
-export function totalRevenueUzs(orders: OrderLike[]): number {
-  return orders.reduce((sum, order) => sum + orderRevenueUzs(order), 0);
+export function totalRevenueUzs(orders: OrderLike[], rate: number = USD_TO_UZS): number {
+  return orders.reduce((sum, order) => sum + orderRevenueUzs(order, rate), 0);
 }
+
+const num = (v: unknown) => Number(v) || 0;
 
 export interface LedgerTx {
   type: string;
   amount: number | string | null;
   expense_category?: string | null;
+  /** Rasxod kiritilgan paytdagi kurs. Yo'q bo'lsa (eski yozuvlar) — USD_TO_UZS. */
+  usd_rate?: number | string | null;
+}
+
+/** Tranzaksiyaning so'mdagi qiymati: rasxod ($) o'z kursi bilan, qolganlari allaqachon so'mda. */
+export function txAmountUzs(t: LedgerTx): number {
+  if (t.type !== "expense") return num(t.amount);
+  const rate = isValidUsdRate(t.usd_rate) ? Number(t.usd_rate) : USD_TO_UZS;
+  return num(t.amount) * rate;
 }
 
 export interface StockProduct {
@@ -81,7 +105,6 @@ export interface CostOrder {
   items: { product_id: string; quantity: number }[] | null;
 }
 
-const num = (v: unknown) => Number(v) || 0;
 
 /**
  * Rasxod segmentlari. "inventory" (atir xaridi) omborga aktiv bo'lib yoziladi,
@@ -114,7 +137,9 @@ export function segmentOf(category: string | null | undefined): ExpenseSegment {
  *  - capital (sarmoya, tikilgan pul) — SO'MDA; savdo emas, foydaga kirmaydi
  *  - income (savdo tushumi) — SO'MDA
  *  - expense (rasxod) — DOLLARDA ("Yangi Tranzaksiya" formasi "Summa ($)")
- * Tan narx esa mahsulotning cost_price_usd'idan (DOLLAR). Ilgari bu
+ * Har bir rasxod o'zi kiritilgan kurs bilan (usd_rate) so'mga o'giriladi —
+ * kurs o'zgarganda eski rasxodlar qayta baholanmaydi.
+ * Tan narx esa mahsulotning cost_price_usd'idan (DOLLAR), joriy kurs bilan. Ilgari bu
  * hisob 3 ta sahifada alohida takrorlanib, har biri boshqacha xato
  * qilardi — endi hammasi shu yerdan olinadi.
  */
@@ -122,8 +147,11 @@ export function summarizeFinances(input: {
   transactions: LedgerTx[];
   deliveredOrders: CostOrder[];
   products: StockProduct[];
+  /** Joriy kurs — ombor va tan narx ($) uchun. */
+  rate?: number;
 }) {
   const { transactions, deliveredOrders, products } = input;
+  const rate = isValidUsdRate(input.rate) ? input.rate : USD_TO_UZS;
 
   const sumOf = (pred: (t: LedgerTx) => boolean) =>
     transactions.filter(pred).reduce((s, t) => s + num(t.amount), 0);
@@ -134,10 +162,10 @@ export function summarizeFinances(input: {
 
   const expenseSegmentsUzs = Object.fromEntries(EXPENSE_SEGMENTS.map((k) => [k, 0])) as Record<ExpenseSegment, number>;
   for (const t of transactions) {
-    if (t.type === "expense") expenseSegmentsUzs[segmentOf(t.expense_category)] += usdToUzs(num(t.amount));
+    if (t.type === "expense") expenseSegmentsUzs[segmentOf(t.expense_category)] += txAmountUzs(t);
   }
 
-  const expensesUzs = usdToUzs(expensesUsd);
+  const expensesUzs = EXPENSE_SEGMENTS.reduce((s, k) => s + expenseSegmentsUzs[k], 0);
   const inventoryPurchasesUzs = expenseSegmentsUzs.inventory;
   const depositsUzs = expenseSegmentsUzs.deposit;
   const operatingExpensesUzs = expensesUzs - inventoryPurchasesUzs - depositsUzs;
@@ -149,7 +177,7 @@ export function summarizeFinances(input: {
   for (const o of deliveredOrders) {
     for (const i of o.items ?? []) cogsUsd += (costOf[i.product_id] || 0) * num(i.quantity);
   }
-  const cogsUzs = usdToUzs(cogsUsd);
+  const cogsUzs = usdToUzs(cogsUsd, rate);
 
   let warehouseItems = 0;
   let warehouseUsd = 0;
@@ -159,7 +187,7 @@ export function summarizeFinances(input: {
     warehouseItems += stock;
     warehouseUsd += stock * num(p.cost_price_usd);
   }
-  const warehouseUzs = usdToUzs(warehouseUsd);
+  const warehouseUzs = usdToUzs(warehouseUsd, rate);
 
   const cashUzs = capitalUzs + salesUzs - expensesUzs;
   const totalWorthUzs = cashUzs + warehouseUzs + depositsUzs;

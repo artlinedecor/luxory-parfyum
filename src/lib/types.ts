@@ -63,6 +63,8 @@ export interface Transaction {
   description: string;
   /** Faqat type="expense" uchun ma'noli: "inventory" (tovar xaridi/aktiv) yoki "operating" (operatsion xarajat). */
   expense_category?: "inventory" | "cargo" | "ads" | "services" | "deposit" | "other" | "operating" | null;
+  /** Rasxod kiritilgan paytdagi kurs ($ → so'm). Eski yozuvlarda bo'lmasligi mumkin. */
+  usd_rate?: number | null;
   created_at: string;
 }
 

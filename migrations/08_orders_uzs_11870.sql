@@ -1,6 +1,8 @@
 -- 2026-09-26: qo'lda kiritilgan (dollar narxli) buyurtmalar summasi
 -- so'mga 11 870 kurs bilan o'giriladi. 07-migratsiyadan KEYIN bajariladi.
--- Qayta bajarilsa ham natija o'zgarmaydi. Uzum/Click (dollar narxi yo'q)
+-- ⚠️ Dashboard'da kursni o'zgartirishdan OLDIN bajaring: keyin bajarilsa,
+-- yangi kurs bilan kiritilgan buyurtmalar ham 11 870 ga qaytarib yoziladi.
+-- Uzum/Click (dollar narxi yo'q)
 -- buyurtmalarga tegmaydi.
 
 -- 1) Har bir qatorning price_uzs'i = price_at_purchase × 11 870

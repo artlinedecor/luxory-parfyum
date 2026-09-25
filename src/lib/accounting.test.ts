@@ -14,8 +14,12 @@ describe("itemPriceUzs", () => {
     expect(itemPriceUzs({ product_id: "p1", quantity: 1 })).toBe(0);
   });
 
-  it("ikkalasi bo'lsa — dollar narx ustuvor (eski price_uzs 12 100 kurs bilan saqlangan)", () => {
-    expect(itemPriceUzs({ product_id: "p1", quantity: 1, price_uzs: 605000, price_at_purchase: 50 })).toBe(593500);
+  it("ikkalasi bo'lsa — kiritilgan paytda muzlatilgan price_uzs ustuvor", () => {
+    expect(itemPriceUzs({ product_id: "p1", quantity: 1, price_uzs: 593500, price_at_purchase: 50 }, 12500)).toBe(593500);
+  });
+
+  it("price_uzs yo'q bo'lsa — berilgan kurs bilan", () => {
+    expect(itemPriceUzs({ product_id: "p1", quantity: 1, price_at_purchase: 10 }, 12500)).toBe(125000);
   });
 
   it("price_uzs = 0 bo'lsa, price_at_purchase bo'lsa — dollardan hisoblaydi", () => {
@@ -255,5 +259,35 @@ describe("summarizeFinances — qaytadigan depozit (masalan Uzum)", () => {
     expect(s.depositsUzs).toBe(100 * 11870);
     expect(s.totalWorthUzs).toBe(s.cashUzs + s.warehouseUzs + s.depositsUzs);
     expect(s.realProfitUzs).toBe(2_000_000 - 10 * 11870);
+  });
+});
+
+describe("kurs o'zgarishi", () => {
+  const base = {
+    deliveredOrders: [{ items: [{ product_id: "p1", quantity: 1 }] }],
+    products: [{ id: "p1", stock: 2, cost_price_usd: 10 }],
+  };
+
+  it("eski rasxod (usd_rate yo'q) 11 870 da, yangisi o'z kursida qoladi", () => {
+    const fin = summarizeFinances({
+      ...base,
+      rate: 13000,
+      transactions: [
+        { type: "expense", amount: 10, expense_category: "ads" },
+        { type: "expense", amount: 10, expense_category: "ads", usd_rate: 12500 },
+      ],
+    });
+    expect(fin.expensesUzs).toBe(118700 + 125000);
+  });
+
+  it("ombor va tan narx joriy kurs bilan", () => {
+    const fin = summarizeFinances({ ...base, rate: 13000, transactions: [] });
+    expect(fin.warehouseUzs).toBe(2 * 10 * 13000);
+    expect(fin.cogsUzs).toBe(10 * 13000);
+  });
+
+  it("noto'g'ri kurs berilsa — 11 870", () => {
+    const fin = summarizeFinances({ ...base, rate: 118, transactions: [] });
+    expect(fin.warehouseUzs).toBe(2 * 10 * 11870);
   });
 });

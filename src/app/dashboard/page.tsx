@@ -3,7 +3,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { dashLoad } from "@/lib/dashboard-api";
 import { Order, Product, Transaction } from "@/lib/types";
-import { orderRevenueUzs, usdToUzs, summarizeFinances, EXPENSE_SEGMENTS, EXPENSE_SEGMENT_LABELS } from "@/lib/accounting";
+import { orderRevenueUzs, usdToUzs, summarizeFinances, EXPENSE_SEGMENTS, EXPENSE_SEGMENT_LABELS, USD_TO_UZS } from "@/lib/accounting";
+import UsdRateEditor from "@/components/UsdRateEditor";
 import { priceOfProductUzs } from "@/lib/pricing-server";
 
 const statusLabels: Record<string, { text: string; color: string }> = {
@@ -20,6 +21,7 @@ export default function DashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [usdRate, setUsdRate] = useState(USD_TO_UZS);
 
   useEffect(() => {
     setMounted(true);
@@ -32,6 +34,7 @@ export default function DashboardPage() {
         setProducts(d.products as never);
         setOrders(d.orders as Order[]);
         setTransactions(d.transactions as Transaction[]);
+        setUsdRate(d.usdRate || USD_TO_UZS);
       } catch (error) {
         console.error("Error loading dashboard metrics:", error);
       } finally {
@@ -46,7 +49,7 @@ export default function DashboardPage() {
     const deliveredOrders = orders.filter(o => o.status === "delivered");
     const pendingOrders = orders.filter(o => o.status === "pending" || o.status === "accepted");
 
-    const fin = summarizeFinances({ transactions, deliveredOrders, products });
+    const fin = summarizeFinances({ transactions, deliveredOrders, products, rate: usdRate });
 
     // Omborni sotsak qancha tushadi — saytdagi haqiqiy narx bilan (pricing-server
     // bilan bir xil formula), price_usd bilan emas.
@@ -61,7 +64,7 @@ export default function DashboardPage() {
 
     const recentOrders = orders.map(o => {
       const items = o.items || [];
-      const totalAmount = orderRevenueUzs({ items });
+      const totalAmount = orderRevenueUzs({ items }, usdRate);
 
       return {
         id: o.id,
@@ -87,7 +90,7 @@ export default function DashboardPage() {
       totalPendingItems: countItems(pendingOrders),
       recentOrders,
     };
-  }, [products, orders, transactions]);
+  }, [products, orders, transactions, usdRate]);
 
   const fmt = (n: number) => n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   const fin = stats.fin;
@@ -98,13 +101,16 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8 max-w-6xl">
       {/* Page Title */}
-      <div>
-        <h1 className="font-heading text-2xl sm:text-3xl font-bold">
-          <span className="text-gradient-gold">Analitika</span>
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Biznesingizning umumiy ko&apos;rsatkichlari — ombor, sotuvlar va moliya
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-2xl sm:text-3xl font-bold">
+            <span className="text-gradient-gold">Analitika</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Biznesingizning umumiy ko&apos;rsatkichlari — ombor, sotuvlar va moliya
+          </p>
+        </div>
+        {!loading && <UsdRateEditor rate={usdRate} onChange={setUsdRate} />}
       </div>
 
       {loading ? (
@@ -293,7 +299,7 @@ export default function DashboardPage() {
                         {inStock.map((product, index) => {
                           const stock = product.stock || 0;
                           const price = priceOfProductUzs(product);
-                          const costPrice = usdToUzs((product as { cost_price_usd?: number }).cost_price_usd || 0);
+                          const costPrice = usdToUzs((product as { cost_price_usd?: number }).cost_price_usd || 0, usdRate);
                           const invested = stock * costPrice;
                           const revenue = stock * price;
                           const profit = revenue - invested;
