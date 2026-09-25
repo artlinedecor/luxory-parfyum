@@ -169,3 +169,61 @@ describe("summarizeFinances", () => {
     for (const v of Object.values(e)) expect(Number.isNaN(v)).toBe(false);
   });
 });
+
+describe("summarizeFinances — rasxod segmentlari", () => {
+  const s = summarizeFinances({
+    transactions: [
+      { type: "expense", amount: 100, expense_category: "inventory" },
+      { type: "expense", amount: 30, expense_category: "cargo" },
+      { type: "expense", amount: 40, expense_category: "ads" },
+      { type: "expense", amount: -10, expense_category: "ads" },
+      { type: "expense", amount: 9, expense_category: "services" },
+      { type: "expense", amount: 5, expense_category: "operating" },
+      { type: "expense", amount: 1, expense_category: null },
+    ],
+    deliveredOrders: [],
+    products: [],
+  });
+
+  it("har bir segmentni so'mda beradi; eski 'operating' va kategoriyasizlar 'boshqa'ga tushadi", () => {
+    expect(s.expenseSegmentsUzs).toEqual({
+      inventory: 100 * 12100,
+      cargo: 30 * 12100,
+      ads: 30 * 12100,
+      services: 9 * 12100,
+      other: 6 * 12100,
+    });
+  });
+
+  it("faqat atir xaridi aktiv; kargo, reklama, xizmat va boshqa — operatsion", () => {
+    expect(s.inventoryPurchasesUzs).toBe(100 * 12100);
+    expect(s.operatingExpensesUzs).toBe(75 * 12100);
+  });
+
+  it("segmentlar yig'indisi jami rasxodga teng", () => {
+    const sum = Object.values(s.expenseSegmentsUzs).reduce((a, b) => a + b, 0);
+    expect(sum).toBe(s.expensesUzs);
+  });
+});
+
+describe("summarizeFinances — sarmoya aylanmasi", () => {
+  it("jami boylik sarmoyadan necha barobar va savdo sarmoyani necha marta aylantirgani", () => {
+    const s = summarizeFinances({
+      transactions: [
+        { type: "capital", amount: 1_000_000 },
+        { type: "income", amount: 3_000_000 },
+        { type: "expense", amount: 100, expense_category: "inventory" },
+      ],
+      deliveredOrders: [],
+      products: [],
+    });
+    expect(s.salesTurnover).toBe(3);
+    expect(s.worthMultiple).toBe((1_000_000 + 3_000_000 - 100 * 12100) / 1_000_000);
+  });
+
+  it("sarmoya kiritilmagan bo'lsa 0 qaytaradi, Infinity/NaN emas", () => {
+    const s = summarizeFinances({ transactions: [{ type: "income", amount: 5 }], deliveredOrders: [], products: [] });
+    expect(s.salesTurnover).toBe(0);
+    expect(s.worthMultiple).toBe(0);
+  });
+});

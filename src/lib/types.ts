@@ -62,7 +62,7 @@ export interface Transaction {
   amount: number;
   description: string;
   /** Faqat type="expense" uchun ma'noli: "inventory" (tovar xaridi/aktiv) yoki "operating" (operatsion xarajat). */
-  expense_category?: "inventory" | "operating" | null;
+  expense_category?: "inventory" | "cargo" | "ads" | "services" | "other" | "operating" | null;
   created_at: string;
 }
 

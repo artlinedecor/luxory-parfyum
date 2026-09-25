@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Transaction, Order, Product } from "@/lib/types";
 import { dashLoad, dashInsert, dashDelete } from "@/lib/dashboard-api";
-import { usdToUzs, summarizeFinances } from "@/lib/accounting";
+import { usdToUzs, summarizeFinances, EXPENSE_SEGMENTS, EXPENSE_SEGMENT_LABELS, type ExpenseSegment } from "@/lib/accounting";
 
 type TxType = "income" | "expense" | "capital";
 
@@ -26,7 +26,7 @@ export default function CashflowPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [type, setType] = useState<TxType>("expense");
   const [amount, setAmount] = useState("");
-  const [expenseCategory, setExpenseCategory] = useState<"inventory" | "operating" | "">("");
+  const [expenseCategory, setExpenseCategory] = useState<ExpenseSegment | "">("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [activeView, setActiveView] = useState<"all" | "sales" | "expenses" | "capital">("all");
@@ -86,7 +86,7 @@ export default function CashflowPage() {
     e.preventDefault();
 
     if (type === "expense" && !expenseCategory) {
-      alert("Iltimos, rasxod kategoriyasini tanlang: Tovar xaridi yoki Operatsion xarajat");
+      alert("Iltimos, rasxod turini tanlang");
       return;
     }
 
@@ -145,7 +145,10 @@ export default function CashflowPage() {
     csv += `Jami Savdo (tushum),${Math.round(f.salesUzs)} so'm\n`;
     csv += `Tovar xaridi,${Math.round(f.inventoryPurchasesUzs)} so'm\n`;
     csv += `Operatsion rasxod,${Math.round(f.operatingExpensesUzs)} so'm\n`;
-    csv += `Jami rasxod,${Math.round(f.expensesUzs)} so'm ($${f.expensesUsd})\n`;
+    csv += `Jami rasxod,${Math.round(f.expensesUzs)} so'm (${f.expensesUsd})\n`;
+    EXPENSE_SEGMENTS.forEach(seg => {
+      csv += `  - ${EXPENSE_SEGMENT_LABELS[seg]},${Math.round(f.expenseSegmentsUzs[seg])} so'm\n`;
+    });
     csv += `Sotilganlar tan narxi,${Math.round(f.cogsUzs)} so'm\n`;
     csv += `Sof Foyda,${Math.round(f.netProfitUzs)} so'm\n`;
     csv += `Kassa,${Math.round(f.cashUzs)} so'm\n`;
@@ -230,8 +233,8 @@ export default function CashflowPage() {
         {[
           { label: "Tikilgan pul (sarmoya)", value: accounting.fin.capitalUzs, tone: "text-purple-400", border: "border-l-purple-500/50", hint: `${accounting.capitalTransactions.length} ta yozuv` },
           { label: "Jami Savdo", value: accounting.fin.salesUzs, tone: "text-blue-400", border: "border-l-blue-500/50", hint: `${accounting.totalSoldItems} ta atir (${accounting.deliveredOrdersCount} ta buyurtma)` },
-          { label: "Tovar xaridi", value: accounting.fin.inventoryPurchasesUzs, tone: "text-orange-400", border: "border-l-orange-500/50", hint: "omborga — Sof Foydaga darhol kirmaydi" },
-          { label: "Operatsion rasxod", value: accounting.fin.operatingExpensesUzs, tone: "text-red-400", border: "border-l-red-500/50", hint: "reklama, ChatGPT, yetkazish..." },
+          { label: "Jami rasxod", value: accounting.fin.expensesUzs, tone: "text-red-400", border: "border-l-red-500/50", hint: "tarkibi pastda" },
+          { label: "Ombor (tan narxda)", value: accounting.fin.warehouseUzs, tone: "text-orange-400", border: "border-l-orange-500/50", hint: `${accounting.fin.warehouseItems} dona atir` },
           { label: "Sof Foyda", value: accounting.fin.netProfitUzs, tone: accounting.fin.netProfitUzs >= 0 ? "text-green-400" : "text-red-400", border: "border-l-green-500/50", hint: "savdo − tan narx − operatsion" },
           { label: "Kassa", value: accounting.fin.cashUzs, tone: accounting.fin.cashUzs >= 0 ? "text-gradient-gold" : "text-red-400", border: "border-l-gold/50", hint: "sarmoya + savdo − barcha rasxod" },
         ].map(c => (
@@ -241,6 +244,21 @@ export default function CashflowPage() {
             <p className="text-[10px] text-muted-foreground mt-1">{c.hint}</p>
           </div>
         ))}
+      </div>
+
+      <div className="glass-card rounded-xl p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+          <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Rasxodlar tarkibi</p>
+          <p className="text-sm font-bold text-red-400">Jami: {fmt(accounting.fin.expensesUzs)} so&apos;m</p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {EXPENSE_SEGMENTS.map(seg => (
+            <div key={seg} className="rounded-lg bg-secondary/40 px-3 py-2">
+              <p className="text-[10px] text-muted-foreground">{EXPENSE_SEGMENT_LABELS[seg]}</p>
+              <p className="text-sm font-semibold text-foreground">{fmt(accounting.fin.expenseSegmentsUzs[seg])} so&apos;m</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════ */}
@@ -377,26 +395,21 @@ export default function CashflowPage() {
               {type === "expense" && (
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground uppercase tracking-wider">Kategoriya</label>
-                  <div className="flex gap-2 p-1 bg-secondary rounded-xl">
-                    <button
-                      type="button"
-                      onClick={() => setExpenseCategory("inventory")}
-                      className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
-                        expenseCategory === "inventory" ? "bg-orange-500/20 text-orange-400" : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      Tovar xaridi
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setExpenseCategory("operating")}
-                      className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
-                        expenseCategory === "operating" ? "bg-red-500/20 text-red-400" : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      Operatsion xarajat
-                    </button>
+                  <div className="grid grid-cols-2 gap-2 p-1 bg-secondary rounded-xl">
+                    {EXPENSE_SEGMENTS.map(seg => (
+                      <button
+                        key={seg}
+                        type="button"
+                        onClick={() => setExpenseCategory(seg)}
+                        className={`py-2 rounded-lg text-xs font-semibold transition-all ${
+                          expenseCategory === seg ? "bg-gold/20 text-gold" : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {EXPENSE_SEGMENT_LABELS[seg]}
+                      </button>
+                    ))}
                   </div>
+                  <p className="text-[10px] text-muted-foreground">Faqat &quot;Atir xaridi&quot; omborga (aktiv) yoziladi — qolganlari darhol foydadan ayiriladi.</p>
                 </div>
               )}
               <div className="space-y-1">

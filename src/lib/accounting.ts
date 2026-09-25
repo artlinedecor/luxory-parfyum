@@ -74,6 +74,25 @@ export interface CostOrder {
 
 const num = (v: unknown) => Number(v) || 0;
 
+/** Rasxod segmentlari. Faqat "inventory" (atir xaridi) aktiv — qolganlari darhol foydadan ayiriladi. */
+export const EXPENSE_SEGMENTS = ["inventory", "cargo", "ads", "services", "other"] as const;
+export type ExpenseSegment = (typeof EXPENSE_SEGMENTS)[number];
+
+export const EXPENSE_SEGMENT_LABELS: Record<ExpenseSegment, string> = {
+  inventory: "Atir xaridi",
+  cargo: "Kargo va yo'l",
+  ads: "Reklama (Target)",
+  services: "Xizmat va obunalar",
+  other: "Boshqa",
+};
+
+/** Eski "operating" qiymati va kategoriyasiz yozuvlar "boshqa"ga tushadi. */
+export function segmentOf(category: string | null | undefined): ExpenseSegment {
+  return (EXPENSE_SEGMENTS as readonly string[]).includes(category ?? "")
+    ? (category as ExpenseSegment)
+    : "other";
+}
+
 /**
  * Butun moliyaviy holat — dashboard'ning YAGONA hisob manbasi.
  *
@@ -98,11 +117,15 @@ export function summarizeFinances(input: {
   const capitalUzs = sumOf((t) => t.type === "capital");
   const salesUzs = sumOf((t) => t.type === "income");
   const expensesUsd = sumOf((t) => t.type === "expense");
-  const inventoryUsd = sumOf((t) => t.type === "expense" && t.expense_category === "inventory");
+
+  const expenseSegmentsUzs = Object.fromEntries(EXPENSE_SEGMENTS.map((k) => [k, 0])) as Record<ExpenseSegment, number>;
+  for (const t of transactions) {
+    if (t.type === "expense") expenseSegmentsUzs[segmentOf(t.expense_category)] += usdToUzs(num(t.amount));
+  }
 
   const expensesUzs = usdToUzs(expensesUsd);
-  const inventoryPurchasesUzs = usdToUzs(inventoryUsd);
-  const operatingExpensesUzs = usdToUzs(expensesUsd - inventoryUsd);
+  const inventoryPurchasesUzs = expenseSegmentsUzs.inventory;
+  const operatingExpensesUzs = expensesUzs - inventoryPurchasesUzs;
 
   const costOf: Record<string, number> = {};
   for (const p of products) costOf[p.id] = num(p.cost_price_usd);
@@ -132,6 +155,10 @@ export function summarizeFinances(input: {
     salesUzs,
     expensesUsd,
     expensesUzs,
+    expenseSegmentsUzs,
+    // Savdo sarmoyani necha marta aylantirgan va boylik sarmoyadan necha barobar
+    salesTurnover: capitalUzs > 0 ? salesUzs / capitalUzs : 0,
+    worthMultiple: capitalUzs > 0 ? totalWorthUzs / capitalUzs : 0,
     inventoryPurchasesUzs,
     operatingExpensesUzs,
     cogsUzs,

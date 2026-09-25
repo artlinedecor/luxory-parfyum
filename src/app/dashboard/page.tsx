@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { dashLoad } from "@/lib/dashboard-api";
 import { Order, Product, Transaction } from "@/lib/types";
-import { orderRevenueUzs, usdToUzs, summarizeFinances } from "@/lib/accounting";
+import { orderRevenueUzs, usdToUzs, summarizeFinances, EXPENSE_SEGMENTS, EXPENSE_SEGMENT_LABELS } from "@/lib/accounting";
 import { priceOfProductUzs } from "@/lib/pricing-server";
 
 const statusLabels: Record<string, { text: string; color: string }> = {
@@ -118,6 +118,35 @@ export default function DashboardPage() {
           {/* ═══════════════════════════════════════════════════════ */}
           {/* ROW 1: ASOSIY KO'RSATKICHLAR                          */}
           {/* ═══════════════════════════════════════════════════════ */}
+          <div className="glass-card rounded-2xl p-6 border border-gold/30 bg-gradient-to-br from-gold/5 to-transparent space-y-4">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">💼 Hozirgi holat — biznesda jami qancha pul bor</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Tikilgan pul</p>
+                <p className="text-xl font-bold text-purple-400">{fmt(fin.capitalUzs)} so&apos;m</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Hozir jami (kassa + ombor)</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gradient-gold">{fmt(fin.totalWorthUzs)} so&apos;m</p>
+                <p className="text-[10px] text-muted-foreground">pul: {fmt(fin.cashUzs)} · atirlar: {fmt(fin.warehouseUzs)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">O&apos;sish (haqiqiy foyda)</p>
+                <p className={`text-xl font-bold ${fin.realProfitUzs >= 0 ? "text-green-400" : "text-red-400"}`}>
+                  {fin.realProfitUzs >= 0 ? "+" : ""}{fmt(fin.realProfitUzs)} so&apos;m
+                </p>
+                {fin.capitalUzs > 0 && (
+                  <p className="text-[10px] text-muted-foreground">sarmoya {fin.worthMultiple.toFixed(2)} barobar bo&apos;ldi</p>
+                )}
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {fin.capitalUzs > 0
+                ? <>Aylanma: savdo tikilgan pulni <b className="text-foreground">{fin.salesTurnover.toFixed(1)} marta</b> aylantirgan ({fmt(fin.salesUzs)} so&apos;m). Egalar pul olmagan bo&apos;lsa, qo&apos;lda va kartada <b className="text-foreground">{fmt(fin.cashUzs)} so&apos;m</b> turishi kerak.</>
+                : <>Tikilgan pul kiritilmagan — &quot;Hisob-kitob&quot; sahifasida &quot;Sarmoya&quot; turi bilan qo&apos;shing.</>}
+            </p>
+          </div>
+
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard label="Tikilgan pul" hint="biznesga kiritilgan sarmoya" value={`${fmt(fin.capitalUzs)} so'm`} tone="text-purple-400" />
             <StatCard label="Jami Savdo" hint="yetkazilgan buyurtmalardan" value={`${fmt(fin.salesUzs)} so'm`} tone="text-blue-400" />
@@ -142,7 +171,9 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <Line label="Jami Savdo (tushum)" value={`+${fmt(fin.salesUzs)} so'm`} tone="text-blue-400" />
                 <Line label="Sotilgan atirlarning tan narxi" value={`−${fmt(fin.cogsUzs)} so'm`} tone="text-orange-400" />
-                <Line label="Operatsion rasxod (reklama, ChatGPT...)" value={`−${fmt(fin.operatingExpensesUzs)} so'm`} tone="text-red-400" />
+                {EXPENSE_SEGMENTS.filter(seg => seg !== "inventory").map(seg => (
+                  <Line key={seg} label={EXPENSE_SEGMENT_LABELS[seg]} value={`−${fmt(fin.expenseSegmentsUzs[seg])} so'm`} tone="text-red-400" />
+                ))}
                 <Line label="= Sof Foyda" value={`${fmt(fin.netProfitUzs)} so'm`} tone={fin.netProfitUzs >= 0 ? 'text-green-400' : 'text-red-400'} total />
               </div>
               <p className="text-[10px] text-muted-foreground leading-relaxed pt-1">
@@ -159,8 +190,9 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <Line label="Tikilgan pul (sarmoya)" value={`+${fmt(fin.capitalUzs)} so'm`} tone="text-purple-400" />
                 <Line label="Savdodan tushgan" value={`+${fmt(fin.salesUzs)} so'm`} tone="text-green-400" />
-                <Line label="Tovar xaridi" value={`−${fmt(fin.inventoryPurchasesUzs)} so'm`} tone="text-orange-400" />
-                <Line label="Operatsion rasxod" value={`−${fmt(fin.operatingExpensesUzs)} so'm`} tone="text-red-400" />
+                {EXPENSE_SEGMENTS.map(seg => (
+                  <Line key={seg} label={EXPENSE_SEGMENT_LABELS[seg]} value={`−${fmt(fin.expenseSegmentsUzs[seg])} so'm`} tone={seg === "inventory" ? "text-orange-400" : "text-red-400"} />
+                ))}
                 <Line label="= Kassada bo'lishi kerak" value={`${fmt(fin.cashUzs)} so'm`} tone={fin.cashUzs >= 0 ? 'text-green-400' : 'text-red-400'} total />
               </div>
               <p className="text-[10px] text-muted-foreground leading-relaxed pt-1">
