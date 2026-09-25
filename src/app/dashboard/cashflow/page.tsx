@@ -119,8 +119,14 @@ export default function CashflowPage() {
     let runningBalance = 0;
     const reversed = [...filtered].reverse();
     const result = reversed.map(tx => {
+      // ⚠️ income tx.amount allaqachon so'mda, expense esa hali $ da
+      // (tranzaksiyalar jadvalining ikkita mustaqil manbasi bor —
+      // buyurtma yetkazilganda avtomatik so'mda, "Yangi Tranzaksiya"
+      // formasi orqali qo'lda kiritilganda hali ham $ da). So'mga
+      // aylantirmasdan ayirilsa, natija ikkalasining aralashmasi bo'lib
+      // qolardi.
       if (tx.type === "income") runningBalance += Number(tx.amount);
-      else runningBalance -= Number(tx.amount);
+      else runningBalance -= usdToUzs(Number(tx.amount));
       return { ...tx, balance: runningBalance };
     });
     return result.reverse();
@@ -197,7 +203,7 @@ export default function CashflowPage() {
     csv += "Sana,Tavsif,Summa\n";
     accounting.incomeTransactions.forEach(tx => {
       const date = new Date(tx.created_at).toLocaleDateString("uz-UZ");
-      csv += `${date},"${tx.description}",+$${tx.amount}\n`;
+      csv += `${date},"${tx.description}",+${tx.amount} so'm\n`;
     });
     csv += `,,Jami: +${accounting.totalIncome} so'm\n\n`;
 
@@ -206,7 +212,7 @@ export default function CashflowPage() {
     csv += "Sana,Tavsif,Summa\n";
     accounting.expenseTransactions.forEach(tx => {
       const date = new Date(tx.created_at).toLocaleDateString("uz-UZ");
-      csv += `${date},"${tx.description}",-$${tx.amount}\n`;
+      csv += `${date},"${tx.description}",-${Math.round(tx.amount * 12100)} so'm\n`;
     });
     csv += `,,Jami: -${Math.round(accounting.totalExpenses * 12100)} so'm\n`;
 
@@ -251,6 +257,7 @@ export default function CashflowPage() {
               setType("expense");
               setAmount("");
               setDescription("");
+              setExpenseCategory("");
               setIsModalOpen(true);
             }}
             className="px-5 py-2.5 rounded-xl bg-gradient-gold text-black font-bold text-sm uppercase tracking-wider hover:opacity-90 transition-all flex items-center justify-center gap-2"
@@ -346,10 +353,10 @@ export default function CashflowPage() {
                   </td>
                   <td className="px-6 py-3 text-sm text-foreground">{tx.description}</td>
                   <td className={`px-6 py-3 text-sm font-bold ${tx.type === "income" ? "text-green-400" : "text-red-400"}`}>
-                    {tx.type === "income" ? "+" : "-"}${tx.amount}
+                    {tx.type === "income" ? `+${fmt(tx.amount)}` : `-${fmt(usdToUzs(tx.amount))}`} so'm
                   </td>
                   <td className={`px-6 py-3 text-sm font-bold ${tx.balance >= 0 ? "text-gradient-gold" : "text-red-400"}`}>
-                    ${tx.balance}
+                    {fmt(tx.balance)} so'm
                   </td>
                   <td className="px-6 py-3 text-xs text-muted-foreground whitespace-nowrap">
                     {isMounted ? new Date(tx.created_at).toLocaleString("uz-UZ", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "..."}
