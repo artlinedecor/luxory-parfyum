@@ -52,6 +52,8 @@ export interface Order {
   order_type: "full_payment" | "deposit_50";
   /** "processing" — Uzum Nasiya shartnomasi tasdiqlangan, jo'natishga tayyor. */
   status: "pending" | "processing" | "accepted" | "delivered" | "cancelled";
+  /** Buyurtma summasi — SO'MDA. */
+  total_amount?: number | null;
   created_at: string;
 }
 
