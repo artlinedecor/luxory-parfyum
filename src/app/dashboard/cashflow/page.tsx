@@ -56,7 +56,10 @@ export default function CashflowPage() {
 
     const totalIncome = incomeTransactions.reduce((s, t) => s + Number(t.amount), 0);
     const totalExpenses = expenseTransactions.reduce((s, t) => s + Number(t.amount), 0);
-    const kassaBalance = totalIncome - totalExpenses;
+    // ⚠️ totalIncome so'mda, totalExpenses dollarda — usdToUzs bilan
+    // aylantirmasdan ayirilsa, Kassa Qoldig'i deyarli o'zgarmagandek
+    // ko'rinardi.
+    const kassaBalance = totalIncome - usdToUzs(totalExpenses);
 
     // Savdodan tushgan jami summa (faqat yetkazilgan)
     const totalSalesRevenue = totalIncome;
@@ -72,9 +75,10 @@ export default function CashflowPage() {
       }
     });
 
-    // Ajratib olamiz: tovar xaridi/cargo (capital) va operatsion xarajatlar (operating)
+    // ⚠️ Ilgari regex bilan taxmin qilinardi — endi admin "Yangi
+    // Tranzaksiya" formasida ANIQ tanlagan kategoriyaga tayanamiz.
     const capitalExpenses = expenseTransactions
-      .filter(t => t.description && /tavar|tovar|mahsulot|xarid|oldik|yulkira|cargo|kargo|turkiya|prixod/i.test(t.description))
+      .filter(t => t.expense_category === "inventory")
       .reduce((s, t) => s + Number(t.amount), 0);
     const operatingExpenses = totalExpenses - capitalExpenses;
 
@@ -91,6 +95,7 @@ export default function CashflowPage() {
       totalSalesRevenue,
       totalCOGS,
       totalCOGSUzs,
+      capitalExpenses,
       totalIncome,
       totalExpenses,
       operatingExpensesUzs,
@@ -181,10 +186,11 @@ export default function CashflowPage() {
     csv += "XULOSA\n";
     csv += `Jami Savdo (Tushum),${accounting.totalSalesRevenue} so'm\n`;
     csv += `Tan Narx (COGS),$${accounting.totalCOGS} (${accounting.totalCOGSUzs} so'm)\n`;
-    csv += `Jami Rasxodlar,$${accounting.totalExpenses}\n`;
+    csv += `Jami Rasxodlar,$${accounting.totalExpenses} (${Math.round(accounting.totalExpenses * 12100)} so'm)\n`;
+    csv += `Tikilgan Pul (Tovar xaridi),${Math.round(accounting.capitalExpenses * 12100)} so'm\n`;
     csv += `Operatsion Rasxodlar (Sof Foydaga kiruvchi),${accounting.operatingExpensesUzs} so'm\n`;
     csv += `Sof Foyda,${accounting.netProfit} so'm\n`;
-    csv += `Kassa Qoldigi,$${accounting.kassaBalance}\n\n`;
+    csv += `Kassa Qoldigi,${accounting.kassaBalance} so'm\n\n`;
 
     // Savdo (Kirim) jadvali
     csv += "SAVDO (KIRIM)\n";
@@ -193,7 +199,7 @@ export default function CashflowPage() {
       const date = new Date(tx.created_at).toLocaleDateString("uz-UZ");
       csv += `${date},"${tx.description}",+$${tx.amount}\n`;
     });
-    csv += `,,Jami: +$${accounting.totalIncome}\n\n`;
+    csv += `,,Jami: +${accounting.totalIncome} so'm\n\n`;
 
     // Rasxodlar (Chiqim) jadvali
     csv += "RASXODLAR (CHIQIM)\n";
@@ -202,7 +208,7 @@ export default function CashflowPage() {
       const date = new Date(tx.created_at).toLocaleDateString("uz-UZ");
       csv += `${date},"${tx.description}",-$${tx.amount}\n`;
     });
-    csv += `,,Jami: -$${accounting.totalExpenses}\n`;
+    csv += `,,Jami: -${Math.round(accounting.totalExpenses * 12100)} so'm\n`;
 
     // Download
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -268,8 +274,13 @@ export default function CashflowPage() {
         </div>
         <div className="glass-card rounded-xl p-5 border-l-4 border-l-red-500/50">
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Jami Rasxod</p>
-          <p className="text-2xl font-bold text-red-400">${fmt(accounting.totalExpenses)}</p>
+          <p className="text-2xl font-bold text-red-400">{fmt(usdToUzs(accounting.totalExpenses))} so&apos;m</p>
           <p className="text-[10px] text-muted-foreground mt-1">{accounting.expenseTransactions.length} ta chiqim</p>
+        </div>
+        <div className="glass-card rounded-xl p-5 border-l-4 border-l-orange-500/50">
+          <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Tikilgan Pul</p>
+          <p className="text-2xl font-bold text-orange-400">{fmt(usdToUzs(accounting.capitalExpenses))} so&apos;m</p>
+          <p className="text-[10px] text-muted-foreground mt-1">tovar xaridi (Sof Foydaga kirmaydi)</p>
         </div>
         <div className="glass-card rounded-xl p-5 border-l-4 border-l-green-500/50">
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Sof Foyda</p>
@@ -278,7 +289,7 @@ export default function CashflowPage() {
         </div>
         <div className="glass-card rounded-xl p-5 border-l-4 border-l-gold/50">
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">Kassa Qoldig&apos;i</p>
-          <p className={`text-2xl font-bold ${accounting.kassaBalance >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>${fmt(accounting.kassaBalance)}</p>
+          <p className={`text-2xl font-bold ${accounting.kassaBalance >= 0 ? 'text-gradient-gold' : 'text-red-400'}`}>{fmt(accounting.kassaBalance)} so&apos;m</p>
           <p className="text-[10px] text-muted-foreground mt-1">kirim − chiqim</p>
         </div>
       </div>
