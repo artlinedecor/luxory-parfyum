@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/api-guard";
 import { serverSupabase } from "@/lib/supabase-server";
+import { isAbandonedDmOrder } from "@/lib/dm-pay-link";
 
 /**
  * Dashboard uchun o'qish — barcha sahifalar shu yerdan ma'lumot oladi.
@@ -38,7 +39,8 @@ export async function GET(req: Request) {
 
     return NextResponse.json({
       products: prodRes.data ?? [],
-      orders: ordRes.data ?? [],
+      // /tolov havolasi har ochilganda buyurtma yaratadi — to'lovga o'tmaganlari ko'rsatilmaydi.
+      orders: (ordRes.data ?? []).filter((o) => !isAbandonedDmOrder(o)),
       transactions: txRes.data ?? [],
       uzumContracts: ucRes.data ?? [],
     });
