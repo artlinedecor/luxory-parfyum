@@ -19,6 +19,13 @@ export function calculatePremiumPriceUzs(priceUsd: number): number {
   return 800000;
 }
 
+/**
+ * 800 000 — guruhlar uzilmas probel bilan, butun songa yaxlitlangan.
+ * Intl('uz-UZ') ishlatilmaydi: ko'p Android WebView'da bu lokal yo'q va
+ * narx "800,000" bo'lib chiqardi (jonli saytda shunday edi).
+ */
 export function formatUzs(amount: number): string {
-  return new Intl.NumberFormat('uz-UZ').format(amount);
+  const n = Math.round(Number(amount) || 0);
+  const s = String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return n < 0 ? `−${s}` : s;
 }

@@ -10,7 +10,8 @@ export default function FloatingCart() {
   const { totalItems } = useCart();
 
   // Hide on dashboard and cart pages
-  if (pathname.startsWith("/dashboard") || pathname === "/cart") return null;
+  // Atir sahifasida o'z pastki xarid paneli bor — suzuvchi tugma uni yopib qo'ymasin
+  if (pathname.startsWith("/dashboard") || pathname === "/cart" || pathname.startsWith("/catalog/")) return null;
 
   // Hide if cart is empty
   if (totalItems === 0) return null;

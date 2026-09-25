@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Heart, Truck, ShieldCheck, CreditCard } from "lucide-react";
+import { ChevronLeft, Heart, Truck, ShieldCheck, CreditCard, Smartphone, PackageCheck, Clock3 } from "lucide-react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
@@ -28,6 +28,10 @@ import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import FragrancePyramid from "@/components/FragrancePyramid";
 import AccordBars from "@/components/AccordBars";
+import { UzumMark } from "@/components/PaymentLogos";
+
+// Uzum kaliti sozlanmagan muhitda (preview) bo'lib to'lash tugmasi ko'rsatilmaydi
+const UZUM_ENABLED = process.env.NEXT_PUBLIC_UZUM_ENABLED === "true";
 
 interface ProductDetailClientProps {
   product: Product;
@@ -39,13 +43,14 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const [activeImage, setActiveImage] = useState(0);
 
   const router = useRouter();
-  const { addItem } = useCart();
+  const { addItem, items: cartItems } = useCart();
   const { t, lang } = useI18n();
   const wishlist = useWishlist();
 
   const frag = getFragranceView(product);
   const isOriginal = product.product_type === "original";
   const saved = wishlist.has(product.id);
+  const inStock = (product.stock ?? 0) > 0;
 
   const displayName =
     lang === "ru" && product.title_ru ? product.title_ru : frag.name;
@@ -112,6 +117,63 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     });
   };
 
+  /**
+   * "Bo'lib to'lash" / "Karta bilan": atir savatchaga qo'shiladi (bo'lmasa) va
+   * savatcha forma tayyor holda ochiladi. UzumCheckout mijoz ma'lumotini
+   * savatcha formasidan oladi — shu sinalgan yo'l qayta ishlatiladi.
+   */
+  const handleBuyNow = (pay: "uzum" | "card") => {
+    if (!cartItems.some((i) => i.product.id === product.id)) addItem(product);
+    const eid = `ic_pdp_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    trackMetaEvent("InitiateCheckout", eid, {}, {
+      content_ids: [product.id],
+      content_name: product.title,
+      content_type: "product",
+      value: priceUzs,
+      currency: "UZS",
+      num_items: 1,
+    });
+    router.push(`/cart?pay=${pay}`);
+  };
+
+  const ru = lang === "ru";
+  const trust = [
+    { Icon: Truck, text: ru ? "Быстрая доставка" : "Tez yetkazib berish" },
+    { Icon: Smartphone, text: ru ? "Телефон + SMS · 2 мин" : "Telefon + SMS · 2 daqiqa" },
+    inStock
+      ? { Icon: PackageCheck, text: ru ? "В наличии" : "Omborda bor" }
+      : { Icon: Clock3, text: ru ? "Под заказ · до 3 дней" : "Buyurtma bilan · 3 kungacha" },
+  ];
+
+  const buyButtons = (compact: boolean) => (
+    <>
+      {UZUM_ENABLED ? (
+        <button
+          type="button"
+          onClick={() => handleBuyNow("uzum")}
+          className={`btn btn-uzum flex-1 normal-case tracking-normal text-sm ${compact ? "min-h-[52px] px-4" : ""}`}
+        >
+          <UzumMark size={22} />
+          {ru ? "Купить в рассрочку" : "Bo'lib to'lash"}
+        </button>
+      ) : (
+        <button type="button" onClick={() => handleBuyNow("card")} className={`btn btn-primary flex-1 ${compact ? "min-h-[52px] px-4" : ""}`}>
+          {ru ? "Оформить заказ" : "Buyurtma berish"}
+        </button>
+      )}
+      {UZUM_ENABLED && (
+        <button
+          type="button"
+          onClick={() => handleBuyNow("card")}
+          className={`btn btn-outline normal-case tracking-normal text-sm ${compact ? "min-h-[52px] px-4" : "px-6"}`}
+        >
+          <CreditCard className="w-4 h-4" strokeWidth={1.75} />
+          {ru ? "Картой" : "Karta bilan"}
+        </button>
+      )}
+    </>
+  );
+
   // Mavsum / kun vaqti / oila teglari — faqat bazada bo'lsa
   const contextTags = [
     ...frag.families.map((f) => NOTE_FAMILY_LABEL[f][lang === "ru" ? "ru" : "uz"]),
@@ -136,28 +198,28 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   return (
     <>
       <Header />
-      <main className="min-h-screen pt-24 pb-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+      <main className="min-h-screen pt-[4.5rem] sm:pt-24 pb-44 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
         {/* Orqaga */}
         <Link
           href="/catalog"
-          className="-ml-2 inline-flex min-h-[44px] items-center gap-1.5 px-2 eyebrow text-muted-foreground hover:text-foreground transition-colors"
+          className="-ml-2 hidden sm:inline-flex min-h-[44px] items-center gap-1.5 px-2 eyebrow text-muted-foreground hover:text-foreground transition-colors"
         >
           <ChevronLeft className="w-3.5 h-3.5" strokeWidth={1.5} />
           {lang === "ru" ? "Каталог" : "Katalog"}
         </Link>
 
         {/* ── Asosiy blok ─────────────────────────────────────── */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start">
+        <div className="mt-1 sm:mt-8 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-10 lg:gap-16 items-start">
           {/* Rasm */}
           <div className="md:sticky md:top-24 space-y-3">
-            <div className="relative aspect-[3/4] w-full overflow-hidden bg-surface-image border border-border">
+            <div className="relative h-[34vh] min-h-[220px] md:h-auto md:aspect-[3/4] w-full overflow-hidden bg-surface-image border border-border rounded-2xl md:rounded-none">
               {!imageLoaded && <div className="absolute inset-0 z-[1] shimmer" />}
               <Image
                 src={currentSrc}
                 alt={displayName}
                 fill
                 priority
-                className={`object-cover transition-opacity duration-500 ${
+                className={`object-contain md:object-cover transition-opacity duration-500 ${
                   imageLoaded ? "opacity-100" : "opacity-0"
                 }`}
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -210,42 +272,59 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </div>
 
           {/* Ma'lumot */}
-          <div className="space-y-8">
+          <div className="space-y-5 md:space-y-8">
             <div>
               {frag.brand && (
                 <p className="eyebrow text-muted-foreground">{frag.brand}</p>
               )}
 
-              <h1 className="font-heading mt-3 text-4xl sm:text-5xl leading-[1.1] text-foreground">
+              <h1 className="font-heading mt-1.5 md:mt-3 text-3xl sm:text-5xl leading-[1.1] text-foreground">
                 {displayName}
               </h1>
 
-              <p className="mt-4 text-xs text-muted-foreground">
-                {isOriginal
-                  ? lang === "ru"
-                    ? "Оригинал под заказ"
-                    : "Buyurtma asosida original"
-                  : lang === "ru"
-                  ? "Копия высшего качества"
-                  : "Oliy toifali klon"}
-                {frag.volumeMl ? ` · ${formatVolume(frag.volumeMl)}` : ""}
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
+                <span className={`px-2.5 py-1 rounded-full font-semibold ${isOriginal ? "bg-gradient-gold text-[#1a1a1a]" : "bg-foreground/[0.06] text-foreground/80"}`}>
+                  {isOriginal ? (ru ? "Оригинал" : "Original") : (ru ? "Премиум копия" : "Premium klon")}
+                </span>
+                {frag.volumeMl && (
+                  <span className="px-2.5 py-1 rounded-full bg-foreground/[0.06] text-foreground/70">{formatVolume(frag.volumeMl)}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Narx va bo'lib to'lash */}
+            <div className="space-y-2.5">
+              <p className="flex items-baseline gap-2">
+                <span className="text-4xl font-semibold text-foreground tabular-nums tracking-tight">{formatUzs(priceUzs)}</span>
+                <span className="text-sm text-muted-foreground">{ru ? "сум" : "so'm"}</span>
               </p>
+              {UZUM_ENABLED && (
+                <p className="inline-flex items-center gap-2 rounded-full bg-[#6100FF]/[0.08] px-3 py-1.5 text-[13px] text-[#4b00c7] dark:text-[#b58cff]">
+                  <UzumMark size={18} />
+                  <span>
+                    <b className="font-semibold">3 · 6 · 12</b> {ru ? "мес. рассрочка — Uzum Nasiya" : "oyga bo'lib to'lash — Uzum Nasiya"}
+                  </span>
+                </p>
+              )}
             </div>
 
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-semibold text-foreground tabular-nums">
-                {formatUzs(priceUzs)}
-              </span>
-              <span className="eyebrow text-muted-foreground">
-                {lang === "ru" ? "сум" : "so'm"}
-              </span>
-            </div>
+            {/* Ishonch belgilari */}
+            <ul className="grid grid-cols-3 gap-2">
+              {trust.map(({ Icon, text }) => (
+                <li key={text} className="flex flex-col items-center text-center gap-1.5 rounded-xl border border-border px-2 py-2.5">
+                  <Icon className="w-4 h-4 text-gold-dark" strokeWidth={1.5} />
+                  <span className="text-[11px] leading-tight text-foreground/80">{text}</span>
+                </li>
+              ))}
+            </ul>
 
-            {/* Harakatlar */}
+            {/* Harakatlar — desktop'da shu yerda, mobil'da pastki panelda */}
+            <div className="hidden md:flex gap-2.5">{buyButtons(false)}</div>
+
             <div className="flex gap-2.5">
               <button
                 onClick={handleAddToCart}
-                className="btn btn-primary flex-1"
+                className="btn btn-sm flex-1 bg-transparent border border-border text-foreground hover:border-foreground/30"
               >
                 {t("btn_add_cart")}
               </button>
@@ -253,8 +332,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               <button
                 onClick={() => wishlist.toggle(product.id)}
                 aria-pressed={saved}
-                aria-label={lang === "ru" ? "В избранное" : "Sevimlilarga"}
-                className="btn-icon w-14 min-h-[54px]"
+                aria-label={ru ? "В избранное" : "Sevimlilarga"}
+                className="btn-icon w-14 min-h-[46px]"
               >
                 <Heart
                   className="w-5 h-5"
@@ -347,6 +426,16 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </div>
         </div>
       </main>
+      <div
+        className="fixed inset-x-0 z-40 md:hidden border-t border-border bg-background/95 backdrop-blur-md px-4 pt-2.5 pb-2.5"
+        style={{ bottom: "calc(4.25rem + env(safe-area-inset-bottom))" }}
+      >
+        <div className="flex items-center justify-between text-xs mb-2">
+          <span className="text-muted-foreground truncate pr-2">{displayName}</span>
+          <span className="font-semibold tabular-nums whitespace-nowrap text-foreground">{formatUzs(priceUzs)} {ru ? "сум" : "so'm"}</span>
+        </div>
+        <div className="flex gap-2">{buyButtons(true)}</div>
+      </div>
       <BottomNav />
       <div className="h-20 md:hidden" />
     </>

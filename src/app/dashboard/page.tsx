@@ -37,7 +37,7 @@ const STATUS_TEXT: Record<string, string> = {
   accepted: "Qabul qilindi",
 };
 
-type Detail = "cash" | "capital" | "sales" | "expenses" | "warehouse" | "profit" | "worth" | "deposit" | "pending";
+type Detail = "cash" | "capital" | "sales" | "expenses" | "warehouse" | "profit" | "worth" | "deposit" | "pending" | "unconfirmed";
 
 export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
@@ -110,7 +110,12 @@ export default function DashboardPage() {
         ...describe(o),
         status: STATUS_TEXT[o.status] ?? o.status,
         uzs: Number(o.total_amount) > 0 ? Number(o.total_amount) : orderRevenueUzs(o, usdRate),
+        // Tasdiqlangan: Uzum shartnomasi tasdiqlangan / to'langan / qabul qilingan —
+        // pul aniq keladi, faqat yetkazish qoldi. Qolganlari hali aniq emas.
+        confirmed: o.status === "processing" || o.status === "accepted" || o.payment_status === "paid",
       }));
+    const confirmed = pending.filter(o => o.confirmed);
+    const unconfirmed = pending.filter(o => !o.confirmed);
 
     const expenses = transactions
       .filter(t => t.type === "expense")
@@ -146,7 +151,10 @@ export default function DashboardPage() {
       fin,
       sales,
       pending,
-      pendingUzs: pending.reduce((s, o) => s + o.uzs, 0),
+      confirmed,
+      confirmedUzs: confirmed.reduce((s, o) => s + o.uzs, 0),
+      unconfirmed,
+      unconfirmedUzs: unconfirmed.reduce((s, o) => s + o.uzs, 0),
       expenses,
       capital,
       warehouse,
@@ -214,11 +222,14 @@ export default function DashboardPage() {
               onClick={() => setOpen("worth")}
               label="Jami boylik"
               value={som(fin.totalWorthUzs)}
-              sub={fin.capitalUzs > 0 ? `pul + ombor + depozit · ${fin.worthMultiple.toFixed(1)}×` : "pul + ombor + depozit"}
+              sub={`${fin.depositsUzs > 0 ? "pul + ombor + depozit" : "pul + ombor"}${fin.capitalUzs > 0 ? ` · ${fin.worthMultiple.toFixed(1)}×` : ""}`}
               tone="text-gradient-gold"
             />
-            <Tile onClick={() => setOpen("deposit")} label="Qaytadigan pul" value={som(fin.depositsUzs)} sub="Uzum depoziti" tone="text-cyan-400" />
-            <Tile onClick={() => setOpen("pending")} label="Kutilayotgan buyurtma" value={som(stats.pendingUzs)} sub={`${stats.pending.length} ta · hali kirim emas`} tone="text-blue-400" />
+            <Tile onClick={() => setOpen("pending")} label="Yetkazilishi kerak" value={som(stats.confirmedUzs)} sub={`${stats.confirmed.length} ta tasdiqlangan · yetkazilganda kirim`} tone="text-blue-400" />
+            <Tile onClick={() => setOpen("unconfirmed")} label="Aniq emas" value={som(stats.unconfirmedUzs)} sub={`${stats.unconfirmed.length} ta · hisobga kirmaydi`} tone="text-muted-foreground" />
+            {fin.depositsUzs > 0 && (
+              <Tile onClick={() => setOpen("deposit")} label="Qaytadigan pul" value={som(fin.depositsUzs)} sub="depozit — qaytib keladi" tone="text-cyan-400" />
+            )}
           </div>
         </>
       )}
@@ -351,7 +362,7 @@ export default function DashboardPage() {
           <Lines>
             <Line label="Hozir turgan pul" value={som(fin.cashUzs)} />
             <Line label={`+ Ombordagi atirlar (${fin.warehouseItems} dona)`} value={som(fin.warehouseUzs)} tone="text-orange-400" />
-            <Line label="+ Qaytadigan pul (depozit)" value={som(fin.depositsUzs)} tone="text-cyan-400" />
+            {fin.depositsUzs > 0 && <Line label="+ Qaytadigan pul (depozit)" value={som(fin.depositsUzs)} tone="text-cyan-400" />}
             <Line label="= Jami boylik" value={som(fin.totalWorthUzs)} tone="text-gradient-gold" total />
             <Line label="− Tikilgan pul" value={som(fin.capitalUzs)} tone="text-purple-400" />
             <Line label="= Boylik o'sishi" value={som(fin.realProfitUzs)} tone={fin.realProfitUzs >= 0 ? "text-green-400" : "text-red-400"} total />
@@ -371,12 +382,23 @@ export default function DashboardPage() {
       )}
 
       {open === "pending" && (
-        <Sheet title={`Kutilayotgan buyurtma — ${stats.pending.length} ta`} total={som(stats.pendingUzs)} hint="“Yetkazildi” qilinganda kirim bo'ladi" onClose={() => setOpen(null)}>
-          <List empty="Kutilayotgan buyurtma yo'q">
-            {stats.pending.map(o => (
+        <Sheet title={`Yetkazilishi kerak — ${stats.confirmed.length} ta`} total={som(stats.confirmedUzs)} hint="tasdiqlangan: pul aniq keladi · “Yetkazildi” qilinganda kirim bo'ladi" onClose={() => setOpen(null)}>
+          <List empty="Tasdiqlangan, yetkazilmagan buyurtma yo'q">
+            {stats.confirmed.map(o => (
               <Item key={o.id} title={o.client} meta={`${o.date} · ${o.status} · ${o.titles}`} value={som(o.uzs)} tone="text-blue-400" />
             ))}
           </List>
+        </Sheet>
+      )}
+
+      {open === "unconfirmed" && (
+        <Sheet title={`Aniq emas — ${stats.unconfirmed.length} ta`} total={som(stats.unconfirmedUzs)} hint="to'lanmagan, shartnoma yo'q — hech bir hisobga kirmaydi" onClose={() => setOpen(null)}>
+          <List empty="Aniq bo'lmagan buyurtma yo'q">
+            {stats.unconfirmed.map(o => (
+              <Item key={o.id} title={o.client} meta={`${o.date} · ${o.status} · ${o.titles}`} value={som(o.uzs)} tone="text-muted-foreground" />
+            ))}
+          </List>
+          <Note>Mijoz olmasa, Buyurtmalar sahifasida “Bekor qilindi” qiling — ro&apos;yxatdan chiqadi.</Note>
         </Sheet>
       )}
     </div>

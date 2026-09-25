@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode } from "react";
 import { Product } from "@/lib/types";
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs } from "@/lib/utils";
 
@@ -21,8 +21,52 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+/**
+ * Savatcha qurilmada saqlanadi — Instagram/Telegram brauzerida mijoz boshqa
+ * ilovaga o'tib qaytsa yoki sahifani yangilasa, tanlagan atiri yo'qolmasin.
+ * Narx baribir serverda bazadan hisoblanadi (pricing-server.ts), bu yerdagi
+ * mahsulot ma'lumoti faqat ko'rsatish uchun.
+ */
+const STORAGE_KEY = "lux_cart_v1";
+
+function readSavedCart(): CartItem[] {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed)
+      ? parsed.filter((i) => i?.product?.id && Number(i.quantity) > 0)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const hydrated = useRef(false);
+
+  useEffect(() => {
+    // Mikrovazifada — birinchi render server HTML bilan mos kelsin
+    queueMicrotask(() => {
+      const saved = readSavedCart();
+      if (saved.length) setItems((prev) => (prev.length ? prev : saved));
+      hydrated.current = true;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated.current) return;
+    try {
+      // Tavsiflar kerak emas — joyni tejaymiz
+      const slim = items.map(({ product, quantity }) => ({
+        product: { ...product, description: undefined, description_ru: undefined },
+        quantity,
+      }));
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
+    } catch {
+      /* xotira yopiq (maxfiy rejim) — savatcha shu sahifada ishlayveradi */
+    }
+  }, [items]);
 
   const addItem = useCallback((product: Product) => {
     setItems((prev) => {

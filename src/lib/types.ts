@@ -54,6 +54,8 @@ export interface Order {
   status: "pending" | "processing" | "accepted" | "delivered" | "cancelled";
   /** Buyurtma summasi — SO'MDA. */
   total_amount?: number | null;
+  /** "paid" — to'langan (Click) yoki Uzum shartnomasi tasdiqlangan. */
+  payment_status?: string | null;
   created_at: string;
 }
 
