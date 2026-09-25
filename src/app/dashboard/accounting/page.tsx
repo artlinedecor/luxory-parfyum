@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Product, Order, Transaction } from "@/lib/types";
 import { dashLoad } from "@/lib/dashboard-api";
 import { useI18n } from "@/lib/i18n-context";
-import { usdToUzs, summarizeFinances } from "@/lib/accounting";
+import { usdToUzs, summarizeFinances, USD_TO_UZS } from "@/lib/accounting";
 import { priceOfProductUzs } from "@/lib/pricing-server";
 
 export default function AccountingPage() {
@@ -12,6 +12,7 @@ export default function AccountingPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [usdRate, setUsdRate] = useState(USD_TO_UZS);
   const [loading, setLoading] = useState(true);
 
   const L = lang === "ru" ? {
@@ -72,6 +73,7 @@ export default function AccountingPage() {
         setProducts(d.products as never);
         setOrders(d.orders as never);
         setTransactions(d.transactions as never);
+        setUsdRate(d.usdRate || USD_TO_UZS);
       } catch (e) {
         console.error("Error fetching accounting data:", e);
       } finally {
@@ -83,7 +85,7 @@ export default function AccountingPage() {
 
   const stats = useMemo(() => {
     const deliveredOrders = orders.filter(o => o.status === "delivered");
-    const fin = summarizeFinances({ transactions, deliveredOrders, products });
+    const fin = summarizeFinances({ transactions, deliveredOrders, products, rate: usdRate });
 
     // Omborni sotsak qancha tushadi — saytdagi haqiqiy narx bilan.
     let expectedSalesUzs = 0;
@@ -98,7 +100,7 @@ export default function AccountingPage() {
     );
 
     return { fin, expectedSalesUzs, expectedProfitUzs: expectedSalesUzs - fin.warehouseUzs, totalSold };
-  }, [products, orders, transactions]);
+  }, [products, orders, transactions, usdRate]);
 
   const fmt = (n: number) => n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   const inStock = products.filter(p => (p.stock || 0) > 0);
@@ -230,7 +232,7 @@ export default function AccountingPage() {
                         {inStock.map((product, index) => {
                           const stock = product.stock || 0;
                           const price = priceOfProductUzs(product);
-                          const costPrice = usdToUzs((product as { cost_price_usd?: number }).cost_price_usd || 0);
+                          const costPrice = usdToUzs((product as { cost_price_usd?: number }).cost_price_usd || 0, usdRate);
                           const invested = stock * costPrice;
                           const revenue = stock * price;
                           const profit = revenue - invested;

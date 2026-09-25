@@ -37,6 +37,8 @@ export type DashboardData<
   orders: O[];
   transactions: T[];
   uzumContracts: U[];
+  /** Joriy buxgalteriya kursi ($ → so'm). */
+  usdRate: number;
 };
 
 /** Barcha dashboard ma'lumotlari — bitta so'rovda. */
@@ -44,6 +46,16 @@ export function dashLoad<P = never, O = never, T = never, U = never>(): Promise<
   DashboardData<P, O, T, U>
 > {
   return call<DashboardData<P, O, T, U>>("/api/dashboard/data");
+}
+
+/** Buxgalteriya kursini saqlaydi, saqlangan qiymatni qaytaradi. */
+export async function dashSetUsdRate(rate: number): Promise<number> {
+  const r = await call<{ rate: number }>("/api/dashboard/usd-rate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ rate }),
+  });
+  return r.rate;
 }
 
 type Values = Record<string, unknown>;

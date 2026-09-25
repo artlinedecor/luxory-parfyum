@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/api-guard";
 import { serverSupabase } from "@/lib/supabase-server";
 import { computeOrderTotal } from "@/lib/pricing-server";
-import { orderRevenueUzs, USD_TO_UZS } from "@/lib/accounting";
+import { orderRevenueUzs } from "@/lib/accounting";
+import { getUsdRate } from "@/lib/usd-rate-server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
@@ -23,17 +24,15 @@ type OrderRow = { id: string; status: string; items: OrderItem[] | null; total_a
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Buyurtmaning summasi — kassa va tranzaksiyalar uchun. */
-function orderTotalAmount(order: OrderRow): number {
-  // ⚠️ total_amount ustuniga endi FAQAT so'm yoziladi (4-vazifa,
-  // 1-qadam). Shuning uchun uni to'g'ridan-to'g'ri ishonib bo'ladi —
-  // lekin ustun bo'sh/0 bo'lgan eski buyurtmalar uchun items dan
-  // qayta hisoblash kerak bo'lishi mumkin, shuning uchun accounting.ts
-  // dagi yagona, NaN'dan himoyalangan funksiyaga tayanamiz.
-  if (order.total_amount != null && Number(order.total_amount) > 0) {
-    return Number(order.total_amount);
-  }
-  return orderRevenueUzs(order);
+/** Buyurtmaning summasi — kassa va tranzaksiyalar uchun, SO'MDA. */
+function orderTotalAmount(order: OrderRow, rate: number): number {
+  // Qatorlardagi price_uzs — kiritilgan paytdagi kurs bilan muzlatilgan.
+  // total_amount'ga ishonib bo'lmaydi: eski qo'lda buyurtmalarda u yerda
+  // DOLLAR turibdi (52, 232…) va holat qayta "yetkazildi" qilinsa kassaga
+  // 52 so'm yozilib qolardi (migrations/08 tuzatadi).
+  const fromItems = orderRevenueUzs(order, rate);
+  if (fromItems > 0) return fromItems;
+  return Number(order.total_amount) || 0;
 }
 
 async function shiftStock(
@@ -84,7 +83,7 @@ export async function POST(req: Request) {
         await shiftStock(supabase, items, -1);
         const { error: tErr } = await supabase.from("transactions").insert({
           type: "income",
-          amount: orderTotalAmount(o),
+          amount: orderTotalAmount(o, await getUsdRate(supabase)),
           description: `Buyurtma #${order_id.slice(0, 8)} yetkazildi - Daromad`,
         });
         if (tErr) throw new Error(`Daromad yozilmadi: ${tErr.message}`);
@@ -138,11 +137,16 @@ export async function POST(req: Request) {
         throw new Error("Mijoz ismi, telefoni va kamida 1 ta mahsulot majburiy");
       }
 
+      // Dollar narx so'mga dashboard'dagi joriy kurs bilan o'giriladi va
+      // price_uzs'da muzlatiladi — kurs keyin o'zgarsa kirim o'zgarmaydi.
+      const rate = await getUsdRate(supabase);
+
       // Qo'lda kiritilgan qatorlar — to'liq erkin: nom, narx, soni admin yozgani bo'yicha
       const lines = items.map((i) => {
         const qty = Math.max(1, Math.floor(Number(i.quantity) || 1));
         const priceDollar = Math.max(0, Number(i.price_at_purchase) || 0);
-        const priceUzs = Number(i.price_uzs) || Math.round(priceDollar * USD_TO_UZS);
+        // Dollar narx bo'lsa — so'm faqat server kursidan, brauzer yuborganidan emas
+        const priceUzs = priceDollar > 0 ? Math.round(priceDollar * rate) : Math.max(0, Number(i.price_uzs) || 0);
         const isValidUuid = i.product_id && UUID_RE.test(i.product_id);
 
         return {

@@ -52,6 +52,8 @@ export interface Order {
   order_type: "full_payment" | "deposit_50";
   /** "processing" — Uzum Nasiya shartnomasi tasdiqlangan, jo'natishga tayyor. */
   status: "pending" | "processing" | "accepted" | "delivered" | "cancelled";
+  /** Buyurtma summasi — SO'MDA. */
+  total_amount?: number | null;
   created_at: string;
 }
 
@@ -63,6 +65,8 @@ export interface Transaction {
   description: string;
   /** Faqat type="expense" uchun ma'noli: "inventory" (tovar xaridi/aktiv) yoki "operating" (operatsion xarajat). */
   expense_category?: "inventory" | "cargo" | "ads" | "services" | "deposit" | "other" | "operating" | null;
+  /** Rasxod kiritilgan paytdagi kurs ($ → so'm). Eski yozuvlarda bo'lmasligi mumkin. */
+  usd_rate?: number | null;
   created_at: string;
 }
 

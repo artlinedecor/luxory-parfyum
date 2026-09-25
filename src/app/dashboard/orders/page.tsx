@@ -82,6 +82,7 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [uzumContracts, setUzumContracts] = useState<UzumContractRow[]>([]);
+  const [usdRate, setUsdRate] = useState(USD_TO_UZS);
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showManualModal, setShowManualModal] = useState(false);
@@ -117,7 +118,7 @@ export default function OrdersPage() {
     (acc, item) => acc + (Number(item.price_at_purchase) || 0) * (Number(item.quantity) || 1),
     0
   );
-  const manualTotalUzs = manualTotalDollars * USD_TO_UZS;
+  const manualTotalUzs = manualTotalDollars * usdRate;
 
   const fetchOrders = useCallback(async () => {
     // Audit X7: admin tekshiruvi bo'lgan server route orqali.
@@ -126,6 +127,7 @@ export default function OrdersPage() {
       setOrders(d.orders);
       setProducts(d.products);
       setUzumContracts(d.uzumContracts ?? []);
+      setUsdRate(d.usdRate || USD_TO_UZS);
     } catch (e) {
       console.error("Buyurtmalarni yuklab bo'lmadi", e);
       alert(e instanceof Error ? e.message : "Ma'lumot yuklanmadi");
@@ -295,7 +297,6 @@ export default function OrdersPage() {
             title: i.title.trim(),
             quantity: Number(i.quantity) || 1,
             price_at_purchase: Number(i.price_at_purchase) || 0,
-            price_uzs: Math.round((Number(i.price_at_purchase) || 0) * USD_TO_UZS),
             product_type: i.product_type || "lux_copy",
           })),
           client_name: manualName.trim(),

@@ -3,13 +3,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Transaction, Order, Product } from "@/lib/types";
 import { dashLoad, dashInsert, dashDelete } from "@/lib/dashboard-api";
-import { usdToUzs, summarizeFinances, EXPENSE_SEGMENTS, EXPENSE_SEGMENT_LABELS, type ExpenseSegment } from "@/lib/accounting";
+import { txAmountUzs, summarizeFinances, EXPENSE_SEGMENTS, EXPENSE_SEGMENT_LABELS, USD_TO_UZS, type ExpenseSegment } from "@/lib/accounting";
+import UsdRateEditor from "@/components/UsdRateEditor";
 
 type TxType = "income" | "expense" | "capital";
 
-// Savdo va sarmoya SO'MDA, rasxod DOLLARDA saqlanadi — jadval va balans uchun so'mga keltiramiz.
-const txUzs = (t: { type: string; amount: number }) =>
-  t.type === "expense" ? -usdToUzs(Number(t.amount)) : Number(t.amount) || 0;
+// Savdo va sarmoya SO'MDA, rasxod DOLLARDA (o'z kursi bilan) saqlanadi — jadval va balans uchun so'mga keltiramiz.
+const txUzs = (t: Transaction) => (t.type === "expense" ? -txAmountUzs(t) : txAmountUzs(t));
 
 const TYPE_UI: Record<TxType, { label: string; badge: string; text: string; button: string }> = {
   income: { label: "Savdo", badge: "bg-green-500/10 text-green-400", text: "text-green-400", button: "bg-green-400 hover:bg-green-500 shadow-green-500/20" },
@@ -22,6 +22,7 @@ export default function CashflowPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [usdRate, setUsdRate] = useState(USD_TO_UZS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [type, setType] = useState<TxType>("expense");
@@ -38,6 +39,7 @@ export default function CashflowPage() {
       setTransactions(d.transactions as never);
       setOrders(d.orders as Order[]);
       setProducts(d.products as never);
+      setUsdRate(d.usdRate || USD_TO_UZS);
     } catch (e) {
       console.error("Error fetching data:", e);
     } finally {
@@ -53,7 +55,7 @@ export default function CashflowPage() {
   // ── HISOB-KITOB ──────────────────────────────
   const accounting = useMemo(() => {
     const deliveredOrders = orders.filter(o => o.status === "delivered");
-    const fin = summarizeFinances({ transactions, deliveredOrders, products });
+    const fin = summarizeFinances({ transactions, deliveredOrders, products, rate: usdRate });
     const totalSoldItems = deliveredOrders.reduce(
       (sum, o) => sum + (o.items ?? []).reduce((acc, i) => acc + (Number(i.quantity) || 0), 0),
       0
@@ -67,7 +69,7 @@ export default function CashflowPage() {
       deliveredOrdersCount: deliveredOrders.length,
       totalSoldItems,
     };
-  }, [transactions, orders, products]);
+  }, [transactions, orders, products, usdRate]);
 
   // Running balance for table
   const txWithBalance = useMemo(() => {
@@ -97,6 +99,8 @@ export default function CashflowPage() {
           amount: Number(amount),
           description,
           expense_category: type === "expense" ? expenseCategory : null,
+          // Kiritilgan paytdagi kurs — keyin kurs o'zgarsa bu rasxod qayta baholanmaydi
+          usd_rate: type === "expense" ? usdRate : null,
         },
       ]);
 
@@ -197,6 +201,7 @@ export default function CashflowPage() {
         </div>
         <div className="flex items-center gap-2">
           {/* Export CSV */}
+          <UsdRateEditor rate={usdRate} onChange={setUsdRate} />
           <button
             onClick={exportToCSV}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gold/30 text-gold font-bold text-xs uppercase tracking-wider hover:bg-gold/10 transition-all"
@@ -415,6 +420,9 @@ export default function CashflowPage() {
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground uppercase tracking-wider">{type === "expense" ? "Summa ($)" : "Summa (so'm)"}</label>
                 <input required type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-lg font-bold text-foreground focus:outline-none focus:border-gold/50" />
+                {type === "expense" && Number(amount) > 0 && (
+                  <p className="text-[11px] text-muted-foreground">≈ {fmt(Number(amount) * usdRate)} so&apos;m (1 $ = {fmt(usdRate)})</p>
+                )}
               </div>
 
               <div className="space-y-1">
