@@ -15,6 +15,7 @@ Reja: `docs/superpowers/specs/2026-09-26-sotuvchi-sayt-design.md`
 | 2 | Atir sahifasi (narx, Uzum satri, pastki panel) | qilindi |
 | 3 | Savat + Uzum oqimi qisqartirildi (Uzum tugmasi birinchi, yetishmagan maydonlar ko'rsatiladi, savatdagi raqam bilan limit darhol tekshiriladi, raqamni o'zgartirish) | qilindi |
 | 4 | Bosh sahifa va katalog (C uslub: binafsha #6100FF, Unbounded + Manrope) | qilindi |
+| 1b | ChatPlace bot aniq havola yuboradi: `/a/<atir-nomi>` (PR #14) + AI agent global qoidalari — `docs/chatplace-bot-sozlash.md` | qilindi |
 | 5 | Tezlik o'lchovi | o'lchandi, tuzatish keyingi ish (quyida) |
 
 ## SEO va AI qidiruv
