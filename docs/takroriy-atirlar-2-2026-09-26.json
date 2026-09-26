@@ -1,0 +1,17 @@
+{
+  "note": "is_available=false qilindi; buyurtmalarda (orders.items) ishlatilmagan. Qaytarish: update products set is_available=true where id in (...)",
+  "hidden": [
+    {
+      "id": "7aeace67-0063-4f26-b8a3-c9eaa5d1c537",
+      "title": "CLIVE CHRISTIAN NO.1 50ML",
+      "why": "Clive Christian No.1 takrori (rasm bir xil) — 8706672d qoldi: omborda 1 ta, notali tavsif bor",
+      "used_in_orders": 0
+    },
+    {
+      "id": "6455f5db-aa91-491b-9375-d2e9cc514307",
+      "title": "EX NIHILO THE HEDONIST 100ML",
+      "why": "Ex Nihilo The Hedonist takrori — 6ebd9e50 (Extrait de Parfum 100ml) qoldi: tekshirilgan oq fonli rasm, to'liq nom",
+      "used_in_orders": 0
+    }
+  ]
+}

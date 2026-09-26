@@ -49,7 +49,10 @@ Sabablari va keyingi ish (tartib bo'yicha):
 - Rasm: faqat flakon, oq fon. 98 ta almashtirilgan — `docs/rasm-almashtirish-2026-09-26.json` (eski havolalar bilan).
 - Qoldirilgan rasmlar: HFC "Delisitrige" (nomi noma'lum), Lady Sexy.
 - Takroriy 5 atir yashirilgan — `docs/takroriy-atirlar-2026-09-26.json`.
-- Nomlar tuzatildi — `docs/nom-tuzatish-2026-09-26.json`.
+- Nomlar tuzatildi — `docs/nom-tuzatish-2026-09-26.json`; emoji va "(+18)" olib tashlandi (30 ta) — `docs/nom-tuzatish-2-2026-09-26.json`.
+- 49 ta mashhur atir qo'shildi (Tygar, Miss Dior, Allure...) — `docs/yangi-atirlar-2026-09-26.json`
+  (rasm va notalar Fragrantica'dan, rasm `product-images/public/added-2026-09-26/`). Yana 2 takroriy yashirildi — `docs/takroriy-atirlar-2-2026-09-26.json`.
+  Eski yashirin kartochkalar (Tygar ×2, J'adore, Chance Eau Tendre) yashirinligicha qoldi.
 
 ## Hisob-kitob (dashboard)
 - Buxgalteriya kursi 11 870 (dashboard'da o'zgartiriladi, `app_settings.usd_to_uzs`);

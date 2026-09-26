@@ -1,0 +1,495 @@
+{
+  "note": "Yangi lux_copy atirlar: price_usd 55 (lux_copy'dagi eng ko'p qiymat), cost_price_usd 0, merchant_id null, stock 0. Notalar, yil va parfyumer — Fragrantica. Qaytarish: update products set is_available=false where id in (...)",
+  "added": [
+    {
+      "id": "3b44ee9d-f6c5-4e25-98e2-11dcfd20746b",
+      "title": "Bvlgari Tygar Eau de Parfum 125 ml",
+      "title_ru": "Bvlgari Tygar Парфюмерная вода 125 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/3b44ee9d-f6c5-4e25-98e2-11dcfd20746b.jpg",
+      "short_link": "https://parfumelux.uz/a/bvlgari-tygar",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.41222.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Bvlgari/Tygar-41222.html"
+    },
+    {
+      "id": "a1a2d5b8-3cc5-4240-904f-bf7a596d115a",
+      "title": "Dior Miss Dior Eau de Parfum 100 ml",
+      "title_ru": "Miss Dior Парфюмерная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/a1a2d5b8-3cc5-4240-904f-bf7a596d115a.jpg",
+      "short_link": "https://parfumelux.uz/a/miss-dior",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.68905.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Dior/Miss-Dior-Eau-de-Parfum-2021-68905.html"
+    },
+    {
+      "id": "6ddcdb3a-5923-49d3-82d2-fe0a231f35b2",
+      "title": "Dior J'adore Eau de Parfum 100 ml",
+      "title_ru": "Dior J'adore Парфюмерная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/6ddcdb3a-5923-49d3-82d2-fe0a231f35b2.jpg",
+      "short_link": "https://parfumelux.uz/a/dior-jadore",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.210.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Dior/J-adore-210.html"
+    },
+    {
+      "id": "21c17b57-2907-4e16-ab29-28dccb8fb73e",
+      "title": "Dior Homme Intense Eau de Parfum 100 ml",
+      "title_ru": "Dior Homme Intense Парфюмерная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/21c17b57-2907-4e16-ab29-28dccb8fb73e.jpg",
+      "short_link": "https://parfumelux.uz/a/dior-homme-intense",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.13016.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Dior/Dior-Homme-Intense-2011-13016.html"
+    },
+    {
+      "id": "c59a9b59-de3b-46a8-8e2e-32ba59ba3d47",
+      "title": "Chanel Chance Eau Tendre Eau de Toilette 100 ml",
+      "title_ru": "Chanel Chance Eau Tendre Туалетная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/c59a9b59-de3b-46a8-8e2e-32ba59ba3d47.jpg",
+      "short_link": "https://parfumelux.uz/a/chanel-chance-eau-tendre",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.8069.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Chanel/Chance-Eau-Tendre-8069.html"
+    },
+    {
+      "id": "e5856c4a-b526-4c38-a701-501b484656e4",
+      "title": "YSL Black Opium Eau de Parfum 90 ml",
+      "title_ru": "YSL Black Opium Парфюмерная вода 90 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/e5856c4a-b526-4c38-a701-501b484656e4.jpg",
+      "short_link": "https://parfumelux.uz/a/ysl-black-opium",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.25324.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Yves-Saint-Laurent/Black-Opium-25324.html"
+    },
+    {
+      "id": "a7007579-88fa-47da-be67-8f5042d72034",
+      "title": "Creed Aventus for Her Eau de Parfum 75 ml",
+      "title_ru": "Creed Aventus for Her Парфюмерная вода 75 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/a7007579-88fa-47da-be67-8f5042d72034.jpg",
+      "short_link": "https://parfumelux.uz/a/creed-aventus-for-her",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.38497.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Creed/Aventus-for-Her-38497.html"
+    },
+    {
+      "id": "43463849-23ee-4e87-acaa-2148ebdac308",
+      "title": "Creed Silver Mountain Water Eau de Parfum 100 ml",
+      "title_ru": "Creed Silver Mountain Water Парфюмерная вода 100 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/43463849-23ee-4e87-acaa-2148ebdac308.jpg",
+      "short_link": "https://parfumelux.uz/a/creed-silver-mountain-water",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.472.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Creed/Silver-Mountain-Water-472.html"
+    },
+    {
+      "id": "51deaa5d-dccf-43e3-bf61-57b7b8b7b832",
+      "title": "Tom Ford Tobacco Vanille Eau de Parfum 50 ml",
+      "title_ru": "Tom Ford Tobacco Vanille Парфюмерная вода 50 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/51deaa5d-dccf-43e3-bf61-57b7b8b7b832.jpg",
+      "short_link": "https://parfumelux.uz/a/tom-ford-tobacco-vanille",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.1825.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Tom-Ford/Tobacco-Vanille-1825.html"
+    },
+    {
+      "id": "d00d2b9c-ae49-4a3e-8073-6ffec9dd7239",
+      "title": "Tom Ford Oud Wood Eau de Parfum 50 ml",
+      "title_ru": "Tom Ford Oud Wood Парфюмерная вода 50 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/d00d2b9c-ae49-4a3e-8073-6ffec9dd7239.jpg",
+      "short_link": "https://parfumelux.uz/a/tom-ford-oud-wood",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.1826.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Tom-Ford/Oud-Wood-1826.html"
+    },
+    {
+      "id": "77764c4b-58d3-4064-bf40-c7c3a4c03bd4",
+      "title": "Tom Ford Black Orchid Eau de Parfum 50 ml",
+      "title_ru": "Tom Ford Black Orchid Парфюмерная вода 50 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/77764c4b-58d3-4064-bf40-c7c3a4c03bd4.jpg",
+      "short_link": "https://parfumelux.uz/a/tom-ford-black-orchid",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.1018.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Tom-Ford/Black-Orchid-1018.html"
+    },
+    {
+      "id": "27ac5f26-126d-47c6-afd8-5ec34e846fbe",
+      "title": "Kilian Angels' Share Eau de Parfum 50 ml",
+      "title_ru": "Kilian Angels' Share Парфюмерная вода 50 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/27ac5f26-126d-47c6-afd8-5ec34e846fbe.jpg",
+      "short_link": "https://parfumelux.uz/a/kilian-angels-share",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.62615.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/By-Kilian/Angels-Share-62615.html"
+    },
+    {
+      "id": "fa712418-2599-4ead-ab85-62160f169c42",
+      "title": "Parfums de Marly Layton Eau de Parfum 125 ml",
+      "title_ru": "Parfums de Marly Layton Парфюмерная вода 125 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/fa712418-2599-4ead-ab85-62160f169c42.jpg",
+      "short_link": "https://parfumelux.uz/a/parfums-de-marly-layton",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.39314.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Parfums-de-Marly/Layton-39314.html"
+    },
+    {
+      "id": "a8a9947b-6588-474f-8f4b-7f1163bd0a76",
+      "title": "Parfums de Marly Herod Eau de Parfum 125 ml",
+      "title_ru": "Parfums de Marly Herod Парфюмерная вода 125 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/a8a9947b-6588-474f-8f4b-7f1163bd0a76.jpg",
+      "short_link": "https://parfumelux.uz/a/parfums-de-marly-herod",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.16939.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Parfums-de-Marly/Herod-16939.html"
+    },
+    {
+      "id": "782621e0-f8b8-4e40-aeec-c2ea9dd91619",
+      "title": "Xerjoff Naxos Eau de Parfum 100 ml",
+      "title_ru": "Xerjoff Naxos Парфюмерная вода 100 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/782621e0-f8b8-4e40-aeec-c2ea9dd91619.jpg",
+      "short_link": "https://parfumelux.uz/a/xerjoff-naxos",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.30529.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Xerjoff/XJ-1861-Naxos-30529.html"
+    },
+    {
+      "id": "57caf0b7-d64f-47a1-ac22-de6bd79fb910",
+      "title": "Amouage Interlude Man Eau de Parfum 100 ml",
+      "title_ru": "Amouage Interlude Man Парфюмерная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/57caf0b7-d64f-47a1-ac22-de6bd79fb910.jpg",
+      "short_link": "https://parfumelux.uz/a/amouage-interlude-man",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.15294.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Amouage/Interlude-Man-15294.html"
+    },
+    {
+      "id": "ddcd0640-1d0b-4376-ab4f-dcb928399229",
+      "title": "Lancome Idole Eau de Parfum 50 ml",
+      "title_ru": "Lancome Idole Парфюмерная вода 50 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/ddcd0640-1d0b-4376-ab4f-dcb928399229.jpg",
+      "short_link": "https://parfumelux.uz/a/lancome-idole",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.55795.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Lancome/Idole-55795.html"
+    },
+    {
+      "id": "1c39a59a-fc19-41e7-ad37-7a1a1fc48559",
+      "title": "Gucci Bloom Eau de Parfum 100 ml",
+      "title_ru": "Gucci Bloom Парфюмерная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/1c39a59a-fc19-41e7-ad37-7a1a1fc48559.jpg",
+      "short_link": "https://parfumelux.uz/a/gucci-bloom",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.44894.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Gucci/Gucci-Bloom-44894.html"
+    },
+    {
+      "id": "f5c6a9b6-e86a-4fdd-a020-b914de58bb4d",
+      "title": "Gucci Flora Gorgeous Gardenia Eau de Parfum 100 ml",
+      "title_ru": "Gucci Flora Gorgeous Gardenia Парфюмерная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/f5c6a9b6-e86a-4fdd-a020-b914de58bb4d.jpg",
+      "short_link": "https://parfumelux.uz/a/gucci-flora-gorgeous-gardenia",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.68578.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Gucci/Flora-Gorgeous-Gardenia-68578.html"
+    },
+    {
+      "id": "89ad4a78-d319-449c-b073-da57607c208c",
+      "title": "Giorgio Armani Si Eau de Parfum 100 ml",
+      "title_ru": "Giorgio Armani Si Парфюмерная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/89ad4a78-d319-449c-b073-da57607c208c.jpg",
+      "short_link": "https://parfumelux.uz/a/armani-si",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.18453.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Giorgio-Armani/Si-18453.html"
+    },
+    {
+      "id": "8c6cfaf5-1c6a-479b-af90-5d55d8d24061",
+      "title": "Giorgio Armani Code Eau de Toilette 125 ml",
+      "title_ru": "Giorgio Armani Code Туалетная вода 125 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/8c6cfaf5-1c6a-479b-af90-5d55d8d24061.jpg",
+      "short_link": "https://parfumelux.uz/a/armani-code",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.412.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Giorgio-Armani/Armani-Code-412.html"
+    },
+    {
+      "id": "76614d60-c8ad-40cf-9fd4-d557652fab00",
+      "title": "Versace Eros Eau de Toilette 100 ml",
+      "title_ru": "Versace Eros Туалетная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/76614d60-c8ad-40cf-9fd4-d557652fab00.jpg",
+      "short_link": "https://parfumelux.uz/a/versace-eros",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.16657.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Versace/Eros-16657.html"
+    },
+    {
+      "id": "ba36f991-bc22-4813-888f-e0f56b8aa3a5",
+      "title": "Versace Dylan Blue Pour Homme Eau de Toilette 100 ml",
+      "title_ru": "Versace Dylan Blue Pour Homme Туалетная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/ba36f991-bc22-4813-888f-e0f56b8aa3a5.jpg",
+      "short_link": "https://parfumelux.uz/a/versace-dylan-blue",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.40031.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Versace/Versace-Pour-Homme-Dylan-Blue-40031.html"
+    },
+    {
+      "id": "39386c4a-04cc-4465-a150-ced5b761ee52",
+      "title": "Paco Rabanne Invictus Eau de Toilette 100 ml",
+      "title_ru": "Paco Rabanne Invictus Туалетная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/39386c4a-04cc-4465-a150-ced5b761ee52.jpg",
+      "short_link": "https://parfumelux.uz/a/paco-rabanne-invictus",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.18471.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Rabanne/Invictus-18471.html"
+    },
+    {
+      "id": "95a57a34-96c5-4b97-a1b6-071862da3059",
+      "title": "Paco Rabanne Phantom Eau de Toilette 100 ml",
+      "title_ru": "Paco Rabanne Phantom Туалетная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/95a57a34-96c5-4b97-a1b6-071862da3059.jpg",
+      "short_link": "https://parfumelux.uz/a/paco-rabanne-phantom",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.68226.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Rabanne/Phantom-68226.html"
+    },
+    {
+      "id": "e5ab2418-6800-4357-9173-ed354dbf9b31",
+      "title": "Carolina Herrera Good Girl Eau de Parfum 80 ml",
+      "title_ru": "Carolina Herrera Good Girl Парфюмерная вода 80 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/e5ab2418-6800-4357-9173-ed354dbf9b31.jpg",
+      "short_link": "https://parfumelux.uz/a/carolina-herrera-good-girl",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.39681.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Carolina-Herrera/Good-Girl-39681.html"
+    },
+    {
+      "id": "8cb0ad18-4df1-4193-ba9a-69584818ca67",
+      "title": "Carolina Herrera 212 VIP Men Eau de Toilette 100 ml",
+      "title_ru": "Carolina Herrera 212 VIP Men Туалетная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/8cb0ad18-4df1-4193-ba9a-69584818ca67.jpg",
+      "short_link": "https://parfumelux.uz/a/carolina-herrera-212-vip-men",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.12865.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Carolina-Herrera/212-VIP-Men-12865.html"
+    },
+    {
+      "id": "aaa3bd3c-e7ba-47c7-a7b5-20bb2baff342",
+      "title": "Jean Paul Gaultier Le Male Eau de Toilette 125 ml",
+      "title_ru": "Jean Paul Gaultier Le Male Туалетная вода 125 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/aaa3bd3c-e7ba-47c7-a7b5-20bb2baff342.jpg",
+      "short_link": "https://parfumelux.uz/a/jean-paul-gaultier-le-male",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.430.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Jean-Paul-Gaultier/Le-Male-430.html"
+    },
+    {
+      "id": "196b52a0-5718-47ac-98b7-0f6cf37e0450",
+      "title": "Jean Paul Gaultier Scandal Eau de Parfum 80 ml",
+      "title_ru": "Jean Paul Gaultier Scandal Парфюмерная вода 80 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/196b52a0-5718-47ac-98b7-0f6cf37e0450.jpg",
+      "short_link": "https://parfumelux.uz/a/jean-paul-gaultier-scandal",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.45651.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Jean-Paul-Gaultier/Scandal-45651.html"
+    },
+    {
+      "id": "58640daa-f38b-49be-8e9b-f0509c8d256a",
+      "title": "Valentino Donna Born in Roma Eau de Parfum 100 ml",
+      "title_ru": "Valentino Donna Born in Roma Парфюмерная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/58640daa-f38b-49be-8e9b-f0509c8d256a.jpg",
+      "short_link": "https://parfumelux.uz/a/valentino-donna-born-in-roma",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.55805.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Valentino/Valentino-Donna-Born-In-Roma-55805.html"
+    },
+    {
+      "id": "0fee1f87-073a-4dd8-96f5-03525624a4c0",
+      "title": "Valentino Uomo Born in Roma Eau de Toilette 100 ml",
+      "title_ru": "Valentino Uomo Born in Roma Туалетная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/0fee1f87-073a-4dd8-96f5-03525624a4c0.jpg",
+      "short_link": "https://parfumelux.uz/a/valentino-uomo-born-in-roma",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.55963.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Valentino/Valentino-Uomo-Born-in-Roma-55963.html"
+    },
+    {
+      "id": "3ea57f85-bdd0-43d4-94ca-b338c5e42e67",
+      "title": "Nishane Hacivat Extrait de Parfum 100 ml",
+      "title_ru": "Nishane Hacivat Экстракт духов 100 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/3ea57f85-bdd0-43d4-94ca-b338c5e42e67.jpg",
+      "short_link": "https://parfumelux.uz/a/nishane-hacivat",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.44174.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Nishane/Hacivat-44174.html"
+    },
+    {
+      "id": "9119994d-acf6-4497-9325-9881eb581777",
+      "title": "Initio Side Effect Eau de Parfum 90 ml",
+      "title_ru": "Initio Side Effect Парфюмерная вода 90 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/9119994d-acf6-4497-9325-9881eb581777.jpg",
+      "short_link": "https://parfumelux.uz/a/initio-side-effect",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.42260.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Initio-Parfums-Prives/Side-Effect-42260.html"
+    },
+    {
+      "id": "4a724134-8f2c-4b8f-9f30-9f8a80d75cb8",
+      "title": "Le Labo Santal 33 Eau de Parfum 50 ml",
+      "title_ru": "Le Labo Santal 33 Парфюмерная вода 50 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/4a724134-8f2c-4b8f-9f30-9f8a80d75cb8.jpg",
+      "short_link": "https://parfumelux.uz/a/le-labo-santal-33",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.12201.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Le-Labo/Santal-33-12201.html"
+    },
+    {
+      "id": "91aa7785-ecdf-44c1-8904-9e3c8fcaf838",
+      "title": "Dolce & Gabbana Light Blue Eau de Toilette 100 ml",
+      "title_ru": "Dolce & Gabbana Light Blue Туалетная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/91aa7785-ecdf-44c1-8904-9e3c8fcaf838.jpg",
+      "short_link": "https://parfumelux.uz/a/dolce-gabbana-light-blue",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.485.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Dolce-Gabbana/Light-Blue-485.html"
+    },
+    {
+      "id": "45aabe41-9537-400f-80f9-777c19125c34",
+      "title": "Burberry Her Eau de Parfum 100 ml",
+      "title_ru": "Burberry Her Парфюмерная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/45aabe41-9537-400f-80f9-777c19125c34.jpg",
+      "short_link": "https://parfumelux.uz/a/burberry-her",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.51694.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Burberry/Burberry-Her-51694.html"
+    },
+    {
+      "id": "4a84e00f-a51f-45c6-882b-2944afa9d921",
+      "title": "Kayali Vanilla 28 Eau de Parfum 100 ml",
+      "title_ru": "Kayali Vanilla 28 Парфюмерная вода 100 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/4a84e00f-a51f-45c6-882b-2944afa9d921.jpg",
+      "short_link": "https://parfumelux.uz/a/kayali-vanilla-28",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.52616.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Kayali-Fragrances/Vanilla-28-52616.html"
+    },
+    {
+      "id": "bfd3f45c-fe55-4f21-9eca-75ec5fcde273",
+      "title": "Maison Margiela Replica By the Fireplace Eau de Toilette 100 ml",
+      "title_ru": "Maison Margiela Replica By the Fireplace Туалетная вода 100 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/bfd3f45c-fe55-4f21-9eca-75ec5fcde273.jpg",
+      "short_link": "https://parfumelux.uz/a/maison-margiela-by-the-fireplace",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.31623.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Maison-Martin-Margiela/By-the-Fireplace-31623.html"
+    },
+    {
+      "id": "a9325aa5-c16e-428a-9234-fd412f271228",
+      "title": "Montale Intense Cafe Eau de Parfum 100 ml",
+      "title_ru": "Montale Intense Cafe Парфюмерная вода 100 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/a9325aa5-c16e-428a-9234-fd412f271228.jpg",
+      "short_link": "https://parfumelux.uz/a/montale-intense-cafe",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.18021.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Montale/Intense-Cafe-18021.html"
+    },
+    {
+      "id": "b2585b50-e051-4f6e-b790-214a520f69ce",
+      "title": "Chanel Allure Eau de Parfum 100 ml",
+      "title_ru": "Chanel Allure Парфюмерная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/b2585b50-e051-4f6e-b790-214a520f69ce.jpg",
+      "short_link": "https://parfumelux.uz/a/chanel-allure",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.176.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Chanel/Allure-Eau-de-Parfum-176.html"
+    },
+    {
+      "id": "d00b9988-0f88-42df-9b1d-ab3a56d99451",
+      "title": "Chanel Allure Homme Eau de Toilette 100 ml",
+      "title_ru": "Chanel Allure Homme Туалетная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/d00b9988-0f88-42df-9b1d-ab3a56d99451.jpg",
+      "short_link": "https://parfumelux.uz/a/chanel-allure-homme",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.523.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Chanel/Allure-Homme-523.html"
+    },
+    {
+      "id": "8630f1f8-2b4d-46ac-9744-c0dd1c381e77",
+      "title": "Dior Sauvage Eau de Parfum 100 ml",
+      "title_ru": "Dior Sauvage Парфюмерная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/8630f1f8-2b4d-46ac-9744-c0dd1c381e77.jpg",
+      "short_link": "https://parfumelux.uz/a/dior-sauvage-edp",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.48100.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Dior/Sauvage-Eau-de-Parfum-48100.html"
+    },
+    {
+      "id": "64b08a6d-f343-499f-88a5-413fa575456e",
+      "title": "Tom Ford Ombre Leather Eau de Parfum 100 ml",
+      "title_ru": "Tom Ford Ombre Leather Парфюмерная вода 100 мл",
+      "gender": "unisex",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/64b08a6d-f343-499f-88a5-413fa575456e.jpg",
+      "short_link": "https://parfumelux.uz/a/tom-ford-ombre-leather",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.50239.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Tom-Ford/Ombre-Leather-2018-50239.html"
+    },
+    {
+      "id": "bc373b43-2e6e-4768-a0be-2a684cd88ec3",
+      "title": "Kilian Love Don't Be Shy Eau de Parfum 50 ml",
+      "title_ru": "Kilian Love Don't Be Shy Парфюмерная вода 50 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/bc373b43-2e6e-4768-a0be-2a684cd88ec3.jpg",
+      "short_link": "https://parfumelux.uz/a/kilian-love-dont-be-shy",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.4322.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/By-Kilian/Love-Don-t-Be-Shy-4322.html"
+    },
+    {
+      "id": "db2e44b8-61b2-4883-a04e-17f4d40d3c01",
+      "title": "YSL La Nuit de L'Homme Eau de Toilette 100 ml",
+      "title_ru": "YSL La Nuit de L'Homme Туалетная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/db2e44b8-61b2-4883-a04e-17f4d40d3c01.jpg",
+      "short_link": "https://parfumelux.uz/a/ysl-la-nuit-de-lhomme",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.5521.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Yves-Saint-Laurent/La-Nuit-de-l-Homme-5521.html"
+    },
+    {
+      "id": "31ef242d-3bbf-4f31-a53a-4cd969c144f9",
+      "title": "Giorgio Armani Stronger With You Eau de Toilette 100 ml",
+      "title_ru": "Giorgio Armani Stronger With You Туалетная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/31ef242d-3bbf-4f31-a53a-4cd969c144f9.jpg",
+      "short_link": "https://parfumelux.uz/a/armani-stronger-with-you",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.45258.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Giorgio-Armani/Emporio-Armani-Stronger-With-You-45258.html"
+    },
+    {
+      "id": "1d06bc6c-e4ec-4f6f-8f4f-7d9411ace6c1",
+      "title": "Lancome La Vie Est Belle Eau de Parfum 100 ml",
+      "title_ru": "Lancome La Vie Est Belle Парфюмерная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/1d06bc6c-e4ec-4f6f-8f4f-7d9411ace6c1.jpg",
+      "short_link": "https://parfumelux.uz/a/lancome-la-vie-est-belle",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.14982.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Lancome/La-Vie-Est-Belle-14982.html"
+    },
+    {
+      "id": "87cc7ba0-c7fd-4da0-adf3-6190684c0a0a",
+      "title": "Dior Hypnotic Poison Eau de Toilette 100 ml",
+      "title_ru": "Dior Hypnotic Poison Туалетная вода 100 мл",
+      "gender": "female",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/87cc7ba0-c7fd-4da0-adf3-6190684c0a0a.jpg",
+      "short_link": "https://parfumelux.uz/a/dior-hypnotic-poison",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.219.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Dior/Hypnotic-Poison-219.html"
+    },
+    {
+      "id": "1d9dbfb0-80cc-4c9e-aa93-11123dad5a04",
+      "title": "Chanel Bleu de Chanel Eau de Parfum 100 ml",
+      "title_ru": "Bleu de Chanel Парфюмерная вода 100 мл",
+      "gender": "male",
+      "image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/1d9dbfb0-80cc-4c9e-aa93-11123dad5a04.jpg",
+      "short_link": "https://parfumelux.uz/a/bleu-de-chanel-edp",
+      "image_source": "https://fimgs.net/mdimg/perfume/o.25967.jpg",
+      "notes_source": "https://www.fragrantica.com/perfume/Chanel/Bleu-de-Chanel-Eau-de-Parfum-25967.html"
+    }
+  ]
+}

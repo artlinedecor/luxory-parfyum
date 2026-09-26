@@ -68,8 +68,28 @@ const ALIASES: Record<string, string> = {
   dolche: "dolce", gabbana: "gabbana", gabana: "gabbana",
   ivsen: "ysl", ivsenloran: "ysl", saint: "saint", loran: "laurent",
   bayredo: "byredo", bairedo: "byredo",
+  no5: "5", n5: "5",
   lv: "louis vuitton", pdm: "parfums de marly", bvlgari: "bulgari", bulgary: "bulgari",
+  // 2026-09-26 qo'shilgan atirlar (docs/yangi-atirlar-2026-09-26.json)
+  tyger: "tygar", tayger: "tygar", taygar: "tygar", tigar: "tygar",
+  mis: "miss", xom: "homme", xomme: "homme", tender: "tendre",
+  blek: "black", blak: "black", xer: "her", barberri: "burberry", barberi: "burberry", berberi: "burberry",
+  mauntin: "mountain", maunten: "mountain", voter: "water",
+  tabako: "tobacco", tabakko: "tobacco", vanila: "vanilla", ud: "oud", vud: "wood", orxid: "orchid", orhid: "orchid",
+  enjels: "angels", enjel: "angels", sher: "share", marli: "marly", leyton: "layton", xerod: "herod", gerod: "herod",
+  naksos: "naxos", interlyud: "interlude", idol: "idole", blum: "bloom", gardeniya: "gardenia", gorjes: "gorgeous",
+  kod: "code", dilan: "dylan", bleu: "blue", blyu: "blue", blu: "blue",
+  inviktus: "invictus", fantom: "phantom", pako: "paco", raban: "rabanne", rabann: "rabanne",
+  gud: "good", gerl: "girl", jpg: "jean paul gaultier", jan: "jean", pol: "paul", gote: "gaultier", gotye: "gaultier",
+  skandal: "scandal", xajivat: "hacivat", xadjivat: "hacivat", xachivat: "hacivat", hajivat: "hacivat",
+  sayd: "side", effekt: "effect", layt: "light", marjela: "margiela", marjiela: "margiela",
+  replika: "replica", fayrpleys: "fireplace", fayerpleys: "fireplace", kafe: "cafe",
+  allyur: "allure", alyur: "allure", allur: "allure", lezer: "leather", lav: "love", shay: "shy",
+  nyui: "nuit", nui: "nuit", gipnotik: "hypnotic", puazon: "poison",
 };
+
+// Tanlashda hisobga olinmaydigan so'zlar: konsentratsiya va hajm atirni boshqasidan ajratmaydi
+const TITLE_NOISE = new Set(["eau", "de", "parfum", "toilette", "edp", "edt", "ml"]);
 
 // Savol va to'ldiruvchi so'zlar — mahsulot nomida bo'lmaydi.
 const STOPWORDS = new Set([
@@ -85,6 +105,9 @@ export function normalizeQuery(q: string): string {
   const plain = latin.normalize("NFD").replace(/[̀-ͯ]/g, "");
   return plain
     .replace(/[^a-z0-9]+/g, " ")
+    // "Eau de Parfum" / "Парфюмерная вода" = edp: "bleu-de-chanel-edp" EDP'ni Parfum'dan ajratsin
+    .replace(/\b(eau de parfum|parfyumernaya voda)\b/g, "edp")
+    .replace(/\b(eau de toilette|tualetnaya voda)\b/g, "edt")
     .trim()
     .split(/\s+/)
     .filter(Boolean)
@@ -111,6 +134,18 @@ function wordScore(word: string, hay: string[]): number {
 
 type Ranked<T> = { p: T; matched: number; score: number; extra: number };
 
+/** Nomdagi so'rovda yo'q so'zlar soni (hajm va konsentratsiya so'zlarisiz). */
+function titleExtra(p: SearchableProduct, words: string[]): number {
+  const titleWords = new Set(normalizeQuery(p.title).split(" "));
+  let extra = 0;
+  for (const t of titleWords) {
+    if (!t || TITLE_NOISE.has(t) || /^\d+(ml)?$/.test(t)) continue;
+    // "ex" (Ex Nihilo) "extrait" ni qoplamasin: qisqa so'z faqat to'liq mos kelsa hisoblanadi
+    if (!words.some((w) => w === t || (w.length >= 3 && wordScore(w, [t]) >= 2))) extra++;
+  }
+  return extra;
+}
+
 /** Mos kelgan mahsulotlar: ko'p so'z mos kelgani, keyin ball, keyin omborda bori oldin. */
 function rankProducts<T extends SearchableProduct>(products: T[], words: string[]): Ranked<T>[] {
   const scored: Ranked<T>[] = [];
@@ -123,8 +158,10 @@ function rankProducts<T extends SearchableProduct>(products: T[], words: string[
       if (s > 0) matched++;
       score += s;
     }
-    // extra — nomdagi ortiqcha so'zlar: "The Hedonist" so'ralsa "The Hedonist Extrait" emas, o'zi
-    if (matched > 0) scored.push({ p, matched, score, extra: hay.length - matched });
+    // extra — nomdagi ortiqcha so'zlar: "The Hedonist" so'ralsa "The Hedonist Extrait" emas, o'zi.
+    // Faqat asosiy nom sanaladi: ruscha nom, hajm va "Eau de Parfum" hisobga olinmaydi, aks holda
+    // "chanel allure" so'ralganda to'liq yozilgan "Chanel Allure Eau de Parfum" o'rniga Allure Homme Sport chiqardi.
+    if (matched > 0) scored.push({ p, matched, score, extra: titleExtra(p, words) });
   }
 
   const inStock = (p: T) => ((p.stock ?? 0) > 0 ? 1 : 0);
@@ -143,21 +180,27 @@ export function searchProducts<T extends SearchableProduct>(products: T[], q: st
     .map((s) => s.p);
 }
 
+// Havolada bo'lishi mumkin, lekin atirni ajratmaydigan so'zlar — mos kelmasa ham bo'ladi
+const GENERIC = new Set([
+  "eau", "de", "du", "la", "le", "the", "parfum", "parfume", "perfume", "toilette", "extrait", "edp", "edt",
+  "by", "and",
+  "s", "t", "m", "d", "ll", "re", // apostrof bo'lingan: devil-s, can-t, i-m
+]);
+
 /**
  * Bot yuboradigan qisqa havola: /a/dior-sauvage-elixir → shu atir.
- * Bot nomni biroz boshqacha yozsa ham topiladi, lekin so'zlarning kamida 60%
- * mos kelishi shart: "tom-ford-tobacco-vanille" faqat brend bo'yicha mos kelib
- * boshqa Tom Ford'ga olib bormasin — bunday holda null (katalog).
+ * Nomdagi har bir ajratuvchi so'z (GENERIC dan tashqari) atir nomida bo'lishi shart:
+ * "giorgio-armani-si" Acqua di Gio'ga, "pdm-layton" boshqa PDM'ga olib bormasin —
+ * faqat brend mos kelsa null (katalog). Teng mos kelganda nomi eng qisqasi.
  */
 export function findShortLinkProduct<T extends SearchableProduct>(products: T[], slug: string): T | null {
-  const words = queryWords(slug.replace(/[-_+.]+/g, " "));
-  if (!words.length) return null;
-  const ranked = rankProducts(products, words);
-  // Havola bitta aniq atirga olib borishi kerak: teng mos kelganlar ichidan nomi eng qisqasi
-  const best = ranked
-    .filter((r) => r.matched === ranked[0].matched && r.score === ranked[0].score)
-    .sort((a, b) => a.extra - b.extra)[0];
-  return best && best.matched >= Math.ceil(words.length * 0.6) ? best.p : null;
+  const all = queryWords(slug.replace(/[-_+.]+/g, " "));
+  const required = all.filter((w) => !GENERIC.has(w));
+  if (!required.length) return null;
+  const ok = new Set(rankProducts(products, required).filter((r) => r.matched === required.length).map((r) => r.p));
+  // Mos kelganlar ichidan umumiy so'zlar bilan ham eng mosi: "...extrait" → Extrait, "...edp" → EDP
+  const best = rankProducts([...ok], all).sort((a, b) => b.score - a.score || a.extra - b.extra)[0];
+  return best ? best.p : null;
 }
 
 export function toPublicItem(p: PublicProductRow, siteUrl: string): PublicItem {

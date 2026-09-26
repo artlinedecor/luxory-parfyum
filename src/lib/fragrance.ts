@@ -163,6 +163,7 @@ const BRANDS = [
   "Amouage",
   "Xerjoff",
   "Nishane",
+  "Kayali",
   "Mancera",
   "Montale",
   "Lattafa",
