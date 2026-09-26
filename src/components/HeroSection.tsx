@@ -20,7 +20,7 @@ export default function HeroSection({ productCount, products }: { productCount: 
   const [q, setQ] = useState("");
   const ru = lang === "ru";
 
-  // Karta ichidagi surat — omborda bor, rasmi bor birinchi atir
+  // Karta ichidagi surat — tez yetkazish mumkin bo'lgan (omborda), rasmi bor birinchi atir
   const showcase = products.find((p) => p.image_url && (p.stock ?? 0) > 0) ?? products.find((p) => p.image_url);
 
   const submit = (e: React.FormEvent) => {
@@ -33,7 +33,7 @@ export default function HeroSection({ productCount, products }: { productCount: 
     { href: "/catalog?g=female", label: ru ? "Женские" : "Ayollar", cls: "bg-[#ffe1ec] text-[#8a1c46]" },
     { href: "/catalog?g=male", label: ru ? "Мужские" : "Erkaklar", cls: "bg-[#dff3ff] text-[#0c4a6e]" },
     { href: "/catalog?g=unisex", label: "Unisex", cls: "bg-[#fff1c9] text-[#7a4b00]" },
-    { href: "/#omborda", label: ru ? "В наличии" : "Omborda bor", cls: "bg-[#dcf7e8] text-[#0b5a36]" },
+    { href: "/catalog", label: ru ? "Все ароматы" : "Hammasi", cls: "bg-[#ece4ff] text-[#3d0f99]" },
   ];
 
   return (
@@ -91,12 +91,24 @@ export default function HeroSection({ productCount, products }: { productCount: 
 
           <div className="relative flex items-center justify-between gap-3 border-t border-white/15 px-5 py-3 text-[12px] text-white/85 sm:px-10">
             <span>
-              <b className="font-bold text-white">3 · 6 · 12</b> {ru ? "мес. рассрочка — Uzum Nasiya" : "oyga bo'lib to'lash — Uzum Nasiya"}
+              <b className="font-bold text-white">{ru ? "Без карты и наличных" : "Kartasiz, naqd pulsiz"}</b> · Uzum Nasiya
             </span>
             <Link href="/catalog" id="hero-cta-catalog" className="inline-flex min-h-[40px] shrink-0 items-center gap-1 font-bold text-white">
               {productCount > 0 ? `${productCount} ${ru ? "ароматов" : "ta atir"}` : ru ? "Каталог" : "Katalog"}
               <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.5} />
             </Link>
+          </div>
+        </div>
+
+        {/* Takliflar — faqat haqiqiy shartlar */}
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <div className="rounded-2xl bg-[#1d1433] px-4 py-3 text-white">
+            <p className="font-heading text-[17px] leading-tight sm:text-xl">800 000 {ru ? "сум" : "so'm"}</p>
+            <p className="mt-1 text-[12px] leading-snug text-white/75">{ru ? "любой премиум-аромат — одна цена" : "har qanday premium atir — bitta narx"}</p>
+          </div>
+          <div className="rounded-2xl bg-[#ffd84d] px-4 py-3 text-[#1d1433]">
+            <p className="font-heading text-[17px] leading-tight sm:text-xl">{ru ? "0 сум сразу" : "0 so'm hozir"}</p>
+            <p className="mt-1 text-[12px] leading-snug text-[#1d1433]/75">{ru ? "платите 3, 6 или 12 месяцев" : "3, 6 yoki 12 oyda to'laysiz"}</p>
           </div>
         </div>
 

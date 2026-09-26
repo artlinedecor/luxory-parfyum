@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Heart, Truck, ShieldCheck, CreditCard, Smartphone, PackageCheck, Clock3 } from "lucide-react";
+import { ChevronLeft, Heart, Truck, ShieldCheck, CreditCard, Smartphone } from "lucide-react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
@@ -50,7 +50,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const frag = getFragranceView(product);
   const isOriginal = product.product_type === "original";
   const saved = wishlist.has(product.id);
-  const inStock = (product.stock ?? 0) > 0;
 
   const displayName =
     lang === "ru" && product.title_ru ? product.title_ru : frag.name;
@@ -140,9 +139,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const trust = [
     { Icon: Truck, text: ru ? "Быстрая доставка" : "Tez yetkazib berish" },
     { Icon: Smartphone, text: ru ? "Телефон + SMS · 2 мин" : "Telefon + SMS · 2 daqiqa" },
-    inStock
-      ? { Icon: PackageCheck, text: ru ? "В наличии" : "Omborda bor" }
-      : { Icon: Clock3, text: ru ? "Под заказ · до 3 дней" : "Buyurtma bilan · 3 kungacha" },
+    { Icon: CreditCard, text: ru ? "Без карты и наличных" : "Kartasiz, naqd pulsiz" },
   ];
 
   const buyButtons = (compact: boolean) => (

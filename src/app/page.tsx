@@ -83,7 +83,7 @@ export default function Home() {
         */}
         <HeroSection productCount={products.length} products={products} />
 
-        {/* Omborda bor atirlar — darhol olish mumkin bo'lganlar */}
+        {/* Tanlangan atirlar — tez yetkazish mumkin bo'lganlar (qoldiq mijozga ko'rsatilmaydi) */}
         <StockCarousel products={products} />
 
         {/* Bo'lib to'lashga qanday olinadi — 3 qadam */}
