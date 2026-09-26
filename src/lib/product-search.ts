@@ -68,6 +68,7 @@ const ALIASES: Record<string, string> = {
   dolche: "dolce", gabbana: "gabbana", gabana: "gabbana",
   ivsen: "ysl", ivsenloran: "ysl", saint: "saint", loran: "laurent",
   bayredo: "byredo", bairedo: "byredo",
+  no5: "5", n5: "5",
   lv: "louis vuitton", pdm: "parfums de marly", bvlgari: "bulgari", bulgary: "bulgari",
   // 2026-09-26 qo'shilgan atirlar (docs/yangi-atirlar-2026-09-26.json)
   tyger: "tygar", tayger: "tygar", taygar: "tygar", tigar: "tygar",
@@ -179,21 +180,27 @@ export function searchProducts<T extends SearchableProduct>(products: T[], q: st
     .map((s) => s.p);
 }
 
+// Havolada bo'lishi mumkin, lekin atirni ajratmaydigan so'zlar — mos kelmasa ham bo'ladi
+const GENERIC = new Set([
+  "eau", "de", "du", "la", "le", "the", "parfum", "parfume", "perfume", "toilette", "extrait", "edp", "edt",
+  "by", "and",
+  "s", "t", "m", "d", "ll", "re", // apostrof bo'lingan: devil-s, can-t, i-m
+]);
+
 /**
  * Bot yuboradigan qisqa havola: /a/dior-sauvage-elixir → shu atir.
- * Bot nomni biroz boshqacha yozsa ham topiladi, lekin so'zlarning kamida 60%
- * mos kelishi shart: "tom-ford-tobacco-vanille" faqat brend bo'yicha mos kelib
- * boshqa Tom Ford'ga olib bormasin — bunday holda null (katalog).
+ * Nomdagi har bir ajratuvchi so'z (GENERIC dan tashqari) atir nomida bo'lishi shart:
+ * "giorgio-armani-si" Acqua di Gio'ga, "pdm-layton" boshqa PDM'ga olib bormasin —
+ * faqat brend mos kelsa null (katalog). Teng mos kelganda nomi eng qisqasi.
  */
 export function findShortLinkProduct<T extends SearchableProduct>(products: T[], slug: string): T | null {
-  const words = queryWords(slug.replace(/[-_+.]+/g, " "));
-  if (!words.length) return null;
-  const ranked = rankProducts(products, words);
-  // Havola bitta aniq atirga olib borishi kerak: teng mos kelganlar ichidan nomi eng qisqasi
-  const best = ranked
-    .filter((r) => r.matched === ranked[0].matched && r.score === ranked[0].score)
-    .sort((a, b) => a.extra - b.extra)[0];
-  return best && best.matched >= Math.ceil(words.length * 0.6) ? best.p : null;
+  const all = queryWords(slug.replace(/[-_+.]+/g, " "));
+  const required = all.filter((w) => !GENERIC.has(w));
+  if (!required.length) return null;
+  const ok = new Set(rankProducts(products, required).filter((r) => r.matched === required.length).map((r) => r.p));
+  // Mos kelganlar ichidan umumiy so'zlar bilan ham eng mosi: "...extrait" → Extrait, "...edp" → EDP
+  const best = rankProducts([...ok], all).sort((a, b) => b.score - a.score || a.extra - b.extra)[0];
+  return best ? best.p : null;
 }
 
 export function toPublicItem(p: PublicProductRow, siteUrl: string): PublicItem {
