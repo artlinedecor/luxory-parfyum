@@ -100,6 +100,14 @@ export default function CartPage() {
   );
 
   const paymentAmount = totalPrice;
+  const uzumEnabled = process.env.NEXT_PUBLIC_UZUM_ENABLED === "true";
+  const missingFields = [
+    !clientName.trim() && t("cart_name").toLowerCase(),
+    !clientPhone.trim() && t("cart_phone").toLowerCase(),
+    !clientRegion && t("cart_region").toLowerCase(),
+    !clientAddress.trim() && t("cart_address").toLowerCase(),
+  ].filter(Boolean) as string[];
+  const formReady = missingFields.length === 0;
 
   const [showUzum, setShowUzum] = useState(false);
 
@@ -418,15 +426,11 @@ export default function CartPage() {
 
           {/* Total + CTA */}
           <div className="glass-card p-6 space-y-5">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{t("cart_total_price")}:</span>
-              <span className="text-sm text-muted-foreground line-through"></span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-foreground">
-                {t("cart_payable_amount")}:
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-sm font-semibold text-foreground whitespace-nowrap">
+                {t("cart_payable_amount")}
               </span>
-              <span className="text-2xl font-semibold text-foreground tabular-nums">{formatUzs(paymentAmount)} so'm</span>
+              <span className="text-xl font-semibold text-foreground tabular-nums whitespace-nowrap">{formatUzs(paymentAmount)} so&apos;m</span>
             </div>
 
             {checkoutError && (
@@ -450,45 +454,23 @@ export default function CartPage() {
               </div>
             )}
 
-            <button
-              id="checkout-btn"
-              onClick={handleCheckout}
-              disabled={loading || !clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion}
-              className="btn btn-primary btn-block
-                         hover:opacity-90 active:scale-[0.98] transition-all duration-300
-                         shadow-xl shadow-gold/25 hover:shadow-gold/40
-                         disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
-                         flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <span className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                  {t("cart_btn_checkout")}
-                </>
-              )}
-            </button>
-
-            {payHint && (
+            {!formReady && (
               <p className="text-xs text-muted-foreground text-center">
-                {payHint === "uzum"
-                  ? "Ma'lumotlarni to'ldiring va binafsha «Uzum Nasiya — bo'lib to'lash» tugmasini bosing"
-                  : "Ma'lumotlarni to'ldiring va buyurtmani tasdiqlang"}
+                To&apos;ldiring: {missingFields.join(", ")}
               </p>
             )}
 
             {/* Uzum Nasiya Checkout Button — faqat kalit sozlanganda ko'rinadi */}
-            {process.env.NEXT_PUBLIC_UZUM_ENABLED === "true" && (
+            {uzumEnabled && (
             <button
               id="uzum-checkout-btn"
               onClick={handleUzumCheckout}
-              disabled={loading || !clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion}
+              disabled={loading || !formReady}
               className={`btn btn-uzum btn-block
                          hover:bg-[#5000E0] active:scale-[0.98] transition-all duration-300
                          shadow-lg shadow-[#6100FF]/25
                          disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
-                         flex items-center justify-center gap-2 mt-2
+                         flex items-center justify-center gap-2
                          ${payHint === "uzum" ? "ring-2 ring-[#6100FF]/35 ring-offset-2 ring-offset-background" : ""}`}
             >
               {loading ? (
@@ -501,6 +483,29 @@ export default function CartPage() {
               )}
             </button>
             )}
+            {uzumEnabled && (
+              <p className="-mt-2 text-xs text-muted-foreground text-center">0 so&apos;m hozir · 3, 6 yoki 12 oyda to&apos;laysiz</p>
+            )}
+            <button
+              id="checkout-btn"
+              onClick={handleCheckout}
+              disabled={loading || !formReady}
+              className={`btn ${uzumEnabled ? "btn-outline" : "btn-primary"} btn-block
+                         hover:opacity-90 active:scale-[0.98] transition-all duration-300
+                                                  disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
+                         flex items-center justify-center gap-2`}
+            >
+              {loading ? (
+                <span className="w-5 h-5 border-2 border-current/20 border-t-current rounded-full animate-spin" />
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                  {uzumEnabled ? "Karta bilan to'lash" : t("cart_btn_checkout")}
+                </>
+              )}
+            </button>
+
+
           </div>
 
           {/* Telegram Channel */}
