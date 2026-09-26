@@ -16,7 +16,7 @@ Bot: Instagram @elore_parfumes, botId `01a0cf0f-4962-716b-a290-6dde8241ce2b`. AI
 2. Jonli tekshirish: `https://parfumelux.uz/a/dior-sauvage-elixir` Dior sahifasini ochishi kerak.
 3. Topic rule "Aniq atir havolasi" (`01a0decc-9c4f-732b-85bc-f504fddd0039`, hozir **o'chirilgan**)
    matnini quyidagiga almashtirish va yoqish. Keyin `ai_agent_test_question` bilan 10 ta so'rov.
-4. Bilim bazasidagi eski yozuvlarni tozalash (quyida "Ziddiyatlar").
+4. ~~Bilim bazasidagi eski yozuvlarni tozalash~~ — qilindi.
 5. Izohlarga javob va tugmalar (quyida).
 6. Virale ssenariylari → Veo → har videoga izoh qoidasi.
 
@@ -48,18 +48,10 @@ Havolani bosib "Bo'lib to'lash" tugmasini bosing — telefon raqam va SMS-kod bi
 Havoladan oldin va keyin bo'sh qator. Ombordagi qoldiqni aytma.
 ```
 
-## Ziddiyatlar — egasi hal qilsin
-Bilim bazasidagi eski yozuvlar global qoidalarga zid (bot ularni aytib yuborishi mumkin):
-- "Atirlar narxi qancha?" → "50–65$, 240–650$"; "Qaysi atirlar 50–55$ atrofida?";
-  "Parfums de Marly … 240$, 310$"; "Original atirlarning narxi" → "600 000–650 000".
-- "Original variantlar ham bor" — global qoida: mijoz so'ramasa original/klon mavzusi ochilmaydi.
-- Ruscha umumiy "рассрочка" yozuvlari (do'konga aloqasi yo'q).
-
-Global qoidalar `docs/HOLAT.md` "Egasi qarorlari" bilan farq qiladi:
-- "Odatda taxminan 3 kunda yetib boradi" (HOLAT: muddat yozilmasin);
-- oylik to'lov summalari (96 000, 172 000, 266 667);
-- to'liq to'lovga 150 000 chegirma "3 soat amal qiladi".
-HOLAT sayt uchunmi yoki bot uchun ham — egasi aytsin.
+## Bilim bazasi tozalandi (2026-09-26)
+- $ narxli va "original bor" yozuvlari 800 000 so'm / LUX klon javobiga moslandi,
+  "Original atirlarning narxi" o'chirildi.
+- Bo'lib to'lash summalari (3/6/12 oy) va ruscha рассрочка yozuvlari — egasi: oferta, qoladi.
 
 ## Izohlar (komment) va tugmalar
 - Hozir: `answerOnCommentEnabled: false`, izoh qoidalari yo'q.
