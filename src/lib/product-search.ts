@@ -157,7 +157,7 @@ export function buildReply(items: PublicItem[], q: string): string {
   }
   const lines = items.map((it) => {
     const name = [it.brand, it.title].filter(Boolean).join(" ");
-    return `• ${name} — ${it.price_text} (${it.availability_text})\n${it.url}`;
+    return `• ${name} — ${it.price_text}\n${it.url}`;
   });
   return `${lines.join("\n\n")}\n\n3, 6 yoki 12 oyga bo'lib to'lash mumkin — havolani bosing, 2 daqiqada rasmiylashtiriladi.`;
 }

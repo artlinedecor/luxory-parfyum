@@ -18,7 +18,7 @@ const translations: Record<Language, Record<string, string>> = {
     cart: "Savatcha",
     login: "Kirish",
     // Home — Premium Hero
-    hero_badge: "Parfume Lux · Toshkent",
+    hero_badge: "Elore Parfume · Toshkent",
     hero_title_1: "Atir oling,",
     hero_title_2: "12 oyga",
     hero_title_3: "bo'lib to'lang",
@@ -58,8 +58,8 @@ const translations: Record<Language, Record<string, string>> = {
     nasiya_point_3: "Bank filialiga bormaysiz",
     nasiya_cta: "Bo'lib to'lashga tanlash",
     nasiya_note: "Tariflar va oylik to'lov Uzum Nasiya tomonidan hisoblanadi.",
-    hotstock_title: "Omborda bor",
-    hotstock_subtitle: "Buyurtma bilan kelishini kutish shart emas",
+    hotstock_title: "Tanlangan atirlar",
+    hotstock_subtitle: "Har biri 3, 6 yoki 12 oyga bo'lib to'lashga",
     // Cart
     cart_empty_title: "Savatcha bo'sh",
     cart_empty_desc: "Katalogdan o'zingizga yoqqan atirlarni tanlang va savatchaga qo'shing",
@@ -110,7 +110,7 @@ const translations: Record<Language, Record<string, string>> = {
     cart: "Корзина",
     login: "Войти",
     // Home — Premium Hero
-    hero_badge: "Parfume Lux · Ташкент",
+    hero_badge: "Elore Parfume · Ташкент",
     hero_title_1: "Берите аромат,",
     hero_title_2: "платите 12",
     hero_title_3: "месяцев",
@@ -150,8 +150,8 @@ const translations: Record<Language, Record<string, string>> = {
     nasiya_point_3: "Без визита в банк",
     nasiya_cta: "Оформить в рассрочку",
     nasiya_note: "Тарифы и месячный платёж рассчитывает Uzum Nasiya.",
-    hotstock_title: "В наличии",
-    hotstock_subtitle: "Не нужно ждать доставки под заказ",
+    hotstock_title: "Избранные ароматы",
+    hotstock_subtitle: "Любой — в рассрочку на 3, 6 или 12 месяцев",
     // Cart
     cart_empty_title: "Корзина пуста",
     cart_empty_desc: "Выберите понравившиеся ароматы из каталога и добавьте в корзину",

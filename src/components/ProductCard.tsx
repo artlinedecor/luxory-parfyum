@@ -53,7 +53,6 @@ export default function ProductCard({
   const secondSrc = !imageError ? product.image_url_2 : null;
 
   const href = `/catalog/${product.id}`;
-  const inStock = (product.stock ?? 0) > 0;
 
   return (
     <article className="group lux-card glass-card rounded-2xl overflow-hidden flex flex-col h-full w-full">
@@ -102,21 +101,10 @@ export default function ProductCard({
           className="absolute inset-0 z-[2]"
         />
 
-        {/* Yuqori chapda — konsentratsiya; original + omborda bor bo'lsa "Omborda bor" shu yerda */}
-        {inStock && isOriginal ? (
-          <span className="absolute top-3 left-3 z-[3] rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white pointer-events-none">
-            {lang === "ru" ? "В наличии" : "Omborda bor"}
-          </span>
-        ) : frag.concentration && !inStock ? (
-          <span className="absolute top-3 left-3 z-[3] eyebrow px-2 py-1 bg-white/85 text-foreground/80 backdrop-blur-[2px] pointer-events-none">
+        {/* Yuqori chapda — konsentratsiya (qoldiq mijozga ko'rsatilmaydi — egasi, 2026-09-26) */}
+        {frag.concentration && (
+          <span className="absolute top-3 left-3 z-[3] eyebrow px-2 py-1 rounded-full bg-white/85 text-foreground/80 backdrop-blur-[2px] pointer-events-none">
             {CONCENTRATION_SHORT[frag.concentration]}
-          </span>
-        ) : null}
-
-        {/* Pastki chapda — omborda bor (klonlar); tor kartada hajm belgisi bilan to'qnashmaydi */}
-        {inStock && !isOriginal && (
-          <span className="absolute bottom-3 left-3 z-[3] rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white pointer-events-none">
-            {lang === "ru" ? "В наличии" : "Omborda bor"}
           </span>
         )}
 

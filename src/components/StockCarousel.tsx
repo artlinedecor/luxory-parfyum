@@ -61,7 +61,7 @@ export default function StockCarousel({ products }: StockCarouselProps) {
     "disabled:hover:text-muted-foreground disabled:hover:border-border transition-colors duration-300";
 
   return (
-    <section id="omborda" className="relative py-10 sm:py-14 border-y border-border bg-secondary/30">
+    <section id="tanlangan" className="relative py-10 sm:py-14 border-y border-border bg-secondary/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 flex items-end justify-between gap-6">
         <div>
           <p className="eyebrow text-muted-foreground">{t("hotstock_subtitle")}</p>
@@ -105,9 +105,6 @@ export default function StockCarousel({ products }: StockCarouselProps) {
                 className="group/card shrink-0 w-[10.5rem] sm:w-48"
               >
                 <div className="relative aspect-[3/4] bg-surface-image overflow-hidden rounded-xl border border-border group-hover/card:border-gold/50 transition-colors duration-500">
-                  <span className="absolute left-2 top-2 z-[1] rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white">
-                    {lang === "ru" ? "В наличии" : "Omborda bor"}
-                  </span>
                   <Image
                     src={p.image_url || "/products/default.png"}
                     alt={name}

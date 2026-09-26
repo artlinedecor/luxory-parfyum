@@ -62,7 +62,7 @@ export default function BrandLogo({
 
       {withName && (
         <span
-          className={`font-heading ${nameSize} whitespace-nowrap text-foreground`}
+          className={`font-heading ${nameSize} whitespace-nowrap uppercase tracking-[0.04em] text-foreground`}
         >
           {shopName}
         </span>
