@@ -2,43 +2,47 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, CreditCard } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ArrowRight, Search, Truck, Smartphone, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n-context";
+import { UzumMark } from "@/components/PaymentLogos";
 
 /**
- * Hero — qorong'i fotosurat ustidagi editorial blok.
+ * Hero — sotuvga yo'naltirilgan birinchi ekran.
  *
- * Uchta muhim tuzatish:
- *  1. pt-28 — sarlavha fiksatsiyalangan header ostida qolib ketmasin
- *     (avval "Atirning" so'zi kesilib turardi).
- *  2. Fon rasmining o'rtasi yorqin (tilla flakon), shu bois matn ortiga
- *     radial quyuqlashtirish qo'yildi — aks holda oq matn o'qilmasdi.
- *  3. Aloqa ikonkalari olib tashlandi — ular footer'da bor, bu yerda esa
- *     ekranni to'ldirib sarlavhani pastga siqib chiqarardi.
+ * Oldingi versiya faqat "Atirning Hashamatli Dunyosi" kayfiyatini berardi:
+ * birinchi ekranda na atir, na narx, na bo'lib to'lash taklifi aniq edi,
+ * ikkinchi asosiy tugma esa mijozni Instagram'ga — saytdan tashqariga olib
+ * ketardi. Endi: aniq taklif (brend atirlar + 12 oygacha bo'lib to'lash),
+ * qidiruv (mijoz ko'pincha aniq atir nomini biladi) va katalogga bitta
+ * asosiy tugma. "24/7" kabi tasdiqlanmagan raqamlar o'rniga haqiqiy
+ * katalog soni.
  */
-export default function HeroSection() {
-  const { t } = useI18n();
-  const reduce = useReducedMotion();
+export default function HeroSection({ productCount }: { productCount: number }) {
+  const { t, lang } = useI18n();
+  const router = useRouter();
+  const [q, setQ] = useState("");
+  const ru = lang === "ru";
 
-  // Bosqichma-bosqich ochilish — CSS orqali (globals.css: .hero-rise).
-  // JS'ga bog'lanmaydi: framer-motion kech yuklansa ham matn ko'rinadi.
-  const rise = (delay: number) => ({
-    style: { animationDelay: `${delay}s` },
-  });
+  const rise = (delay: number) => ({ style: { animationDelay: `${delay}s` } });
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const query = q.trim();
+    router.push(query ? `/catalog?q=${encodeURIComponent(query)}` : "/catalog");
+  };
+
+  const trust = [
+    { Icon: Sparkles, text: productCount > 0 ? `${productCount} ${ru ? "ароматов" : "ta atir"}` : ru ? "Большой выбор" : "Katta tanlov" },
+    { Icon: Smartphone, text: ru ? "Телефон + SMS" : "Telefon + SMS" },
+    { Icon: Truck, text: ru ? "Доставка по РУз" : "O'zbekiston bo'ylab" },
+  ];
 
   return (
-    <section
-      id="hero"
-      className="relative flex min-h-[92vh] items-center justify-center overflow-hidden"
-    >
+    <section id="hero" className="relative overflow-hidden">
       {/* Fon rasmi */}
-      <motion.div
-        className="absolute inset-0"
-        initial={reduce ? false : { scale: 1.06 }}
-        animate={reduce ? undefined : { scale: 1 }}
-        transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
-      >
+      <div className="absolute inset-0">
         <Image
           src="/hero.webp"
           alt="Elore Parfume — Toshkentda original atirlar va super klon parfyumeriya do'koni"
@@ -47,122 +51,85 @@ export default function HeroSection() {
           priority
           sizes="100vw"
         />
-      </motion.div>
-
-      {/* Matn o'qilishi uchun qatlamlar (rasm ustida, matn ostida) */}
-      <div aria-hidden className="absolute inset-0 bg-[#141210]/62" />
+      </div>
+      <div aria-hidden className="absolute inset-0 bg-[#141210]/70" />
       <div
         aria-hidden
         className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(120% 85% at 50% 42%, rgba(10,9,8,0.72) 0%, rgba(10,9,8,0.42) 45%, transparent 78%)",
-        }}
+        style={{ background: "radial-gradient(120% 80% at 50% 35%, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.2) 55%, transparent 85%)" }}
       />
-      <div
-        aria-hidden
-        className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-b from-transparent via-[#faf8f5]/55 to-[#faf8f5]"
-      />
+      <div aria-hidden className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-[#faf8f5]" />
 
-      {/* Matn */}
-      <div className="relative z-10 mx-auto w-full max-w-3xl px-5 pt-28 pb-32 text-center sm:pb-36">
+      <div className="relative z-10 mx-auto w-full max-w-2xl px-5 pt-24 pb-12 sm:pt-32 sm:pb-20 text-center">
         <p {...rise(0.05)} className="hero-rise eyebrow text-[#ded0b8]">
           {t("hero_badge")}
         </p>
 
         <h1
-          {...rise(0.15)}
-          className="hero-rise mt-6 font-heading text-[2.15rem] leading-[1.08] text-white sm:text-6xl md:text-[4.25rem]"
+          {...rise(0.12)}
+          className="hero-rise mt-4 font-heading text-[2.1rem] leading-[1.08] text-white sm:text-6xl"
           style={{ textShadow: "0 2px 28px rgba(0,0,0,0.55)" }}
         >
-          {t("hero_title_1")} <span className="italic">{t("hero_title_2")}</span>
+          {t("hero_title_1")} <span className="italic text-[#e8d49a]">{t("hero_title_2")}</span>
           <br />
           {t("hero_title_3")}
           <span className="sr-only"> — Toshkentda Original Atirlar va Brend Parfyumeriya Do&#39;koni | Parfume Lux (Elore)</span>
         </h1>
 
-        <div {...rise(0.3)} className="hero-rise gold-hairline mx-auto mt-7 w-20" />
-
         <p
-          {...rise(0.38)}
-          className="hero-rise mx-auto mt-7 max-w-lg text-sm leading-relaxed text-white/80 sm:text-[15px]"
+          {...rise(0.22)}
+          className="hero-rise mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-white/80"
           style={{ textShadow: "0 1px 16px rgba(0,0,0,0.6)" }}
         >
           {t("hero_desc")}
         </p>
 
-        {/* Bo'lib to'lash ilgagi — hero'dagi asosiy savdo argumenti */}
-        <div {...rise(0.46)} className="hero-rise mt-8 flex justify-center">
-          <Link
-            href="#nasiya"
-            className="btn btn-glass btn-sm btn-wrap max-w-full rounded-2xl border-[#ded0b8]/45
-                       px-4 text-[#ded0b8] hover:border-[#ded0b8] sm:rounded-full sm:px-5"
-          >
-            <CreditCard
-              className="h-4 w-4 shrink-0 text-[#e8d49a]"
-              strokeWidth={1.5}
-            />
-            <span className="eyebrow text-left text-[#ded0b8]">
-              {t("hero_delivery_badge")}
+        {/* Bo'lib to'lash taklifi — asosiy savdo argumenti */}
+        <div {...rise(0.3)} className="hero-rise mt-5 flex justify-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/95 px-3.5 py-2 text-[13px] text-[#1a1a1a] shadow-lg">
+            <UzumMark size={20} />
+            <span>
+              <b className="font-semibold">3 · 6 · 12</b> {ru ? "мес. рассрочка — Uzum Nasiya" : "oyga bo'lib to'lash — Uzum Nasiya"}
             </span>
-          </Link>
+          </span>
         </div>
 
-        {/* CTA */}
-        <div
-          {...rise(0.56)}
-          className="hero-rise mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center"
-        >
-          <Link
-            href="/catalog"
-            id="hero-cta-catalog"
-            className="btn btn-gold w-full sm:w-auto"
-          >
-            {t("btn_catalog")}
+        {/* Qidiruv — mijoz ko'pincha aniq atir nomini biladi */}
+        <form {...rise(0.38)} onSubmit={submit} role="search" className="hero-rise mx-auto mt-7 flex max-w-md gap-2">
+          <label htmlFor="hero-search" className="sr-only">{ru ? "Поиск аромата" : "Atir qidirish"}</label>
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" strokeWidth={1.75} />
+            <input
+              id="hero-search"
+              type="search"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder={ru ? "Например: Baccarat, Sauvage" : "Masalan: Baccarat, Sauvage"}
+              className="h-[52px] w-full rounded-2xl border border-white/20 bg-white pl-11 pr-3 text-[15px] text-[#1a1a1a] placeholder:text-[#8a8580] focus:outline-none focus:ring-2 focus:ring-[#e8d49a]"
+            />
+          </div>
+          <button type="submit" className="btn btn-gold h-[52px] min-h-0 rounded-2xl px-5" aria-label={ru ? "Найти" : "Qidirish"}>
+            <Search className="h-4 w-4 sm:hidden" strokeWidth={2} />
+            <span className="hidden sm:inline">{ru ? "Найти" : "Qidirish"}</span>
+          </button>
+        </form>
+
+        <div {...rise(0.46)} className="hero-rise mt-3 flex justify-center">
+          <Link href="/catalog" id="hero-cta-catalog" className="inline-flex min-h-[44px] items-center gap-1.5 px-3 text-sm font-medium text-white/90 underline-offset-4 hover:underline">
+            {ru ? "Смотреть весь каталог" : "Butun katalogni ko'rish"}
             <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
           </Link>
-
-          <a
-            href="https://www.instagram.com/elore_parfumes?igsh=a2xrMmp1ZmpleGpm"
-            target="_blank"
-            rel="noopener noreferrer"
-            id="hero-cta-instagram"
-            className="btn btn-glass w-full sm:w-auto"
-          >
-            {/* lucide 1.31 da brend ikonkalari yo'q — Instagram inline SVG */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              className="h-3.5 w-3.5"
-              aria-hidden
-            >
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-            </svg>
-            Instagram
-          </a>
         </div>
 
-        {/* Statistika */}
-        <div
-          {...rise(0.66)}
-          className="hero-rise mt-14 flex items-start justify-center gap-8 sm:gap-16"
-        >
-          {[
-            { v: "200+", l: t("stats_products") },
-            { v: "50+", l: t("stats_brands") },
-            { v: "24/7", l: t("stats_support") },
-          ].map((s) => (
-            <div key={s.v} className="text-center">
-              <div className="font-heading text-3xl text-white">{s.v}</div>
-              <div className="eyebrow mt-2 text-white/55">{s.l}</div>
-            </div>
+        {/* Ishonch qatori — faqat haqiqiy ma'lumot */}
+        <ul {...rise(0.54)} className="hero-rise mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[12px] text-white/75">
+          {trust.map(({ Icon, text }) => (
+            <li key={text} className="inline-flex items-center gap-1.5">
+              <Icon className="h-3.5 w-3.5 text-[#e8d49a]" strokeWidth={1.75} />
+              {text}
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

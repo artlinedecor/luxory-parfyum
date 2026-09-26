@@ -3,7 +3,6 @@
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import ProductGrid from "@/components/ProductGrid";
-import { siteConfig } from "@/config/site";
 import { useI18n } from "@/lib/i18n-context";
 import { useEffect, useState } from "react";
 import { fetchCatalogProducts } from "@/lib/products-query";
@@ -22,18 +21,16 @@ export default function CatalogView() {
   return (
     <>
       <Header />
-      <main className="flex-1 pt-24 pb-24 md:pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          {/* Page header */}
-          <div className="text-center mb-12 space-y-5">
-            <p className="eyebrow text-muted-foreground">{siteConfig.siteName}</p>
-            <h1 className="font-heading text-4xl sm:text-5xl text-foreground">
+      <main className="flex-1 pt-20 sm:pt-24 pb-24 md:pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
+          {/* Sarlavha ixcham — oldin mahsulotlardan oldin yarim ekran bo'sh joy edi */}
+          <div className="space-y-1.5">
+            <h1 className="font-heading text-3xl sm:text-4xl text-foreground">
               {t("catalog")} <span className="sr-only">— Toshkentda Original va Super Klon Atirlar | Parfume Lux</span>
             </h1>
-            <p className="max-w-xl mx-auto text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground">
               {t("collection_desc")}
             </p>
-            <div className="gold-hairline w-24 mx-auto" />
           </div>
 
           {/* Products Grid */}

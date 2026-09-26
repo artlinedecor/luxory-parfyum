@@ -8,7 +8,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Product } from "@/lib/types";
 import { useI18n } from "@/lib/i18n-context";
 import { getFragranceView } from "@/lib/fragrance";
-import { calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
+import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 
 interface StockCarouselProps {
   products: Product[];
@@ -51,9 +51,9 @@ export default function StockCarousel({ products }: StockCarouselProps) {
     };
   }, [emblaApi, onSelect]);
 
-  // Rasmi bor mahsulotlardan tanlangan to'plam
-  const featured = products.filter((p) => p.image_url).slice(0, 14);
-  if (featured.length < 4) return null;
+  // Omborda bor, rasmi bor atirlar — "Barcha atirlar" ro'yxatini takrorlamaydi
+  const featured = products.filter((p) => p.image_url && (p.stock ?? 0) > 0).slice(0, 16);
+  if (featured.length < 3) return null;
 
   const arrow =
     "w-10 h-10 flex items-center justify-center border border-border text-muted-foreground " +
@@ -61,7 +61,7 @@ export default function StockCarousel({ products }: StockCarouselProps) {
     "disabled:hover:text-muted-foreground disabled:hover:border-border transition-colors duration-300";
 
   return (
-    <section className="relative py-14 border-y border-border bg-secondary/30">
+    <section id="omborda" className="relative py-10 sm:py-14 border-y border-border bg-secondary/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 flex items-end justify-between gap-6">
         <div>
           <p className="eyebrow text-muted-foreground">{t("hotstock_subtitle")}</p>
@@ -104,7 +104,10 @@ export default function StockCarousel({ products }: StockCarouselProps) {
                 href={`/catalog/${p.id}`}
                 className="group/card shrink-0 w-[10.5rem] sm:w-48"
               >
-                <div className="relative aspect-[3/4] bg-surface-image overflow-hidden border border-border group-hover/card:border-gold/50 transition-colors duration-500">
+                <div className="relative aspect-[3/4] bg-surface-image overflow-hidden rounded-xl border border-border group-hover/card:border-gold/50 transition-colors duration-500">
+                  <span className="absolute left-2 top-2 z-[1] rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white">
+                    {lang === "ru" ? "В наличии" : "Omborda bor"}
+                  </span>
                   <Image
                     src={p.image_url || "/products/default.png"}
                     alt={name}
@@ -117,7 +120,7 @@ export default function StockCarousel({ products }: StockCarouselProps) {
 
                 <div className="pt-3.5">
                   {frag.brand && (
-                    <p className="eyebrow text-muted-foreground truncate">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground truncate">
                       {frag.brand}
                     </p>
                   )}
@@ -125,7 +128,8 @@ export default function StockCarousel({ products }: StockCarouselProps) {
                     {name}
                   </p>
                   <p className="mt-1.5 text-sm font-semibold text-foreground tabular-nums">
-                    {formatUzs(calculatePremiumPriceUzs(p.price_usd))}{" "}
+                    {/* Oldin har doim klon narxi chiqardi — original atirlar ham 800 000 ko'rinardi */}
+                    {formatUzs(p.product_type === "original" ? calculateOriginalPriceUzs(p.price_usd) : calculatePremiumPriceUzs(p.price_usd))}{" "}
                     <span className="eyebrow text-muted-foreground font-normal">
                       {lang === "ru" ? "сум" : "so'm"}
                     </span>

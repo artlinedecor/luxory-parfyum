@@ -53,6 +53,7 @@ export default function ProductCard({
   const secondSrc = !imageError ? product.image_url_2 : null;
 
   const href = `/catalog/${product.id}`;
+  const inStock = (product.stock ?? 0) > 0;
 
   return (
     <article className="group lux-card glass-card overflow-hidden flex flex-col h-full w-full">
@@ -101,10 +102,21 @@ export default function ProductCard({
           className="absolute inset-0 z-[2]"
         />
 
-        {/* Yuqori chapda — konsentratsiya */}
-        {frag.concentration && (
+        {/* Yuqori chapda — konsentratsiya; original + omborda bor bo'lsa "Omborda bor" shu yerda */}
+        {inStock && isOriginal ? (
+          <span className="absolute top-3 left-3 z-[3] rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white pointer-events-none">
+            {lang === "ru" ? "В наличии" : "Omborda bor"}
+          </span>
+        ) : frag.concentration && !inStock ? (
           <span className="absolute top-3 left-3 z-[3] eyebrow px-2 py-1 bg-white/85 text-foreground/80 backdrop-blur-[2px] pointer-events-none">
             {CONCENTRATION_SHORT[frag.concentration]}
+          </span>
+        ) : null}
+
+        {/* Pastki chapda — omborda bor (klonlar); tor kartada hajm belgisi bilan to'qnashmaydi */}
+        {inStock && !isOriginal && (
+          <span className="absolute bottom-3 left-3 z-[3] rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white pointer-events-none">
+            {lang === "ru" ? "В наличии" : "Omborda bor"}
           </span>
         )}
 
@@ -147,8 +159,9 @@ export default function ProductCard({
 
       {/* ── Matn qismi ──────────────────────────────────────────── */}
       <Link href={href} className="flex flex-col flex-grow px-4 pt-4 pb-3 text-left">
+        {/* Brend — oddiy harf oralig'ida: eyebrow uslubida "ESSENTIAL…" deb kesilib qolardi */}
         {frag.brand && (
-          <p className="eyebrow text-muted-foreground line-clamp-1">{frag.brand}</p>
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground line-clamp-1">{frag.brand}</p>
         )}
 
         <h3 className="font-heading mt-1.5 text-[17px] leading-snug text-foreground line-clamp-2 group-hover:text-gold-dark transition-colors duration-300">
@@ -178,6 +191,9 @@ export default function ProductCard({
               {lang === "ru" ? "сум" : "so'm"}
             </span>
           </div>
+          <p className="mt-1 text-[11px] text-[#5a00e6] dark:text-[#b58cff]">
+            {lang === "ru" ? "или рассрочка 3–12 мес." : "yoki 3–12 oyga bo'lib"}
+          </p>
         </div>
       </Link>
 
