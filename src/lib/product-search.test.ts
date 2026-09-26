@@ -114,6 +114,21 @@ describe("findShortLinkProduct", () => {
     expect(findShortLinkProduct([row({ title: "BULGARI POUR HOMME 100ML" })], "bvlgari-tygar")).toBeNull();
   });
 
+  it("brend mos, atir nomi boshqa — null", () => {
+    const acqua = row({ title: "GIORGIO ARMANI ACQUA DI GIO 100ML" });
+    const splendide = row({ title: "CHANEL CHANCE EAU SPLENDIDE" });
+    expect(findShortLinkProduct([acqua], "giorgio-armani-si")).toBeNull();
+    expect(findShortLinkProduct([splendide], "chanel-chance-eau-tendre")).toBeNull();
+    expect(findShortLinkProduct([splendide], "chanel-chance")).toBe(splendide);
+    expect(findShortLinkProduct([sauvage], "dior-homme-intense")).toBeNull();
+  });
+
+  it("umumiy so'zlar (eau de parfum, 100ml emas) xalaqit bermaydi, №5 tushuniladi", () => {
+    expect(findShortLinkProduct(all, "lv-imagination-eau-de-parfum")).toBe(imagination);
+    const n5 = row({ title: "CHANEL №5 100ML" });
+    expect(findShortLinkProduct([n5], "chanel-no5")).toBe(n5);
+  });
+
   it("so'zlarning 60% idan kami mos kelsa — null (noto'g'ri atirga olib bormaydi)", () => {
     expect(findShortLinkProduct(all, "chanel-coco-noir")).toBeNull();
     expect(findShortLinkProduct(all, "louis-vuitton-pacific-chill-cologne")).toBeNull();
