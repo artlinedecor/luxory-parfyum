@@ -1,6 +1,7 @@
-# Reels "NASIYA" — 10 ta ssenariy (Veo uchun), 2026-09
+# Reels "+" — 10 ta ssenariy (Veo uchun), 2026-09
 
-Manba: ChatPlace Virale ssenariylari (15 s, o'zbekcha, chaqiruv — kommentga NASIYA).
+Manba: ChatPlace Virale ssenariylari (15 s, o'zbekcha, chaqiruv — kommentga "+").
+Kodli so'z 2026-09-26 da NASIYA'dan "+" ga almashtirildi (egasi: "nasiya so'zi bo'lmasin, + bo'lsin").
 Bu faylda ular egasining qoidalariga moslab tuzatilgan va Google Veo uchun kadrlarga bo'lingan.
 
 ## 1. Qoidalar (har rolikka tegishli)
@@ -23,9 +24,9 @@ Dior Sauvage Elixir, Versace Crystal Noir / Bright Crystal, Kilian Good Girl Gon
 **Ko'rsatilmaydi:** Bvlgari Tygar, Miss Dior, J'adore, Black Opium, Tobacco Vanille, Oud Wood,
 Creed Silver Mountain Water, Versace Eros, JPG Le Male, Carolina Herrera Good Girl, Kayali.
 
-**Chaqiruv:** oxirgi 3 soniyada NASIYA — ovozda, ekranda va captionda. Kommentga "NASIYA"
-yozilsa ChatPlace avtomatizatsiyasi izohga "Directga yubordim 😊" deb javob beradi va Directga
-shartlar + "Atir tanlash" tugmasini yuboradi (2-bo'lim).
+**Chaqiruv:** oxirgi 3 soniyada "+" — ovozda ("Kommentga plyus qo'ying"), ekranda va captionda.
+Kommentga "+" qo'yilsa ChatPlace izohga "Directga yubordim 😊" deb javob beradi va Directga
+shartlar + "Erkaklar uchun / Ayollar uchun / Barcha atirlar" tugmalarini yuboradi (oxirgi bo'lim).
 
 **Nashr tartibi (Virale maslahati, tuzatilgan):** 1-partiya — **10** (1-oktyabrgacha ulgurish kerak,
 27-sentabrda joylang), 7, 2, 9. 2-partiya — 1, 3, 6, 8. 3-partiya — 4, 5.
@@ -37,7 +38,7 @@ shartlar + "Atir tanlash" tugmasini yuboradi (2-bo'lim).
 - Format: vertikal **9:16**, 1080×1920, fotorealistik, 24 fps.
 - **Brend logotipi, yozuv, etiketka, sayt interfeysi Veo'da chizdirilmaydi.** Har promptga
   "no logos, no brand names, no text, no labels, no subtitles, no watermark" qo'shilgan.
-  Ekran matni, subtitr, narx va NASIYA — montajda (CapCut / Instagram editor) qo'shiladi.
+  Ekran matni, subtitr, narx va "+" chaqiruvi — montajda (CapCut / Instagram editor) qo'shiladi.
 - **Aniq atir (Chanel, LV, Creed...) ko'rinadigan joylar** — Veo'ning nomsiz flakoni o'rniga
   do'kondagi haqiqiy flakonni telefonda suratga oling (oq yoki qora fon, yon yorug'lik) va montajda
   qo'ying. Veo — kayfiyat kadrlari uchun (qo'l, quti, sepish, yorug'lik).
@@ -69,12 +70,12 @@ shartlar + "Atir tanlash" tugmasini yuboradi (2-bo'lim).
 - 0–2 s: "Chanel hidi yoqadimi? 🤍"
 - 2–8 s: "800 000 so'm · 3 / 6 / 12 oyga"
 - 8–12 s: "Hozir 0 so'm · telefon + SMS · 2 daqiqa"
-- 12–15 s: "Kommentga yozing: NASIYA"
+- 12–15 s: "Kommentga + qo'ying"
 
 **O'zbekcha ovoz (≈14 s):**
 > Chanel hidini yoqtirasizu, narxi to'xtatib qo'yadimi? Endi pulni birdaniga to'lash shart emas.
 > Saytimizdan atirni tanlang — 800 000 so'm, 3, 6 yoki 12 oyga bo'lib to'laysiz, hozir 0 so'm.
-> Kommentga NASIYA deb yozing — havolani yuboraman.
+> Kommentga plyus qo'ying — havolani yuboraman.
 
 **Veo — A kadr (0–8 s):**
 ```
@@ -107,7 +108,7 @@ Saytimizdan tanlang va Uzum Nasiya bilan 3, 6 yoki 12 oyga bo'lib to'lang.
 ✔️ Kartasiz — telefon + SMS, 2 daqiqa
 ✔️ Tez yetkazib berish
 
-👇 Kommentga NASIYA deb yozing — havolani Directga yuboramiz.
+👇 Kommentga "+" qo'ying — havolani Directga yuboramiz.
 #atir #parfum #chanel #nasiya #bolibtolash #toshkent
 ```
 
@@ -122,12 +123,12 @@ bo'lib-bo'lib". "Sevimli brendini" → "sevimli hidini" (katalogda yo'q brend so
 - 0–2 s: "Oxirgi marta qachon? 🎁"
 - 2–9 s: "Chanel, LV, PDM hidlari — 800 000 so'm"
 - 9–12 s: "Sovg'a hozir, to'lov bo'lib-bo'lib"
-- 12–15 s: "Kommentga yozing: NASIYA"
+- 12–15 s: "Kommentga + qo'ying"
 
 **O'zbekcha ovoz (≈13 s):**
 > Ayolingizga oxirgi marta qachon atir sovg'a qilgansiz? Esingizda yo'q bo'lsa — demak vaqti keldi.
 > Saytimizdan uning sevimli hidini tanlang, to'lovini Uzum Nasiya bilan bo'lib to'laysiz.
-> Kommentga NASIYA deb yozing.
+> Kommentga plyus qo'ying.
 
 **Veo — A kadr (0–8 s):**
 ```
@@ -157,7 +158,7 @@ Oxirgi marta qachon unga atir sovg'a qilgansiz? 🎁
 Uning sevimli hidini saytimizdan tanlang — to'lovini Uzum Nasiya bilan 3, 6 yoki 12 oyga bo'lasiz.
 Hozir 0 so'm, telefon + SMS bilan 2 daqiqada.
 
-👇 Kommentga NASIYA deb yozing — Directga havola yuboramiz.
+👇 Kommentga "+" qo'ying — Directga havola yuboramiz.
 #sovga #atir #ayolgasovga #nasiya #parfum
 ```
 
@@ -172,12 +173,12 @@ Ekran matni "Originalni bo'lib olsa bo'ladimi?" → "Premium atirni bo'lib olsa 
 - 0–3 s: "Premium atirni bo'lib olsa bo'ladimi?"
 - 3–5 s: "HA ✅"
 - 5–12 s: "Sayt → atir → Uzum Nasiya · 0 so'm hozir"
-- 12–15 s: "Kommentga yozing: NASIYA"
+- 12–15 s: "Kommentga + qo'ying"
 
 **O'zbekcha ovoz (≈14 s):**
 > Directga har kuni bitta savol keladi: premium atirni bo'lib to'lashga olsa bo'ladimi? Ha, bo'ladi.
 > Saytimizdan atirni tanlaysiz, Uzum Nasiya orqali rasmiylashtirasiz — boshlang'ich to'lovsiz.
-> Havola kerakmi? Kommentga NASIYA deb yozing.
+> Havola kerakmi? Kommentga plyus qo'ying.
 
 **Tavsiya:** bu rolikni sotuvchining o'zi telefonda gapirib olsin (ishonch kuchliroq).
 Veo varianti — voice-over bilan:
@@ -209,7 +210,7 @@ no subtitles, no watermark. No dialogue, no speech.
 Eng ko'p beriladigan savol: premium atirni bo'lib to'lashga olsa bo'ladimi? Ha ✅
 Saytimizda tanlaysiz → Uzum Nasiya → 3, 6 yoki 12 oy. Hozir 0 so'm, kartasiz.
 
-👇 Kommentga NASIYA deb yozing — havolani yuboramiz.
+👇 Kommentga "+" qo'ying — havolani yuboramiz.
 #atir #nasiya #bolibtolash #uzumnasiya #parfum
 ```
 
@@ -225,7 +226,7 @@ Logotip — montajda (ELORE PARFUME).
 - 0–4 s: "Bu oddiy atir emas — bu daraja"
 - 4–8 s: "Endi bo'lib to'lash bilan"
 - 8–12 s: "Saytda tanlang · Uzum Nasiya · 0 so'm hozir"
-- 12–15 s: "Kommentga: NASIYA"
+- 12–15 s: "Kommentga: +"
 
 **Ovoz:** yo'q (faqat musiqa). Subtitr o'rniga ekran matni.
 
@@ -255,7 +256,7 @@ no watermark. No dialogue, no speech.
 Bu oddiy atir emas — bu daraja ✨
 Chanel, Louis Vuitton, Amouage hidlari — 800 000 so'm. Saytda tanlang, Uzum Nasiya bilan bo'lib to'lang.
 
-👇 Kommentga NASIYA deb yozing.
+👇 Kommentga "+" qo'ying.
 #atir #premiumatir #parfum #nasiya
 ```
 
@@ -276,13 +277,13 @@ bo'lsa, bu joyga sayt ekran yozuvi qo'yiladi. Otziv to'qib chiqarilmaydi.
 - 3–6 s: "Pulni oldindan tashlamaysiz — hozir 0 so'm"
 - 6–9 s: "Rasmiylashtirish: Uzum Nasiya · telefon + SMS"
 - 9–12 s: "Har bir atirning saytda o'z sahifasi · tez yetkazib berish"
-- 12–15 s: "Kommentga yozing: NASIYA"
+- 12–15 s: "Kommentga + qo'ying"
 
 **O'zbekcha ovoz (≈15 s):**
 > Internetdan atir olishga qo'rqasizmi? Tushunaman. Shuning uchun bizda pulni oldindan
 > tashlamaysiz — hozir 0 so'm. Atirni saytdan tanlaysiz, Uzum Nasiya orqali telefon va SMS bilan
 > rasmiylashtirasiz, biz tez yetkazib beramiz. Savol bo'lsa — Directda javob beramiz.
-> Kommentga NASIYA deb yozing.
+> Kommentga plyus qo'ying.
 
 **Veo — A kadr (0–8 s):**
 ```
@@ -313,7 +314,7 @@ Internetdan atir olishga ikkilanasizmi? Bizda pulni oldindan tashlamaysiz 🤝
 ✔️ Har bir atirning saytda o'z sahifasi
 ✔️ Tez yetkazib berish
 
-👇 Kommentga NASIYA deb yozing — Directda hamma savolga javob beramiz.
+👇 Kommentga "+" qo'ying — Directda hamma savolga javob beramiz.
 #atir #parfum #nasiya #uzumnasiya
 ```
 
@@ -328,12 +329,12 @@ tashlandi. O'rniga "tez yetkazib beramiz" (tasdiqlangan).
 - 0–3 s: "3 kun qoldi 😬"
 - 3–8 s: "Oylik — oy oxirida"
 - 8–12 s: "Sovg'a hozir, to'lov keyin · 0 so'm hozir"
-- 12–15 s: "Kommentga yozing: NASIYA"
+- 12–15 s: "Kommentga + qo'ying"
 
 **O'zbekcha ovoz (≈13 s):**
 > Tug'ilgan kunga 3 kun qoldi, oylik esa oy oxirida? Sovg'ani kechiktirmang. Saytimizdan atirni
 > hozir tanlang, to'lovini Uzum Nasiya bilan bo'lib to'laysiz — biz tez yetkazib beramiz.
-> Kommentga NASIYA deb yozing.
+> Kommentga plyus qo'ying.
 
 **Veo — A kadr (0–8 s):**
 ```
@@ -364,7 +365,7 @@ Tug'ilgan kunga 3 kun qoldi, oylik esa oy oxirida? 😬
 Sovg'ani kechiktirmang: atirni hozir tanlang, to'lovni Uzum Nasiya bilan 3, 6 yoki 12 oyga bo'ling.
 Hozir 0 so'm · tez yetkazib berish.
 
-👇 Kommentga NASIYA deb yozing.
+👇 Kommentga "+" qo'ying.
 #sovga #tugilgankun #atir #nasiya
 ```
 
@@ -379,12 +380,12 @@ Veo emas. Shaxsiy ma'lumot (telefon raqam, SMS kod) ekranda xiralashtiriladi.
 **Ekran matni:**
 - 0–2 s: "Qancha vaqt oladi? ⏱"
 - 2–12 s: "1. Sayt → 2. Atir → 3. Uzum Nasiya → 4. SMS" (qadamlar ketma-ket paydo bo'ladi)
-- 12–15 s: "2 daqiqa · Kommentga: NASIYA"
+- 12–15 s: "2 daqiqa · Kommentga: +"
 
 **O'zbekcha ovoz (≈14 s):**
 > Premium atirni bo'lib to'lashga olish qancha vaqt oladi? Qarang. Saytga kiraman, atirni
 > tanlayman, "Bo'lib to'lash"ni bosaman, telefon raqam va SMS-kod. Tayyor — 2 daqiqa, hozir 0 so'm.
-> Kommentga NASIYA deb yozing.
+> Kommentga plyus qo'ying.
 
 **Veo — A kadr (0–2 s ishlatiladi, 8 s generatsiya):**
 ```
@@ -413,7 +414,7 @@ No dialogue, no speech.
 Bo'lib to'lashga atir olish qancha vaqt oladi? ⏱ 2 daqiqa.
 Sayt → atir → "Bo'lib to'lash" → telefon + SMS. Kartasiz, hozir 0 so'm.
 
-👇 Kommentga NASIYA deb yozing — havolani yuboramiz.
+👇 Kommentga "+" qo'ying — havolani yuboramiz.
 #uzumnasiya #nasiya #atir #bolibtolash
 ```
 
@@ -429,12 +430,12 @@ Dior Sauvage Elixir, Bleu de Chanel Parfum. Creed Silver Mountain Water ko'rsati
 - 0–3 s: "Birinchi taassurot — hid"
 - 3–10 s: "Creed · Amouage · Louis Vuitton hidlari"
 - 10–12 s: "800 000 so'm · 3 / 6 / 12 oyga"
-- 12–15 s: "Kommentga: NASIYA"
+- 12–15 s: "Kommentga: +"
 
 **O'zbekcha ovoz (≈13 s):**
 > Uchrashuvda sizni birinchi bo'lib hidingiz tanishtiradi. Creed, Amouage, Louis Vuitton hidlari —
 > saytimizda. To'liq pulni birdaniga to'lash shart emas: Uzum Nasiya bilan bo'lib to'laysiz.
-> Kommentga NASIYA deb yozing.
+> Kommentga plyus qo'ying.
 
 **Veo — A kadr (0–8 s):**
 ```
@@ -466,7 +467,7 @@ Birinchi taassurot — hid 🖤
 Creed Aventus, Amouage Guidance, LV Imagination hidlari — 800 000 so'm.
 Uzum Nasiya bilan 3, 6 yoki 12 oyga, hozir 0 so'm.
 
-👇 Kommentga NASIYA deb yozing.
+👇 Kommentga "+" qo'ying.
 #erkaklaratiri #creed #amouage #atir #nasiya
 ```
 
@@ -482,12 +483,12 @@ da'vosi olib tashlandi, "atir o'sha" qoldi. Atir: Dior Sauvage Elixir (katalogda
 - 0–3 s: "800 000 so'm birdaniga?"
 - 3–7 s: "~~800 000~~ → oyiga 96 000 so'm (12 oy)"
 - 7–11 s: "12 oy: jami 1 152 000 so'm · 3 oy: oyiga 266 667, jami 800 000"
-- 11–15 s: "Hozir 0 so'm · Kommentga: NASIYA"
+- 11–15 s: "Hozir 0 so'm · Kommentga: +"
 
 **O'zbekcha ovoz (≈15 s):**
 > Bu atir 800 000 so'm turadi. Ko'pchilik shu yerda to'xtaydi. Lekin saytimiz orqali Uzum Nasiya
 > bilan olsangiz, 12 oyga oyiga 96 000 so'mdan — jami 1 152 000 so'm. Yoki 3 oyga — jami
-> o'sha 800 000. Hozir 0 so'm. Kommentga NASIYA deb yozing.
+> o'sha 800 000. Hozir 0 so'm. Kommentga plyus qo'ying.
 
 **Veo — A kadr (0–8 s):**
 ```
@@ -519,7 +520,7 @@ Uzum Nasiya orqali:
 • 12 oy — oyiga 96 000 so'm (jami 1 152 000)
 Hozir 0 so'm, telefon + SMS, 2 daqiqa.
 
-👇 Kommentga NASIYA deb yozing.
+👇 Kommentga "+" qo'ying.
 #nasiya #uzumnasiya #atir #bolibtolash #diorsauvage
 ```
 
@@ -536,12 +537,12 @@ Yetkazish muddati va'da qilinmaydi ("1-oktyabrgacha yetkazamiz" deyilmaydi) — 
 - 0–3 s: "1-oktyabr — O'qituvchilar kuni 🌷"
 - 3–8 s: "Gul — bir hafta. Atir — har kuni eslatadi"
 - 8–12 s: "800 000 so'm · Uzum Nasiya · 0 so'm hozir"
-- 12–15 s: "Kommentga yozing: NASIYA"
+- 12–15 s: "Kommentga + qo'ying"
 
 **O'zbekcha ovoz (≈14 s):**
 > 1-oktyabr yaqin. Ustozingizga nima sovg'a qilasiz? Gul bir haftada so'lib qoladi, yaxshi atir
 > esa sizni har kuni eslatib turadi. Saytimizdan tanlang, Uzum Nasiya bilan bo'lib to'lang.
-> Kommentga NASIYA deb yozing.
+> Kommentga plyus qo'ying.
 
 **Veo — A kadr (0–8 s):**
 ```
@@ -569,7 +570,7 @@ bottle, no subtitles, no watermark. No dialogue, no speech.
 Gul bir haftada so'ladi, yaxshi atir esa har kuni eslatadi.
 Saytimizdan tanlang — 800 000 so'm, Uzum Nasiya bilan 3, 6 yoki 12 oyga, hozir 0 so'm.
 
-👇 Kommentga NASIYA deb yozing.
+👇 Kommentga "+" qo'ying.
 #1oktyabr #ustozlarkuni #oqituvchilarkuni #sovga #atir #nasiya
 ```
 
@@ -583,25 +584,18 @@ Virale namunasidagi "💳 Original atirlar endi bo'lib to'lash bilan..." o'rniga
 Chanel, Louis Vuitton, Amouage hidlari — 800 000 so'm, Uzum Nasiya bilan 3, 6 yoki 12 oyga.
 Hozir 0 so'm · telefon + SMS, 2 daqiqa · tez yetkazib berish.
 
-👇 Kommentga NASIYA deb yozing — havolani Directga yuboramiz.
+👇 Kommentga "+" qo'ying — havolani Directga yuboramiz.
 ```
 
-## ChatPlace (2026-09-26 sozlangan)
+## ChatPlace (2026-09-26 yangilandi — kodli so'z "+")
 
 | Nima | ID | Holat |
 |---|---|---|
-| Avtomatizatsiya "NASIYA" — DM yoki izohda "nasiya" / "насия" (barcha postlar), kuniga 1 marta | `01a0dee6-29d9-721c-a13e-c9f4924486f8` | Active |
-| Izohga ochiq javob "NASIYA — izohga ochiq javob" (3 xil matn) | `01a0dee6-53c3-715e-85aa-803b902f0025` | Active |
-| AI topic rule "Nasiya va bo'lib to'lash" | `01a0dee7-058c-722e-a609-0de8d3ff328e` | Yoqilgan |
+| Avtomatizatsiya "+ — asosiy oqim (DM va izoh)": DM'da aynan "+", izohda "+" (barcha postlar), kuniga 1 marta | `01a0def3-223d-70a4-a7e5-3acbac3ec1a1` | Active |
+| Izohga ochiq javob "+ — izohga ochiq javob" (3 xil matn, barcha postlar) | `01a0def3-7d25-710a-8470-d8eab42811a8` | Active |
+| Eski "NASIYA" avtomatizatsiyasi | `01a0dee6-29d9-721c-a13e-c9f4924486f8` | Paused |
+| Eski "NASIYA — izohga ochiq javob" | `01a0dee6-53c3-715e-85aa-803b902f0025` | Paused |
+| AI topic rule "Nasiya va bo'lib to'lash" ("+" ga moslab qayta yozildi) | `01a0dee7-058c-722e-a609-0de8d3ff328e` | Yoqilgan |
 
-- DM xabari: shartlar (800 000 so'm; 3/6/12 oy; hozir 0 so'm; telefon + SMS, 2 daqiqa) +
-  tugmalar "Atir tanlash" (`/catalog?utm_source=instagram&utm_medium=nasiya`, teg
-  `nasiya-katalog-bosdi`) va "Telegram" (`t.me/Jelyor`). Mijozga `nasiya` tegi qo'yiladi.
-- AI agentning izohga javobi (`answerOnCommentEnabled`) **yoqilmadi**: izoh qoidasi (commentRules)
-  MCP orqali o'rnatilmaydi; qoidasiz yoqilsa AI barcha izohlarga umumiy qoidalar bilan (havola,
-  to'lov ma'lumotlari bilan) ochiq javob yozadi. ChatPlace ilovasida izoh qoidasini qo'yib, keyin yoqing:
-  ```
-  Izohda qisqa yoz (1 jumla). Narx so'ralsa faqat: "800 000 so'm, bo'lib to'lash mumkin — Directga yozdim 😊".
-  Izohda havola, oylik summa, karta, to'lov havolasi va batafsil ma'lumot yozma — hammasi Directda.
-  "Original" deb yozma. Salbiy izohga xotirjam, qisqa va hurmat bilan javob ber, bahslashma.
-  ```
+To'liq savdo tizimi (voronka, eslatma, teglar, har Reels uchun shablon): `docs/chatplace-savdo-tizimi.md` (main'dagi PR).
+AI agentning izohga javobi (`answerOnCommentEnabled`) yoqilmagan — sababi va ilovada yoqish tartibi o'sha hujjatda.
