@@ -17,6 +17,10 @@ Reja: `docs/superpowers/specs/2026-09-26-sotuvchi-sayt-design.md`
 | 4 | Bosh sahifa va katalog (C uslub: binafsha #6100FF, Unbounded + Manrope) | qilindi |
 | 5 | Tezlik o'lchovi | o'lchandi, tuzatish keyingi ish (quyida) |
 
+## Keyingi katta ish: SEO va AI qidiruv
+Reja: `docs/superpowers/specs/2026-09-26-seo-geo-reja.md`. Birinchi: atir sahifasi schema'sida narx xato
+(`3.31 USD`, 800 000 UZS bo'lishi kerak), keyin meta matnlar, tezlik, llms.txt, so'zli URL, /ru, brend sahifalari.
+
 ## Tezlik (Lighthouse, mobil, jonli sayt, 2026-09-26)
 | Sahifa | Ball | LCP | TBT | CLS |
 |---|---|---|---|---|

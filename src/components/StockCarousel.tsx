@@ -53,6 +53,33 @@ export default function StockCarousel({ products }: StockCarouselProps) {
 
   // Omborda bor, rasmi bor atirlar — "Barcha atirlar" ro'yxatini takrorlamaydi
   const featured = products.filter((p) => p.image_url && (p.stock ?? 0) > 0).slice(0, 16);
+
+  // Mahsulotlar hali yuklanmagan — joyni oldindan band qilamiz. Aks holda lenta
+  // keyin paydo bo'lib, pastdagi bloklarni itarib yuborardi (Lighthouse CLS 0.515).
+  if (products.length === 0) {
+    return (
+      <section aria-hidden className="relative py-10 sm:py-14 border-y border-border bg-secondary/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+          <p className="eyebrow text-muted-foreground">{t("hotstock_subtitle")}</p>
+          <h2 className="font-heading mt-2 text-3xl sm:text-4xl text-foreground">{t("hotstock_title")}</h2>
+        </div>
+        <div className="overflow-hidden px-4 sm:px-6 lg:px-8">
+          <div className="flex gap-5 max-w-7xl mx-auto">
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="shrink-0 w-[10.5rem] sm:w-48">
+                <div className="aspect-[3/4] rounded-xl border border-border bg-surface-image shimmer" />
+                <div className="pt-3.5 space-y-2">
+                  <div className="h-3 w-16 rounded bg-border/60" />
+                  <div className="h-[2.3rem] rounded bg-border/40" />
+                  <div className="h-4 w-24 rounded bg-border/60" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
   if (featured.length < 3) return null;
 
   const arrow =

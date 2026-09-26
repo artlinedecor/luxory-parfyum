@@ -82,8 +82,9 @@ const onlineStoreSchema = {
   "image": `${siteConfig.siteUrl}/hero.webp`,
   "description": siteConfig.seoDescription,
   "telephone": siteConfig.phone,
-  "currenciesAccepted": "UZS, USD",
-  "paymentAccepted": "Cash, Credit Card, Payme, Click, Uzum Nasiya",
+  "currenciesAccepted": "UZS",
+  "paymentAccepted": "Click, Uzcard, Humo, Uzum Nasiya",
+  "sameAs": [siteConfig.telegramChannel],
   "address": {
     "@type": "PostalAddress",
     "streetAddress": siteConfig.location,
@@ -130,9 +131,7 @@ export default function RootLayout({
           </CartProvider>
           </I18nProvider>
         </SettingsProvider>
-      <img src="https://vercel-dashboard-amber-pi.vercel.app/api/track?site=parfumelux" style={{ display: "none" }} alt="original atirlar
-parfyumeriya kosmetika
-erkak ayol atirlari" />
+      <img src="https://vercel-dashboard-amber-pi.vercel.app/api/track?site=parfumelux" style={{ display: "none" }} alt="" />
       </body>
     </html>
   );

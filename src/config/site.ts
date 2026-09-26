@@ -33,7 +33,7 @@ export const siteConfig = {
   // ── SEO ──────────────────────────────────────────
   seoTitle: "Elore Parfume — Toshkentda Original va Premium Klon Atirlar, 12 oyga bo'lib to'lash",
   seoDescription:
-    "Toshkentda 100% original va premium super klon atirlar do'koni. Tom Ford, Chanel, Dior, Creed va boshqa jahon brendlari. 0-0-6 muddatli to'lov va O'zbekiston bo'ylab tez yetkazib berish.",
+    "Toshkentda original va premium klon atirlar: Tom Ford, Chanel, Dior, Creed va boshqa brendlar. Premium atir — 800 000 so'm, 3, 6 yoki 12 oyga bo'lib to'lash (Uzum Nasiya). Tez yetkazib berish.",
   seoKeywords: [
     "Parfume Lux",
     "parfume lux",

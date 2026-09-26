@@ -10,7 +10,8 @@ export default function YandexMetrica() {
   return (
     <Script
       id="yandex-metrica"
-      strategy="afterInteractive"
+      // Metrika (webvisor bilan) ~3 s JS — sahifa yuklangandan keyin ishga tushadi
+      strategy="lazyOnload"
       dangerouslySetInnerHTML={{
         __html: `
           (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};

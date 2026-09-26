@@ -507,9 +507,10 @@ export default function ProductGrid({ products }: ProductGridProps) {
 
       {/* ── Ro'yxat ───────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10">
-        {filteredProducts.slice(0, visible).map((product) => (
+        {filteredProducts.slice(0, visible).map((product, i) => (
           <ProductCard
             key={product.id}
+            priority={i < 4}
             product={product}
             onAddToCart={handleAddToCart}
             onQuickView={setQuickView}

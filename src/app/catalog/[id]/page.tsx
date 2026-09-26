@@ -3,6 +3,14 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import ProductDetailClient from "@/components/ProductDetailClient";
 import { siteConfig } from "@/config/site";
+import {
+  seoProductName,
+  productTypeLabel,
+  productMetaDescription,
+  productUrl,
+  productJsonLd,
+  productBreadcrumbJsonLd,
+} from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -32,13 +40,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       };
     }
 
-    const title = `${product.title} — ${
-      product.product_type === "original" ? "Original" : "Super Klon"
-    } Atir | ${siteConfig.siteName}`;
-
-    const description = product.description
-      ? product.description.slice(0, 160)
-      : `${product.title} premium parfyumeriyasi. Original va eng sifatli super klon atirlar hamyonbop narxlarda.`;
+    const name = seoProductName(product);
+    const title = `${name} — ${productTypeLabel(product)} atir, bo'lib to'lash | ${siteConfig.siteName}`;
+    const description = productMetaDescription(product);
+    const url = productUrl(product);
 
     const imageUrl = product.image_url || `${siteConfig.siteUrl}/products/default.png`;
 
@@ -46,19 +51,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       alternates: {
-        canonical: `${siteConfig.siteUrl}/catalog/${product.id}`,
+        canonical: url,
       },
+      // Yashirilgan atir (takroriy yoki test) qidiruvga chiqmasin
+      ...(product.is_available === false ? { robots: { index: false, follow: true } } : {}),
       openGraph: {
         title,
         description,
-        url: `${siteConfig.siteUrl}/catalog/${product.id}`,
+        url,
         type: "website",
         images: [
           {
             url: imageUrl,
             width: 800,
             height: 1000,
-            alt: product.title,
+            alt: name,
           },
         ],
       },
@@ -96,22 +103,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  // Schema.org / JSON-LD structured data for Google & Yandex rich snippets
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": product.title,
-    "image": product.image_url || `${siteConfig.siteUrl}/products/default.png`,
-    "description": product.description || `${product.title} premium parfyumeriyasi.`,
-    "offers": {
-      "@type": "Offer",
-      "priceCurrency": "USD",
-      "price": product.price_usd,
-      "itemCondition": "https://schema.org/NewCondition",
-      "availability": product.is_available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      "url": `${siteConfig.siteUrl}/catalog/${product.id}`
-    }
-  };
+  // Schema.org / JSON-LD — narx so'mda, savat bilan bir xil manbadan (lib/seo.ts)
+  const jsonLd = [productJsonLd(product), productBreadcrumbJsonLd(product)];
 
   return (
     <>
