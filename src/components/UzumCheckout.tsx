@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 import { savePending } from "@/lib/uzum-pending";
@@ -167,6 +167,22 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
     }
   };
 
+  // Savatda kiritilgan raqam to'g'ri bo'lsa, "Davom etish"ni qayta bostirmaymiz —
+  // tekshiruv darhol boshlanadi. Raqamni tariflar bosqichida o'zgartirsa bo'ladi.
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (autoStarted.current || !isValidUzPhone(normalizePhone(initialPhone))) return;
+    autoStarted.current = true;
+    void handlePhone();
+    // faqat birinchi ochilishda
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const changePhone = () => {
+    setStep("phone"); setTariffs([]); setSelected(""); setUserId(null);
+    setError(""); setInfo("");
+  };
+
   // 2) calculate -> tariflar
   const loadTariffs = async (uid: number) => {
     setLoading(true); setError("");
@@ -260,7 +276,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center justify-center w-9 h-9 bg-[#6100FF] text-white text-sm font-semibold">U</span>
+            <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#6100FF] text-white text-sm font-semibold">U</span>
             <div>
               <h3 className="font-heading text-base font-bold text-foreground">Uzum Nasiya</h3>
               <p className="text-[11px] text-muted-foreground">Bo'lib to'lash</p>
@@ -272,10 +288,10 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         <div className="gold-hairline" />
 
         {info && (
-          <div className="p-3.5 bg-gold-muted border border-gold/30 text-xs text-gold-deep leading-relaxed">{info}</div>
+          <div className="p-3.5 rounded-xl bg-gold-muted border border-gold/30 text-xs text-gold-deep leading-relaxed">{info}</div>
         )}
         {error && (
-          <div className="p-3.5 bg-destructive/8 border border-destructive/25 text-xs text-destructive leading-relaxed">{error}</div>
+          <div className="p-3.5 rounded-xl bg-destructive/8 border border-destructive/25 text-xs text-destructive leading-relaxed">{error}</div>
         )}
 
         {/* Limit yo'q / tarif yo'q holatida mijozni boshi berk ko'chada qoldirmaymiz */}
@@ -292,8 +308,9 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         {/* Step: phone */}
         {step === "phone" && (
           <div className="space-y-4">
-            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">Uzum Nasiya telefon raqamingiz</label>
+            <label htmlFor="uzum-phone" className="block text-sm font-semibold text-foreground">Uzum Nasiyadagi telefon raqamingiz</label>
             <input
+              id="uzum-phone"
               type="tel"
               inputMode="numeric"
               value={phone}
@@ -321,7 +338,12 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
               disabled={loading}
               className="btn btn-uzum btn-block"
             >
-              {loading ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Davom etish"}
+              {loading ? (
+                <>
+                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Limit tekshirilmoqda…
+                </>
+              ) : "Davom etish"}
             </button>
           </div>
         )}
@@ -329,21 +351,22 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         {/* Step: tariffs */}
         {step === "tariffs" && (
           <div className="space-y-3">
-            <p className="text-xs text-muted-foreground">
-              Bo&apos;lib to&apos;lash muddatini tanlang:
-            </p>
-            <p className="text-[11px] text-muted-foreground -mt-1">
+            <p className="text-sm font-semibold text-foreground">Muddatni tanlang</p>
+            <p className="text-xs text-muted-foreground -mt-1">
               Raqam:{" "}
               <span className="text-gold font-semibold">
                 {prettyPhone(normalizePhone(phone))}
-              </span>
+              </span>{" "}
+              <button type="button" onClick={changePhone} className="underline underline-offset-2 hover:text-foreground">
+                o&apos;zgartirish
+              </button>
             </p>
             <div className="space-y-2">
               {tariffs.map((t) => (
                 <button
                   key={t.tariff}
                   onClick={() => setSelected(t.tariff)}
-                  className={`w-full flex items-center justify-between p-3.5  border transition-all ${
+                  className={`w-full flex items-center justify-between p-3.5 rounded-xl border transition-all ${
                     selected === t.tariff
                       ? "border-gold bg-gold/10 shadow-md shadow-gold/10"
                       : "border-border hover:border-foreground/30"
@@ -371,7 +394,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
               disabled={loading || !selected}
               className="btn btn-uzum btn-block"
             >
-              {loading ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Rasmiylashtirish"}
+              {loading ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Rasmiylashtirish — SMS-kodga o'tish"}
             </button>
           </div>
         )}
