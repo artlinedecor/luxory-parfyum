@@ -68,6 +68,7 @@ const ALIASES: Record<string, string> = {
   dolche: "dolce", gabbana: "gabbana", gabana: "gabbana",
   ivsen: "ysl", ivsenloran: "ysl", saint: "saint", loran: "laurent",
   bayredo: "byredo", bairedo: "byredo",
+  lv: "louis vuitton", pdm: "parfums de marly", bvlgari: "bulgari", bulgary: "bulgari",
 };
 
 // Savol va to'ldiruvchi so'zlar — mahsulot nomida bo'lmaydi.
@@ -108,11 +109,11 @@ function wordScore(word: string, hay: string[]): number {
   return best;
 }
 
-export function searchProducts<T extends SearchableProduct>(products: T[], q: string, limit: number): T[] {
-  const words = normalizeQuery(q).split(" ").filter((w) => w && !STOPWORDS.has(w));
-  if (!words.length) return [];
+type Ranked<T> = { p: T; matched: number; score: number; extra: number };
 
-  const scored: { p: T; matched: number; score: number }[] = [];
+/** Mos kelgan mahsulotlar: ko'p so'z mos kelgani, keyin ball, keyin omborda bori oldin. */
+function rankProducts<T extends SearchableProduct>(products: T[], words: string[]): Ranked<T>[] {
+  const scored: Ranked<T>[] = [];
   for (const p of products) {
     const hay = haystackWords(p);
     let matched = 0;
@@ -122,14 +123,41 @@ export function searchProducts<T extends SearchableProduct>(products: T[], q: st
       if (s > 0) matched++;
       score += s;
     }
-    if (matched > 0) scored.push({ p, matched, score });
+    // extra — nomdagi ortiqcha so'zlar: "The Hedonist" so'ralsa "The Hedonist Extrait" emas, o'zi
+    if (matched > 0) scored.push({ p, matched, score, extra: hay.length - matched });
   }
 
   const inStock = (p: T) => ((p.stock ?? 0) > 0 ? 1 : 0);
-  return scored
-    .sort((a, b) => b.matched - a.matched || b.score - a.score || inStock(b.p) - inStock(a.p))
+  return scored.sort(
+    (a, b) => b.matched - a.matched || b.score - a.score || inStock(b.p) - inStock(a.p) || a.extra - b.extra,
+  );
+}
+
+const queryWords = (q: string) => normalizeQuery(q).split(" ").filter((w) => w && !STOPWORDS.has(w));
+
+export function searchProducts<T extends SearchableProduct>(products: T[], q: string, limit: number): T[] {
+  const words = queryWords(q);
+  if (!words.length) return [];
+  return rankProducts(products, words)
     .slice(0, Math.max(0, limit))
     .map((s) => s.p);
+}
+
+/**
+ * Bot yuboradigan qisqa havola: /a/dior-sauvage-elixir → shu atir.
+ * Bot nomni biroz boshqacha yozsa ham topiladi, lekin so'zlarning kamida 60%
+ * mos kelishi shart: "tom-ford-tobacco-vanille" faqat brend bo'yicha mos kelib
+ * boshqa Tom Ford'ga olib bormasin — bunday holda null (katalog).
+ */
+export function findShortLinkProduct<T extends SearchableProduct>(products: T[], slug: string): T | null {
+  const words = queryWords(slug.replace(/[-_+.]+/g, " "));
+  if (!words.length) return null;
+  const ranked = rankProducts(products, words);
+  // Havola bitta aniq atirga olib borishi kerak: teng mos kelganlar ichidan nomi eng qisqasi
+  const best = ranked
+    .filter((r) => r.matched === ranked[0].matched && r.score === ranked[0].score)
+    .sort((a, b) => a.extra - b.extra)[0];
+  return best && best.matched >= Math.ceil(words.length * 0.6) ? best.p : null;
 }
 
 export function toPublicItem(p: PublicProductRow, siteUrl: string): PublicItem {
