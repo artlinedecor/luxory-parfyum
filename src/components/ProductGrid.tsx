@@ -51,6 +51,13 @@ interface Facets {
 export default function ProductGrid({ products }: ProductGridProps) {
   const [genderFilter, setGenderFilter] = useState<Gender>("all");
   const [query, setQuery] = useState("");
+  // Bosh sahifadagi qidiruv /catalog?q=... ga yuboradi
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("q");
+    if (!q) return;
+    const timer = window.setTimeout(() => setQuery(q.slice(0, 80)), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
   const [concFilter, setConcFilter] = useState<Concentration | null>(null);
   const [familyFilter, setFamilyFilter] = useState<NoteFamily | null>(null);
