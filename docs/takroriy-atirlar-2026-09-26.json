@@ -1,0 +1,30 @@
+{
+  "note": "is_available=false qilindi; qaytarish: update products set is_available=true where id in (...)",
+  "hidden": [
+    {
+      "id": "b3f30e8c-496b-496b-9b7f-2cf291eaa6fe",
+      "title": "Louis Vuitton Afternoon Swim Eau De Parfum 100 ml",
+      "why": "Afternoon Swim takrori — 698f4a4e qoldi"
+    },
+    {
+      "id": "aced5576-bebc-4c36-ae98-49e29c324781",
+      "title": "Louis Vuitton Attrape-Rêves ",
+      "why": "Attrape-Rêves takrori — 31720525 qoldi"
+    },
+    {
+      "id": "7e721440-6346-4b99-a994-345353e57da1",
+      "title": "Louis Vuitton California Dream ",
+      "why": "California Dream takrori — ab34e49d qoldi"
+    },
+    {
+      "id": "768c4461-dcfe-41bf-bdda-927f6585f5a5",
+      "title": "XERJOFF TORINO21 100 ml",
+      "why": "Xerjoff Torino 21 takrori — 26a58fcf qoldi"
+    },
+    {
+      "id": "31b7ff52-10de-4a0c-99a5-209ae39ed9b1",
+      "title": "HORMONE | This Is Not GABA ✨",
+      "why": "Hormone GABA takrori — e9efb4f9 qoldi"
+    }
+  ]
+}

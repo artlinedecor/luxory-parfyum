@@ -110,7 +110,7 @@ export default function StockCarousel({ products }: StockCarouselProps) {
                     alt={name}
                     fill
                     loading="lazy"
-                    className="object-cover transition-transform duration-[600ms] ease-out group-hover/card:scale-[1.04]"
+                    className="object-contain p-2 transition-transform duration-[600ms] ease-out group-hover/card:scale-[1.04]"
                     sizes="(max-width: 640px) 168px, 192px"
                   />
                 </div>
