@@ -4,6 +4,22 @@ Maqsad: mijoz botga atir nomini yozsa ("Baccarat bormi?", "шанель", "ди�
 bot saytdan shu atirni topib, **aniq atir sahifasi havolasini** yuborsin. Mijoz havolani
 bosadi va o'sha sahifada "Bo'lib to'lash" orqali rasmiylashtiradi.
 
+## 0. Eng oddiy yo'l — qisqa havola (kalit kerak emas)
+
+`https://parfumelux.uz/a/<atir-nomi>` — sayt nom bo'yicha eng mos atirni topib, o'sha
+sahifaga olib boradi (`utm_source=chatplace` bilan):
+
+| Bot yuborgan havola | Qayerga olib boradi |
+|---|---|
+| `/a/dior-sauvage-elixir` | Dior Sauvage Elixir sahifasi |
+| `/a/lv-imagination` | Louis Vuitton Imagination |
+| `/a/pdm-delina` | Parfums de Marly Delina Exclusif |
+| `/a/tom-ford-tobacco-vanille` (katalogda yo'q) | katalog |
+
+- Nom kichik harf, so'zlar defis bilan. Qisqartmalar tushuniladi: `lv`, `pdm`, `mfk`, `ysl`.
+- So'zlarning kamida 60% mos kelmasa — noto'g'ri atirga emas, katalogga olib boradi.
+- AI agent ko'rsatmasi: `docs/chatplace-bot-sozlash.md`.
+
 ## 1. Kalit yaratish (bir marta)
 
 1. Uzun tasodifiy kalit o'ylab toping (kamida 32 belgi), masalan parol generatoridan.

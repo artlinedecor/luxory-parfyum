@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normalizeQuery, searchProducts, toPublicItem, buildReply, type PublicProductRow } from "./product-search";
+import { normalizeQuery, searchProducts, findShortLinkProduct, toPublicItem, buildReply, type PublicProductRow } from "./product-search";
 
 const row = (over: Partial<PublicProductRow>): PublicProductRow => ({
   id: "id-" + Math.random().toString(36).slice(2, 8),
@@ -83,5 +83,40 @@ describe("buildReply", () => {
     expect(text).toContain("Dior Sauvage");
     expect(text).toContain("800 000 so'm");
     expect(text).toContain(item.url);
+  });
+});
+
+describe("findShortLinkProduct", () => {
+  const sauvage = row({ title: "DIOR SAUVAGE ELIXIR 60 ml" });
+  const imagination = row({ title: "Louis Vuitton Imagination Eau De Parfum 100 ml" });
+  const ombre = row({ title: "Louis Vuitton Ombre Nomade Eau De Parfum" });
+  const all = [sauvage, imagination, ombre];
+
+  it("defisli nomdan aniq atirni topadi", () => {
+    expect(findShortLinkProduct(all, "dior-sauvage-elixir")).toBe(sauvage);
+    expect(findShortLinkProduct(all, "louis-vuitton-imagination")).toBe(imagination);
+  });
+
+  it("qisqartma yoki kirill bilan yozilsa ham topadi", () => {
+    expect(findShortLinkProduct(all, "lv-imagination")).toBe(imagination);
+    expect(findShortLinkProduct(all, "диор-саваж")).toBe(sauvage);
+  });
+
+  it("bir xil mos kelganda ortiqcha so'zi kami tanlanadi", () => {
+    const hedonist = row({ title: "EX NIHILO THE HEDONIST 100ML" });
+    const extrait = row({ title: "Ex Nihilo The Hedonist Extrait de Parfum 100ml" });
+    expect(findShortLinkProduct([extrait, hedonist], "ex-nihilo-the-hedonist")).toBe(hedonist);
+  });
+
+  it("faqat brend mos kelsa — null, boshqa atirga olib bormaydi", () => {
+    const rose = row({ title: "TOM FORD ROSE D'AMALFI 100ML" });
+    expect(findShortLinkProduct([rose], "tom-ford-tobacco-vanille")).toBeNull();
+    expect(findShortLinkProduct([row({ title: "BULGARI POUR HOMME 100ML" })], "bvlgari-tygar")).toBeNull();
+  });
+
+  it("so'zlarning 60% idan kami mos kelsa — null (noto'g'ri atirga olib bormaydi)", () => {
+    expect(findShortLinkProduct(all, "chanel-coco-noir")).toBeNull();
+    expect(findShortLinkProduct(all, "louis-vuitton-pacific-chill-cologne")).toBeNull();
+    expect(findShortLinkProduct(all, "---")).toBeNull();
   });
 });
