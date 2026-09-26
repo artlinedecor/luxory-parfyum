@@ -17,15 +17,22 @@ Reja: `docs/superpowers/specs/2026-09-26-sotuvchi-sayt-design.md`
 | 4 | Bosh sahifa va katalog (C uslub: binafsha #6100FF, Unbounded + Manrope) | qilindi |
 | 5 | Tezlik o'lchovi | o'lchandi, tuzatish keyingi ish (quyida) |
 
-## Keyingi katta ish: SEO va AI qidiruv
-Reja: `docs/superpowers/specs/2026-09-26-seo-geo-reja.md`. Birinchi: atir sahifasi schema'sida narx xato
-(`3.31 USD`, 800 000 UZS bo'lishi kerak), keyin meta matnlar, tezlik, llms.txt, so'zli URL, /ru, brend sahifalari.
+## SEO va AI qidiruv
+Reja: `docs/superpowers/specs/2026-09-26-seo-geo-reja.md`.
+- **0-bosqich qilindi (PR #12):** schema narxi 800 000 UZS (oldin 3.31 USD), brand/sku/breadcrumb,
+  toza nomlar (`src/lib/seo.ts`), meta matnlar, yashirilgan atirlar noindex + sitemap'dan chiqdi,
+  `public/llms.txt`, Metrika lazyOnload, bosh sahifa CLS, katalog birinchi 4 rasm priority.
+- **Keyingisi (1-bosqich):** so'zli URL + 301, `/ru` + hreflang, brend/toifa sahifalari, "bo'lib to'lash" sahifasi, IndexNow.
+- Rasm kichraytirish (Supabase transform) yoqilmadi — pullik kvota; Vercel kvotasi tugab rasmlar yo'qolgan tajriba bor.
+- Egasining qarori kutilmoqda: "super klon" + mashhur brend nomi xavfi.
 
 ## Tezlik (Lighthouse, mobil, jonli sayt, 2026-09-26)
 | Sahifa | Ball | LCP | TBT | CLS |
 |---|---|---|---|---|
 | `/` | 24 | 4.6 s | 4 170 ms | 0.515 |
 | `/catalog` | 42 | 11.5 s | 4 300 ms | 0 |
+| `/` (PR #12 dan keyin) | 44 | 4.9 s | 5 890 ms | 0.085 |
+| `/catalog` (PR #12 dan keyin) | 44 | 9.1 s | 4 750 ms | 0 |
 
 Sabablari va keyingi ish (tartib bo'yicha):
 1. Yandex Metrika (~2.9 s JS) va Facebook Pixel darhol yuklanadi → `lazyOnload`/foydalanuvchi harakatidan keyin yuklash.
