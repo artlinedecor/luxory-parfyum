@@ -86,7 +86,7 @@ export default function QuickViewDialog({
                       src={product.image_url || "/products/default.png"}
                       alt={displayName || ""}
                       fill
-                      className="object-cover"
+                      className="object-contain p-3"
                       sizes="(max-width: 640px) 100vw, 384px"
                     />
                     {frag.concentrationLabel && (

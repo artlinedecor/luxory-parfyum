@@ -64,7 +64,7 @@ export default function HeroSection({ productCount, products }: { productCount: 
                 className="relative block h-36 w-24 shrink-0 overflow-hidden rounded-2xl bg-white shadow-xl shadow-black/20 sm:h-60 sm:w-44"
                 aria-label={showcase.title}
               >
-                <Image src={showcase.image_url} alt={showcase.title} fill priority className="object-cover" sizes="(max-width: 640px) 96px, 176px" />
+                <Image src={showcase.image_url} alt={showcase.title} fill priority className="object-contain p-2" sizes="(max-width: 640px) 96px, 176px" />
               </Link>
             )}
           </div>

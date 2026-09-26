@@ -216,7 +216,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 alt={displayName}
                 fill
                 priority
-                className={`object-contain md:object-cover transition-opacity duration-500 ${
+                className={`object-contain p-4 transition-opacity duration-500 ${
                   imageLoaded ? "opacity-100" : "opacity-0"
                 }`}
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -261,7 +261,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     }`}
                     aria-label={`${i + 1}-rasm`}
                   >
-                    <Image src={src} alt="Rasm" fill className="object-cover" sizes="64px" />
+                    <Image src={src} alt="Rasm" fill className="object-contain" sizes="64px" />
                   </button>
                 ))}
               </div>

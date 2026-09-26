@@ -68,7 +68,7 @@ export default function ProductCard({
           alt={`${frag.brand ? frag.brand + " " : ""}${displayName} — atir`}
           fill
           loading="lazy"
-          className={`object-cover transition-[transform,opacity] duration-500 ease-out
+          className={`object-contain p-3 transition-[transform,opacity] duration-500 ease-out
                       group-hover:scale-[1.03]
                       ${secondSrc ? "group-hover:opacity-0" : ""}
                       ${imageLoaded ? "opacity-100" : "opacity-0"}`}
@@ -88,7 +88,7 @@ export default function ProductCard({
             aria-hidden
             fill
             loading="lazy"
-            className="object-cover opacity-0 scale-[1.03] transition-opacity duration-500 ease-out group-hover:opacity-100"
+            className="object-contain p-3 opacity-0 scale-[1.03] transition-opacity duration-500 ease-out group-hover:opacity-100"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         )}
