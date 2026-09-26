@@ -56,7 +56,7 @@ export default function ProductCard({
   const inStock = (product.stock ?? 0) > 0;
 
   return (
-    <article className="group lux-card glass-card overflow-hidden flex flex-col h-full w-full">
+    <article className="group lux-card glass-card rounded-2xl overflow-hidden flex flex-col h-full w-full">
       {/* ── Rasm: 3:4 vertikal, issiq oq fon ──────────────────────
           Havola rasm ustidagi qatlam sifatida qo'yilgan: shunda
           sevimlilar tugmasi havola ICHIDA bo'lmaydi (tugmani havola
@@ -164,7 +164,7 @@ export default function ProductCard({
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground line-clamp-1">{frag.brand}</p>
         )}
 
-        <h3 className="font-heading mt-1.5 text-[17px] leading-snug text-foreground line-clamp-2 group-hover:text-gold-dark transition-colors duration-300">
+        <h3 className="mt-1 text-[15px] font-semibold leading-snug text-foreground line-clamp-2 group-hover:text-gold-dark transition-colors duration-300" style={{ fontFamily: "var(--font-sans)", letterSpacing: 0 }}>
           {displayName}
         </h3>
 

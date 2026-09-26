@@ -67,60 +67,57 @@
    Og'ir soyalar YO'Q: 1px nozik chegara + keng bo'sh joy.
    ================================================================ */
 :root {
-  --background: #faf8f5;          /* Warm Alabaster */
-  --foreground: #1a1a1a;          /* Deep Carbon Charcoal */
-  --card: #fdfcfb;                /* Porcelain */
-  --card-foreground: #1a1a1a;
+  /* C uslubi (2026-09-26): Uzum binafsha asosida, yumaloq, jonli.
+     Fon — binafsha tusli oq, matn — to'q siyoh, aksent — Uzum binafsha. */
+  --background: #fbf8ff;
+  --foreground: #1d1433;
+  --card: #ffffff;
+  --card-foreground: #1d1433;
   --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
-  --primary: #1a1a1a;             /* asosiy CTA — ko'mir */
-  --primary-foreground: #faf8f5;
-  --secondary: #f2efe9;
-  --secondary-foreground: #1a1a1a;
-  --muted: #f2efe9;
-  --muted-foreground: #6e6d7a;    /* meta matn */
-  --accent: #f6f2ec;
-  --accent-foreground: #1a1a1a;
-  --destructive: #b3261e;
-  --border: rgba(0, 0, 0, 0.06);  /* nozik hairline */
-  --input: rgba(0, 0, 0, 0.12);
-  --ring: #c5a880;
-  --radius: 0.25rem;              /* lyuks = deyarli to'g'ri burchak */
+  --popover-foreground: #1d1433;
+  --primary: #6100ff;
+  --primary-foreground: #ffffff;
+  --secondary: #f1ebff;
+  --secondary-foreground: #1d1433;
+  --muted: #f3eefc;
+  --muted-foreground: #6b6480;
+  --accent: #efe7ff;
+  --accent-foreground: #1d1433;
+  --destructive: #d92d20;
+  --border: rgba(29, 20, 51, 0.08);
+  --input: rgba(29, 20, 51, 0.14);
+  --ring: #6100ff;
+  --radius: 1rem;
 
-  /* Gold / Bronze */
-  --gold: #c5a880;                /* asosiy bronza aksent */
-  --gold-bright: #d4af37;         /* yorqin tilla — faqat belgilar uchun */
-  --gold-light: #ded0b8;
-  --gold-dark: #b39268;           /* hover */
-  --gold-deep: #8a6d3b;           /* matn uchun — kontrast yetarli */
-  --gold-muted: rgba(197, 168, 128, 0.14);
+  /* "gold" nomli tokenlar komponentlarda ko'p ishlatilgan — do'konda endi
+     binafsha oila. Dashboard (.theme-dark) oltinini saqlaydi. */
+  --gold: #7b3dff;
+  --gold-bright: #6100ff;
+  --gold-light: #d9c8ff;
+  --gold-dark: #5a00e6;
+  --gold-deep: #4b00c0;
+  --gold-muted: rgba(97, 0, 255, 0.1);
 
-  /* Sirtlar */
-  --surface-image: #f8f6f2;       /* mahsulot rasmi konteyneri */
+  --surface-image: #f6f2fd;
   --surface-raised: #ffffff;
 
-  /* Charts */
-  --chart-1: #c5a880;
-  --chart-2: #8a6d3b;
-  --chart-3: #6e6d7a;
-  --chart-4: #b39268;
-  --chart-5: #1a1a1a;
+  --chart-1: #6100ff;
+  --chart-2: #4b00c0;
+  --chart-3: #6b6480;
+  --chart-4: #b58cff;
+  --chart-5: #1d1433;
 
-  /* Sidebar */
-  --sidebar: #fdfcfb;
-  --sidebar-foreground: #1a1a1a;
-  --sidebar-primary: #1a1a1a;
-  --sidebar-primary-foreground: #faf8f5;
-  --sidebar-accent: #f2efe9;
-  --sidebar-accent-foreground: #1a1a1a;
-  --sidebar-border: rgba(0, 0, 0, 0.06);
-  --sidebar-ring: #c5a880;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1d1433;
+  --sidebar-primary: #6100ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1ebff;
+  --sidebar-accent-foreground: #1d1433;
+  --sidebar-border: rgba(29, 20, 51, 0.08);
+  --sidebar-ring: #6100ff;
 
-  /* Shriftlar — next/font hashlangan nom beradi, shuning uchun o'zgaruvchi.
-     Jakarta da kirill yo'q, shu bois Inter zaxira sifatida ketma-ket turadi. */
-  --font-sans: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui,
-    sans-serif;
-  --font-heading: var(--font-cormorant), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-unbounded), var(--font-manrope), ui-sans-serif, sans-serif;
 }
 
 /* ================================================================
@@ -179,8 +176,9 @@
     @apply text-foreground;
     background-color: var(--background);
   }
-  /* Juda nozik issiq don — qog'ozdek chuqurlik (faqat kompyuterda) */
+  /* Don teksturasi o'chirildi — C uslubi tekis va toza */
   body::before {
+    display: none;
     content: "";
     position: fixed;
     inset: 0;
@@ -195,15 +193,15 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  /* Serif sarlavhalar — keng harf oralig'i (lyuks tipografika) */
+  /* Unbounded sarlavhalar — zich harf oralig'i, qalin */
   h1, h2, h3, .font-heading {
     font-family: var(--font-heading);
-    letter-spacing: 0.05em;
-    font-weight: 500;
+    letter-spacing: -0.01em;
+    font-weight: 600;
   }
   ::selection {
-    background: rgba(197, 168, 128, 0.3);
-    color: #1a1a1a;
+    background: rgba(97, 0, 255, 0.18);
+    color: #1d1433;
   }
 }
 
@@ -237,6 +235,10 @@
 
   /* Quyma metalik tilla — belgilar (badge) uchun */
   .bg-gradient-gold {
+    background: #6100ff;
+    color: #fff;
+  }
+  .theme-dark .bg-gradient-gold {
     background: linear-gradient(
       135deg,
       #b39268 0%,
@@ -245,6 +247,7 @@
       #d4af37 66%,
       #b39268 100%
     );
+    color: #1a1a1a;
   }
 
   .bg-gradient-dark {
@@ -254,7 +257,7 @@
   /* Kartochka sirti — soya emas, nozik chegara */
   .glass-card {
     background: var(--card);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border);
     box-shadow: none;
   }
   .theme-dark .glass-card {
@@ -277,7 +280,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(197, 168, 128, 0.55) 50%,
+      rgba(97, 0, 255, 0.35) 50%,
       transparent
     );
   }
@@ -288,8 +291,8 @@
     transition: border-color 0.5s ease, box-shadow 0.5s ease;
   }
   .lux-card:hover {
-    border-color: rgba(197, 168, 128, 0.55);
-    box-shadow: 0 12px 32px -20px rgba(26, 26, 26, 0.28);
+    border-color: rgba(97, 0, 255, 0.35);
+    box-shadow: 0 14px 32px -18px rgba(61, 0, 160, 0.28);
   }
   .theme-dark .lux-card:hover {
     border-color: rgba(201, 168, 76, 0.45);
@@ -486,8 +489,8 @@
     font-size: 0.6875rem;   /* 11px — 10px da 0.18em oraliq bilan o'qilmasdi */
     line-height: 1.25;
     text-transform: uppercase;
-    letter-spacing: 0.16em;
-    font-weight: 600;
+    letter-spacing: 0.08em;
+    font-weight: 700;
   }
 }
 
@@ -560,10 +563,9 @@
     border-radius: 14px;
     padding-inline: 2rem;
     min-height: 54px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0;
     white-space: nowrap;
     isolation: isolate;
     overflow: hidden;
@@ -604,8 +606,7 @@
     min-height: 46px;
     padding-inline: 1.25rem;
     border-radius: 12px;
-    font-size: 0.6875rem;
-    letter-spacing: 0.1em;
+    font-size: 0.8125rem;
   }
   .btn-block {
     width: 100%;
@@ -621,8 +622,8 @@
 
   /* ── Asosiy: ko'mir ─────────────────────────────────────────── */
   .btn-primary {
-    background-color: #1a1a1a;
-    color: #faf8f5;
+    background-color: #1d1433;
+    color: #ffffff;
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.18),
       0 1px 2px rgba(20, 18, 16, 0.24),
@@ -645,41 +646,17 @@
 
   /* ── Tilla: quyma metall ────────────────────────────────────── */
   .btn-gold {
-    background-image: linear-gradient(
-      175deg,
-      #f0e0af 0%,
-      #dcb84a 30%,
-      #cfa64a 52%,
-      #b8934f 76%,
-      #a37f3c 100%
-    );
-    color: #1a1a1a;
+    background-color: #6100ff;
+    color: #fff;
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.6),
-      inset 0 -1px 0 rgba(120, 88, 40, 0.35),
-      0 1px 2px rgba(120, 88, 40, 0.28),
-      0 8px 18px -6px rgba(120, 88, 40, 0.38),
-      0 24px 46px -18px rgba(120, 88, 40, 0.46);
-  }
-  .btn-gold::before {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.32) 0%,
-      rgba(255, 255, 255, 0.06) 45%,
-      rgba(120, 88, 40, 0.12) 100%
-    );
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      0 8px 18px -6px rgba(97, 0, 255, 0.45);
   }
   .btn-gold:hover {
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.7),
-      0 2px 4px rgba(120, 88, 40, 0.3),
-      0 14px 28px -8px rgba(120, 88, 40, 0.44),
-      0 34px 64px -20px rgba(120, 88, 40, 0.52);
+    background-color: #5000e0;
   }
   .btn-gold:active {
-    box-shadow:
-      inset 0 2px 6px rgba(120, 88, 40, 0.45),
-      0 1px 2px rgba(120, 88, 40, 0.22);
+    box-shadow: inset 0 2px 6px rgba(30, 0, 80, 0.5);
   }
 
   /* ── Ikkilamchi: nozik chegara, oq sirt ─────────────────────── */
@@ -793,14 +770,13 @@
     border: 1px solid rgba(0, 0, 0, 0.09);
     background-color: var(--surface-raised);
     color: var(--muted-foreground);
-    font-size: 0.6875rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0;
     white-space: nowrap;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
-    box-shadow: 0 1px 2px rgba(20, 18, 16, 0.05);
+    box-shadow: none;
     transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
       background-color 0.28s ease, color 0.28s ease, border-color 0.28s ease,
       box-shadow 0.28s ease;
@@ -813,13 +789,10 @@
     transform: scale(0.96);
   }
   .pill[data-active="true"] {
-    background-color: #1a1a1a;
-    border-color: #1a1a1a;
-    color: #faf8f5;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.16),
-      0 2px 6px rgba(20, 18, 16, 0.22),
-      0 10px 22px -12px rgba(20, 18, 16, 0.3);
+    background-color: #6100ff;
+    border-color: #6100ff;
+    color: #ffffff;
+    box-shadow: 0 6px 16px -8px rgba(97, 0, 255, 0.55);
   }
 
   /* Kiritish maydonlari ham iOS geometriyasida bo'lsin */
@@ -849,10 +822,10 @@
 
   .field:focus {
     outline: none;
-    border-color: var(--gold);
+    border-color: #6100ff;
     box-shadow:
       inset 0 1px 2px rgba(20, 18, 16, 0.04),
-      0 0 0 3px rgba(197, 168, 128, 0.22);
+      0 0 0 3px rgba(97, 0, 255, 0.16);
   }
 
   /* Animatsiya kamaytirilsa — prujina yo'q, faqat rang o'zgaradi */
