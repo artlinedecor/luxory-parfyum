@@ -22,12 +22,15 @@ interface ProductCardProps {
   product: Product;
   onAddToCart?: (product: Product) => void;
   onQuickView?: (product: Product) => void;
+  /** Birinchi ekrandagi kartalar — rasm darhol yuklanadi (LCP) */
+  priority?: boolean;
 }
 
 export default function ProductCard({
   product,
   onAddToCart,
   onQuickView,
+  priority = false,
 }: ProductCardProps) {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -61,17 +64,20 @@ export default function ProductCard({
           sevimlilar tugmasi havola ICHIDA bo'lmaydi (tugmani havola
           ichiga joylash noto'g'ri va bosilganda sahifa ochilib ketardi). */}
       <div className="relative aspect-[3/4] overflow-hidden bg-surface-image flex-shrink-0">
-        {!imageLoaded && <div className="absolute inset-0 z-[1] shimmer" />}
+        {/* Birinchi kartalarda rasm yashirilmaydi: aks holda JS yuklanguncha
+            (onLoad) ko'rinmay turadi va LCP soniyalab kechikadi */}
+        {!imageLoaded && !priority && <div className="absolute inset-0 z-[1] shimmer" />}
 
         <Image
           src={primarySrc}
           alt={`${frag.brand ? frag.brand + " " : ""}${displayName} — atir`}
           fill
-          loading="lazy"
+          priority={priority}
+          loading={priority ? undefined : "lazy"}
           className={`object-contain p-3 transition-[transform,opacity] duration-500 ease-out
                       group-hover:scale-[1.03]
                       ${secondSrc ? "group-hover:opacity-0" : ""}
-                      ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                      ${imageLoaded || priority ? "opacity-100" : "opacity-0"}`}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           onError={() => {
             if (!imageError) setImageError(true);

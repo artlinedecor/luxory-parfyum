@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
-    const { data: products } = await supabase.from('products').select('id');
+    const { data: products } = await supabase.from('products').select('id').eq('is_available', true); // yashirilgan (takroriy, test) atirlar indekslanmaydi
     
     if (products) {
       const productRoutes = products.map((product) => ({
