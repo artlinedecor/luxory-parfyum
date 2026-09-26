@@ -81,7 +81,7 @@ export default function Home() {
           bo'lmadi). Bot yana ishga tushsa, xuddi shu xatoni yana
           qilishi mumkin — shuning uchun bu ogohlantirish qoldirilgan.
         */}
-        <HeroSection productCount={products.length} />
+        <HeroSection productCount={products.length} products={products} />
 
         {/* Omborda bor atirlar — darhol olish mumkin bo'lganlar */}
         <StockCarousel products={products} />

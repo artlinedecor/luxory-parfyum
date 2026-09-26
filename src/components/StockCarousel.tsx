@@ -124,7 +124,7 @@ export default function StockCarousel({ products }: StockCarouselProps) {
                       {frag.brand}
                     </p>
                   )}
-                  <p className="font-heading mt-1 text-[15px] leading-tight text-foreground line-clamp-2 min-h-[2.4rem] group-hover/card:text-gold-dark transition-colors duration-300">
+                  <p className="mt-1 text-[14px] font-semibold leading-tight text-foreground line-clamp-2 min-h-[2.3rem] group-hover/card:text-gold-dark transition-colors duration-300">
                     {name}
                   </p>
                   <p className="mt-1.5 text-sm font-semibold text-foreground tabular-nums">

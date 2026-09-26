@@ -53,9 +53,15 @@ export default function ProductGrid({ products }: ProductGridProps) {
   const [query, setQuery] = useState("");
   // Bosh sahifadagi qidiruv /catalog?q=... ga yuboradi
   useEffect(() => {
-    const q = new URLSearchParams(window.location.search).get("q");
-    if (!q) return;
-    const timer = window.setTimeout(() => setQuery(q.slice(0, 80)), 0);
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q");
+    const g = params.get("g");
+    if (!q && !g) return;
+    const timer = window.setTimeout(() => {
+      if (q) setQuery(q.slice(0, 80));
+      // Bosh sahifadagi toifa tugmalari: ?g=female|male|unisex
+      if (g === "female" || g === "male" || g === "unisex") setGenderFilter(g);
+    }, 0);
     return () => window.clearTimeout(timer);
   }, []);
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
