@@ -15,7 +15,20 @@ Reja: `docs/superpowers/specs/2026-09-26-sotuvchi-sayt-design.md`
 | 2 | Atir sahifasi (narx, Uzum satri, pastki panel) | qilindi |
 | 3 | Savat + Uzum oqimi qisqartirildi (Uzum tugmasi birinchi, yetishmagan maydonlar ko'rsatiladi, savatdagi raqam bilan limit darhol tekshiriladi, raqamni o'zgartirish) | qilindi |
 | 4 | Bosh sahifa va katalog (C uslub: binafsha #6100FF, Unbounded + Manrope) | qilindi |
-| 5 | Tezlik o'lchovi | quyida |
+| 5 | Tezlik o'lchovi | o'lchandi, tuzatish keyingi ish (quyida) |
+
+## Tezlik (Lighthouse, mobil, jonli sayt, 2026-09-26)
+| Sahifa | Ball | LCP | TBT | CLS |
+|---|---|---|---|---|
+| `/` | 24 | 4.6 s | 4 170 ms | 0.515 |
+| `/catalog` | 42 | 11.5 s | 4 300 ms | 0 |
+
+Sabablari va keyingi ish (tartib bo'yicha):
+1. Yandex Metrika (~2.9 s JS) va Facebook Pixel darhol yuklanadi → `lazyOnload`/foydalanuvchi harakatidan keyin yuklash.
+2. Mahsulot rasmlari Supabase'dan to'g'ridan-to'g'ri, kichraytirilmagan (~0.8 MB) → Next Image optimizatsiyasi yoki Supabase transform (`width=`).
+3. Bosh sahifada katta layout shift (CLS 0.515, hero ostidagi SECTION) → joyni oldindan band qilish.
+4. Katalogda LCP — birinchi karta rasmi → birinchi 2–4 rasmga `priority`.
+5. Ishlatilmagan JS ~260 KB (asosiy chunk'lar).
 
 ## Egasi qarorlari (buzmang)
 - Mijozga faqat tasdiqlangan va'dalar: "Tez yetkazib berish", "Telefon + SMS · 2 daqiqa",
