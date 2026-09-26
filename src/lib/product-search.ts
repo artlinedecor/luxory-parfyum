@@ -69,7 +69,26 @@ const ALIASES: Record<string, string> = {
   ivsen: "ysl", ivsenloran: "ysl", saint: "saint", loran: "laurent",
   bayredo: "byredo", bairedo: "byredo",
   lv: "louis vuitton", pdm: "parfums de marly", bvlgari: "bulgari", bulgary: "bulgari",
+  // 2026-09-26 qo'shilgan atirlar (docs/yangi-atirlar-2026-09-26.json)
+  tyger: "tygar", tayger: "tygar", taygar: "tygar", tigar: "tygar",
+  mis: "miss", xom: "homme", xomme: "homme", tender: "tendre",
+  blek: "black", blak: "black", xer: "her", barberri: "burberry", barberi: "burberry", berberi: "burberry",
+  mauntin: "mountain", maunten: "mountain", voter: "water",
+  tabako: "tobacco", tabakko: "tobacco", vanila: "vanilla", ud: "oud", vud: "wood", orxid: "orchid", orhid: "orchid",
+  enjels: "angels", enjel: "angels", sher: "share", marli: "marly", leyton: "layton", xerod: "herod", gerod: "herod",
+  naksos: "naxos", interlyud: "interlude", idol: "idole", blum: "bloom", gardeniya: "gardenia", gorjes: "gorgeous",
+  kod: "code", dilan: "dylan", bleu: "blue", blyu: "blue", blu: "blue",
+  inviktus: "invictus", fantom: "phantom", pako: "paco", raban: "rabanne", rabann: "rabanne",
+  gud: "good", gerl: "girl", jpg: "jean paul gaultier", jan: "jean", pol: "paul", gote: "gaultier", gotye: "gaultier",
+  skandal: "scandal", xajivat: "hacivat", xadjivat: "hacivat", xachivat: "hacivat", hajivat: "hacivat",
+  sayd: "side", effekt: "effect", layt: "light", marjela: "margiela", marjiela: "margiela",
+  replika: "replica", fayrpleys: "fireplace", fayerpleys: "fireplace", kafe: "cafe",
+  allyur: "allure", alyur: "allure", allur: "allure", lezer: "leather", lav: "love", shay: "shy",
+  nyui: "nuit", nui: "nuit", gipnotik: "hypnotic", puazon: "poison",
 };
+
+// Tanlashda hisobga olinmaydigan so'zlar: konsentratsiya va hajm atirni boshqasidan ajratmaydi
+const TITLE_NOISE = new Set(["eau", "de", "parfum", "toilette", "edp", "edt", "ml"]);
 
 // Savol va to'ldiruvchi so'zlar — mahsulot nomida bo'lmaydi.
 const STOPWORDS = new Set([
@@ -85,6 +104,9 @@ export function normalizeQuery(q: string): string {
   const plain = latin.normalize("NFD").replace(/[̀-ͯ]/g, "");
   return plain
     .replace(/[^a-z0-9]+/g, " ")
+    // "Eau de Parfum" / "Парфюмерная вода" = edp: "bleu-de-chanel-edp" EDP'ni Parfum'dan ajratsin
+    .replace(/\b(eau de parfum|parfyumernaya voda)\b/g, "edp")
+    .replace(/\b(eau de toilette|tualetnaya voda)\b/g, "edt")
     .trim()
     .split(/\s+/)
     .filter(Boolean)
@@ -111,6 +133,18 @@ function wordScore(word: string, hay: string[]): number {
 
 type Ranked<T> = { p: T; matched: number; score: number; extra: number };
 
+/** Nomdagi so'rovda yo'q so'zlar soni (hajm va konsentratsiya so'zlarisiz). */
+function titleExtra(p: SearchableProduct, words: string[]): number {
+  const titleWords = new Set(normalizeQuery(p.title).split(" "));
+  let extra = 0;
+  for (const t of titleWords) {
+    if (!t || TITLE_NOISE.has(t) || /^\d+(ml)?$/.test(t)) continue;
+    // "ex" (Ex Nihilo) "extrait" ni qoplamasin: qisqa so'z faqat to'liq mos kelsa hisoblanadi
+    if (!words.some((w) => w === t || (w.length >= 3 && wordScore(w, [t]) >= 2))) extra++;
+  }
+  return extra;
+}
+
 /** Mos kelgan mahsulotlar: ko'p so'z mos kelgani, keyin ball, keyin omborda bori oldin. */
 function rankProducts<T extends SearchableProduct>(products: T[], words: string[]): Ranked<T>[] {
   const scored: Ranked<T>[] = [];
@@ -123,8 +157,10 @@ function rankProducts<T extends SearchableProduct>(products: T[], words: string[
       if (s > 0) matched++;
       score += s;
     }
-    // extra — nomdagi ortiqcha so'zlar: "The Hedonist" so'ralsa "The Hedonist Extrait" emas, o'zi
-    if (matched > 0) scored.push({ p, matched, score, extra: hay.length - matched });
+    // extra — nomdagi ortiqcha so'zlar: "The Hedonist" so'ralsa "The Hedonist Extrait" emas, o'zi.
+    // Faqat asosiy nom sanaladi: ruscha nom, hajm va "Eau de Parfum" hisobga olinmaydi, aks holda
+    // "chanel allure" so'ralganda to'liq yozilgan "Chanel Allure Eau de Parfum" o'rniga Allure Homme Sport chiqardi.
+    if (matched > 0) scored.push({ p, matched, score, extra: titleExtra(p, words) });
   }
 
   const inStock = (p: T) => ((p.stock ?? 0) > 0 ? 1 : 0);

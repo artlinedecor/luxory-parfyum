@@ -22,6 +22,27 @@ describe("normalizeQuery", () => {
     expect(normalizeQuery("джадор")).toBe("jadore");
   });
 
+  it("yangi atirlarning ruscha va xato yozilishi", () => {
+    expect(normalizeQuery("tyger")).toBe("tygar");
+    expect(normalizeQuery("Булгари Тайгар")).toBe("bulgari tygar");
+    expect(normalizeQuery("Мисс Диор")).toBe("miss dior");
+    expect(normalizeQuery("Инвиктус")).toBe("invictus");
+    expect(normalizeQuery("Версаче Эрос")).toBe("versace eros");
+    expect(normalizeQuery("Шанель Аллюр")).toBe("chanel allure");
+    expect(normalizeQuery("Блэк Опиум")).toBe("black opium");
+    expect(normalizeQuery("Жан Поль Готье Скандал")).toBe("jean paul gaultier scandal");
+    expect(normalizeQuery("Хачиват")).toBe("hacivat");
+    expect(normalizeQuery("Том Форд Табако Ваниль")).toBe("tom ford tobacco vanil");
+    expect(normalizeQuery("Гуд Герл")).toBe("good girl");
+    expect(normalizeQuery("Лэйтон")).toBe("layton");
+  });
+
+  it("Bleu va Blue bir xil, Eau de Parfum — edp", () => {
+    expect(normalizeQuery("Блю де Шанель")).toBe("blue de chanel");
+    expect(normalizeQuery("Bleu de Chanel Eau de Parfum")).toBe("blue de chanel edp");
+    expect(normalizeQuery("Туалетная вода")).toBe("edt");
+  });
+
   it("katta harf, urg'u va belgilarni olib tashlaydi", () => {
     expect(normalizeQuery("  BACCARAT!! ")).toBe("baccarat");
     expect(normalizeQuery("Bois Impérial")).toBe("bois imperial");
@@ -106,6 +127,26 @@ describe("findShortLinkProduct", () => {
     const hedonist = row({ title: "EX NIHILO THE HEDONIST 100ML" });
     const extrait = row({ title: "Ex Nihilo The Hedonist Extrait de Parfum 100ml" });
     expect(findShortLinkProduct([extrait, hedonist], "ex-nihilo-the-hedonist")).toBe(hedonist);
+  });
+
+  it("ruscha nom va hajm tanlovga ta'sir qilmaydi: Allure — Allure, Homme — Homme", () => {
+    const sport = row({ title: "CHANEL ALLURE HOMME SPORT 100ML" });
+    const allure = row({ title: "Chanel Allure Eau de Parfum 100 ml", title_ru: "Chanel Allure Парфюмерная вода 100 мл" });
+    const homme = row({ title: "Chanel Allure Homme Eau de Toilette 100 ml", title_ru: "Chanel Allure Homme Туалетная вода 100 мл" });
+    const list = [sport, allure, homme];
+    expect(findShortLinkProduct(list, "chanel-allure")).toBe(allure);
+    expect(findShortLinkProduct(list, "chanel-allure-homme")).toBe(homme);
+    expect(findShortLinkProduct(list, "chanel-allure-homme-sport")).toBe(sport);
+  });
+
+  it("EDP va Parfum ajratiladi", () => {
+    const parfum = row({ title: "BLEU DE CHANEL PARFUM" });
+    const edp = row({ title: "Chanel Bleu de Chanel Eau de Parfum 100 ml", title_ru: "Bleu de Chanel Парфюмерная вода 100 мл" });
+    expect(findShortLinkProduct([parfum, edp], "bleu-de-chanel-edp")).toBe(edp);
+    const elixir = row({ title: "DIOR SAUVAGE ELIXIR 60 ml" });
+    const sauvage = row({ title: "Dior Sauvage Eau de Parfum 100 ml" });
+    expect(findShortLinkProduct([elixir, sauvage], "dior-sauvage-edp")).toBe(sauvage);
+    expect(findShortLinkProduct([sauvage, elixir], "dior-sauvage-elixir")).toBe(elixir);
   });
 
   it("faqat brend mos kelsa — null, boshqa atirga olib bormaydi", () => {
