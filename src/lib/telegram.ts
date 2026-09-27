@@ -108,3 +108,8 @@ export async function answerCallback(id: string, text?: string) {
     console.error("[telegram] answerCallbackQuery muvaffaqiyatsiz", j.description);
   }
 }
+
+/** parse_mode: "HTML" uchun — mijoz ismidagi "<" yoki "&" xabarni buzmasin. */
+export function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}

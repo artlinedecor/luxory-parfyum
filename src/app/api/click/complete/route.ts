@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
       .from('orders')
       .update({
         payment_status: 'paid',
-        status: 'accepted' // Automatically accept order if paid via Click
+        status: 'accepted' // Click — pul tushdi, avtomatik qabul (egasi qarori; tasdiqlash faqat Uzum Nasiya'da)
       })
       .eq('id', merchant_trans_id);
 
@@ -96,6 +96,7 @@ export async function POST(req: NextRequest) {
         method: "POST",
         headers: internalHeaders(),
         body: JSON.stringify({
+          orderId: order.id,
           clientName: order.client_name,
           clientPhone: order.client_phone,
           region: order.region, // In DB we store "Region - Address", wait no, we store regionDisplay in region, and nothing in address if it was combined. Let's just pass what we have.
