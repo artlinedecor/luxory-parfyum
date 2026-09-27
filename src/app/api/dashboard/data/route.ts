@@ -46,7 +46,7 @@ export async function GET(req: Request) {
       transactions: txRes.data ?? [],
       uzumContracts: ucRes.data ?? [],
       usdRate,
-    });
+    }, { headers: { "Cache-Control": "no-store" } }); // pul raqamlari hech qayerda keshlanmasin
   } catch (e) {
     console.error("[dashboard/data]", e);
     return NextResponse.json(
