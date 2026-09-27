@@ -3,9 +3,11 @@ import {
   answerCallback,
   editTelegramMessage,
   getAdminChatIds,
+  escapeHtml,
 } from "@/lib/telegram";
 import { confirmContract, cancelContract, uzumErrorPayload } from "@/lib/uzumnasiya";
 import { syncOrderAfterContractAction } from "@/lib/uzum-order-sync";
+import { serverSupabase } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,6 +40,31 @@ export async function POST(req: NextRequest) {
       const admins = await getAdminChatIds();
       if (admins.length === 0 || (!admins.includes(fromId) && !admins.includes(String(chatId)))) {
         await answerCallback(cbId, "Ruxsat yo'q");
+        return NextResponse.json({ ok: true });
+      }
+
+      // ── Click buyurtmasi tugmalari: ckok_<order_id> / ckno_<order_id> ──
+      const ck = cbData.match(/^ck(ok|no)_([0-9a-f-]{36})$/i);
+      if (ck) {
+        const confirm = ck[1] === "ok";
+        const oldText: string = cq.message?.text || "";
+        const { data: rows, error } = await serverSupabase()
+          .from("orders")
+          .update({ status: confirm ? "processing" : "cancelled" })
+          .eq("id", ck[2])
+          .eq("payment_status", "paid")
+          .in("status", ["pending", "accepted"]) // ikki marta bosilsa yoki keyin o'zgargan bo'lsa tegmaymiz
+          .select("id");
+        const done = !error && (rows?.length ?? 0) > 0;
+        await answerCallback(cbId, done ? (confirm ? "Tasdiqlandi ✅" : "Bekor qilindi") : "Holat allaqachon o'zgargan");
+        if (chatId && messageId) {
+          const note = !done
+            ? `⚠️ Buyurtma holati allaqachon o'zgargan${error ? `: ${error.message}` : ""}`
+            : confirm
+              ? "✅ <b>TASDIQLANDI</b> — tovarni jo'natish mumkin."
+              : "❌ <b>BEKOR QILINDI</b> — pulni Click kabinetidan mijozga qaytaring.";
+          await editTelegramMessage(chatId, messageId, escapeHtml(oldText) + `\n\n${note}`);
+        }
         return NextResponse.json({ ok: true });
       }
 

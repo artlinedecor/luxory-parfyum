@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireInternalSecret } from '@/lib/api-guard';
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from '@/lib/utils';
-import { serverSupabase } from "@/lib/supabase-server";
+import { getAdminChatIds, sendTelegram, escapeHtml } from "@/lib/telegram";
 
+/**
+ * Click orqali to'langan buyurtma — adminlarga Telegram xabari,
+ * Uzum Nasiya'dagidek "Tasdiqlash" / "Bekor qilish" tugmalari bilan.
+ * Tugmalar telegram-webhook'da: ckok_<order_id> / ckno_<order_id>.
+ */
 export async function POST(req: NextRequest) {
   // ⚠️ Audit X11: oldin har kim adminlarga soxta buyurtma xabari
   // yubora olardi. Bu route'ni faqat click/complete chaqiradi.
@@ -11,72 +16,45 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const token = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
-
-    if (!token) {
+    if (!process.env.TELEGRAM_BOT_TOKEN) {
       console.warn('Telegram Bot token not configured. Skipping notification.');
       return NextResponse.json({ ok: true, skipped: true });
     }
 
-    const { clientName, clientPhone, region, address, items, totalAmount, orderType, receiptUrl } = body;
+    const { orderId, clientName, clientPhone, region, address, items, totalAmount } = body;
 
     const productLines = (items || [])
       .map((item: { title: string; product_type: string; quantity: number; price_at_purchase: number }) =>
-        `- ${item.title} (${item.product_type === 'original' ? 'Original atir' : 'Lyuks Premium atir'}) x${item.quantity} — ${formatUzs(item.product_type === 'original' ? calculateOriginalPriceUzs(item.price_at_purchase) : calculatePremiumPriceUzs(item.price_at_purchase))} so'm`
+        `• ${escapeHtml(item.title)} × ${item.quantity} — ${formatUzs(item.product_type === 'original' ? calculateOriginalPriceUzs(item.price_at_purchase) : calculatePremiumPriceUzs(item.price_at_purchase))} so'm`
       )
       .join('\n');
 
-    const message =
-`🛍 YANGI BUYURTMA!
-👤 Mijoz: ${clientName}
-📞 Telefon: ${clientPhone}
-📍 Viloyat: ${region}, Manzil: ${address}
+    const text =
+      `💳 <b>YANGI BUYURTMA — Click (to'liq to'landi)</b>\n` +
+      `<i>Pul tushdi, tasdiqlashingizni kutmoqda</i>\n\n` +
+      `👤 ${escapeHtml(clientName || "—")}\n` +
+      `📞 ${escapeHtml(clientPhone || "—")}\n` +
+      `📍 ${escapeHtml(region || "")} ${escapeHtml(address || "")}\n\n` +
+      `📦 <b>Mahsulotlar:</b>\n${productLines || "—"}\n\n` +
+      `💰 Jami: <b>${formatUzs(Number(totalAmount) || 0)} so'm</b>\n` +
+      (orderId ? `🔖 Buyurtma: <code>${escapeHtml(String(orderId).slice(0, 8))}</code>\n\n` : `\n`) +
+      `⚠️ Omborda tovar borligini tekshirib tasdiqlang.`;
 
-📦 Mahsulotlar:
-${productLines}
+    const buttons = orderId
+      ? [[
+          { text: "✅ Tasdiqlash", callback_data: `ckok_${orderId}` },
+          { text: "❌ Bekor qilish", callback_data: `ckno_${orderId}` },
+        ]]
+      : undefined;
 
-💰 Jami summa: ${formatUzs(totalAmount)} so'm
-🧾 To'lov: To'liq to'lov`;
-
-    const supabase = serverSupabase();
-    
-    // 1. Get static IDs from ENV
-    let chatIds = (chatId || '').split(',').map(id => id.trim()).filter(Boolean);
-    
-    // 2. Fetch dynamic IDs from Supabase
-    const { data: adminUsers } = await supabase
-      .from('users')
-      .select('email')
-      .eq('role', 'superadmin')
-      .like('email', '%@telegram.bot');
-      
-    if (adminUsers) {
-      const dynamicIds = adminUsers.map((u: {email: string}) => u.email.split('@')[0]);
-      chatIds = [...new Set([...chatIds, ...dynamicIds])]; // Merge and unique
+    const ids = await getAdminChatIds();
+    let delivered = 0;
+    for (const id of ids) {
+      if (await sendTelegram(id, text, buttons)) delivered++;
     }
+    if (delivered === 0) console.error("[click/notify] xabar hech kimga yetib bormadi", { orderId, tried: ids.length });
 
-    for (const id of chatIds) {
-      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: id, text: message }),
-      });
-
-      if (receiptUrl) {
-        await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: id,
-            photo: receiptUrl,
-            caption: `🧾 To'lov cheki — ${clientName} (${clientPhone})`,
-          }),
-        });
-      }
-    }
-
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, sent: delivered, tried: ids.length });
   } catch (error) {
     console.error('Telegram notification error:', error);
     return NextResponse.json({ ok: true, error: 'notification_failed' });
