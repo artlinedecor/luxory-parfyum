@@ -6,6 +6,7 @@ import { MOCK_PRODUCTS } from "@/lib/mock-data";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client"; // faqat Storage (rasm yuklash) uchun
 import { dashLoad, dashInsert, dashUpdate, dashDelete } from "@/lib/dashboard-api";
+import MissingPerfumes from "@/components/MissingPerfumes";
 
 export default function InventoryPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -240,6 +241,8 @@ export default function InventoryPage() {
           Yangi Qo&apos;shish
         </button>
       </div>
+
+      <MissingPerfumes />
 
       {/* Tabs */}
       <div className="flex gap-2 p-1 bg-secondary/30 w-fit rounded-xl backdrop-blur-sm border border-border/50">
