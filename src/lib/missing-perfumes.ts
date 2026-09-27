@@ -1,9 +1,14 @@
 import { serverSupabase } from "@/lib/supabase-server";
+import { getAdminChatIds, sendTelegram, escapeHtml } from "@/lib/telegram";
 
 /**
  * Mijozlar so'ragan, lekin katalogda yo'q atirlar ro'yxati — egasi keyin
  * shularni saytga qo'shadi. Alohida jadval o'rniga app_settings'da bitta
- * JSON qiymat (migratsiya shart emas). Manba: /a/<slug> havolasi atir topmaganda.
+ * JSON qiymat (migratsiya shart emas).
+ *
+ * Oqim: /a/<slug> atir topmaydi → adminlarga Telegram xabari ikki tugma bilan.
+ * "Bizning segment" bosilsa ro'yxatga tushadi, "Sotmaymiz" (masalan Dubay/arab
+ * atirlari) — hech qayerga yozilmaydi (egasi qarori).
  */
 export const MISSING_KEY = "missing_perfumes";
 const MAX_ITEMS = 300;
@@ -59,4 +64,33 @@ export async function recordMissingPerfume(slug: string, name: string): Promise<
 
 export async function deleteMissingPerfume(slug: string): Promise<void> {
   await writeMissing(removeMissing(await readMissing(), slug));
+}
+
+/** "creed-viking" → "Creed Viking" */
+export const missingTitle = (slug: string) =>
+  slug.replace(/[-_+.]+/g, " ").trim().replace(/\s+/g, " ").replace(/(^|\s)\p{L}/gu, (c) => c.toUpperCase());
+
+/** Telegram callback_data 64 baytdan oshmasin (kirill harfi 2 bayt). */
+export function callbackSlug(slug: string, prefix = "mpok_"): string {
+  let s = normalizeMissingSlug(slug);
+  while (s && new TextEncoder().encode(prefix + s).length > 64) s = s.slice(0, -1);
+  return s.replace(/-+$/, "");
+}
+
+export const MISSING_CALLBACK = /^mp(ok|no)_(.+)$/;
+
+/** Adminlarga: "mijoz so'radi, yo'q" + ro'yxatga qo'shish / sotmaymiz tugmalari. */
+export async function sendMissingPerfumeAlert(slug: string, linkBase: string): Promise<void> {
+  const key = callbackSlug(slug);
+  if (!key) return;
+  const text =
+    `🔎 <b>Mijoz so'radi — katalogda YO'Q</b>\n\n` +
+    `🧴 ${escapeHtml(missingTitle(key))}\n` +
+    `🔗 ${escapeHtml(`${linkBase}/a/${key}`)}\n\n` +
+    `Bizning segmentmi? "Ro'yxatga" bossangiz, Omborxona'dagi ro'yxatga tushadi — keyin saytga qo'shasiz.`;
+  const buttons = [[
+    { text: "✅ Bizning segment — ro'yxatga", callback_data: `mpok_${key}` },
+    { text: "❌ Bunaqasini sotmaymiz", callback_data: `mpno_${key}` },
+  ]];
+  for (const id of await getAdminChatIds()) await sendTelegram(id, text, buttons);
 }

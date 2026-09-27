@@ -3,7 +3,9 @@ import {
   answerCallback,
   editTelegramMessage,
   getAdminChatIds,
+  escapeHtml,
 } from "@/lib/telegram";
+import { MISSING_CALLBACK, missingTitle, recordMissingPerfume } from "@/lib/missing-perfumes";
 import { confirmContract, cancelContract, uzumErrorPayload } from "@/lib/uzumnasiya";
 import { syncOrderAfterContractAction } from "@/lib/uzum-order-sync";
 
@@ -38,6 +40,29 @@ export async function POST(req: NextRequest) {
       const admins = await getAdminChatIds();
       if (admins.length === 0 || (!admins.includes(fromId) && !admins.includes(String(chatId)))) {
         await answerCallback(cbId, "Ruxsat yo'q");
+        return NextResponse.json({ ok: true });
+      }
+
+      // ── So'ralgan, katalogda yo'q atir: ro'yxatga / sotmaymiz ──────────
+      const mp = cbData.match(MISSING_CALLBACK);
+      if (mp) {
+        const add = mp[1] === "ok";
+        const name = missingTitle(mp[2]);
+        let note: string;
+        try {
+          if (add) await recordMissingPerfume(mp[2], name);
+          note = add
+            ? "✅ <b>Ro'yxatga qo'shildi</b> — Omborxona → \"Mijozlar so'ragan, katalogda yo'q atirlar\"."
+            : "❌ <b>Bizning segment emas</b> — hech qayerga yozilmadi.";
+          await answerCallback(cbId, add ? "Ro'yxatga qo'shildi ✅" : "Yozilmadi");
+        } catch (e) {
+          console.error("[telegram-webhook] missing-perfume", e);
+          note = "⚠️ Ro'yxatga yozib bo'lmadi, keyinroq qayta bosing.";
+          await answerCallback(cbId, "Xatolik");
+        }
+        if (chatId && messageId) {
+          await editTelegramMessage(chatId, messageId, escapeHtml(cq.message?.text || "") + `\n\n${note}`);
+        }
         return NextResponse.json({ ok: true });
       }
 

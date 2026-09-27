@@ -23,3 +23,14 @@ describe("missing-perfumes", () => {
     expect(normalizeMissingSlug("Тайгер  Булгари!")).toBe("тайгер-булгари");
   });
 });
+
+describe("callbackSlug / missingTitle", () => {
+  it("Telegram callback_data 64 baytdan oshmaydi (kirill ham)", async () => {
+    const { callbackSlug, missingTitle } = await import("./missing-perfumes");
+    const long = callbackSlug("очень-длинное-название-аромата-которое-не-влезает-в-лимит");
+    expect(new TextEncoder().encode("mpok_" + long).length).toBeLessThanOrEqual(64);
+    expect(long.endsWith("-")).toBe(false);
+    expect(callbackSlug("Creed-Viking")).toBe("creed-viking");
+    expect(missingTitle("creed-viking")).toBe("Creed Viking");
+  });
+});
