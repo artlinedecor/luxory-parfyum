@@ -26,7 +26,7 @@ export default function CatalogView() {
           {/* Sarlavha ixcham — oldin mahsulotlardan oldin yarim ekran bo'sh joy edi */}
           <div className="space-y-1.5">
             <h1 className="font-heading text-3xl sm:text-4xl text-foreground">
-              {t("catalog")} <span className="sr-only">— Toshkentda Original va Super Klon Atirlar | Parfume Lux</span>
+              {t("catalog")} <span className="sr-only">— Toshkentda Original va Premium Atirlar | Parfume Lux</span>
             </h1>
             <p className="text-sm text-muted-foreground">
               {t("collection_desc")}

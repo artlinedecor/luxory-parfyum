@@ -372,7 +372,7 @@ export default function CartPage() {
                   <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-snug">{item.product.title}</h3>
                   <div className="flex items-center gap-2">
                     <span className="eyebrow px-2 py-1 border border-border text-muted-foreground">
-                      {item.product.product_type === "original" ? "Original" : "Premium klon"}
+                      {item.product.product_type === "original" ? "Original" : "Premium atir"}
                     </span>
                   </div>
                   <p className="text-sm font-semibold text-foreground tabular-nums">

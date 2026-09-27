@@ -1,0 +1,46 @@
+import { describe, expect, it } from "vitest";
+import {
+  PROMO,
+  isPromoActive,
+  promoDaysLeft,
+  promoEndLabel,
+  promoOldPriceFor,
+} from "./promo";
+
+const END = Date.parse(PROMO.endsAt);
+
+describe("oktyabr aksiyasi", () => {
+  it("chegirma foizi narxlarga mos: 1 000 000 − 20% = 800 000", () => {
+    expect(PROMO.oldPriceUzs * (1 - PROMO.percent / 100)).toBe(PROMO.priceUzs);
+  });
+
+  it("endsAt gacha faol, bir soniya o'tgach nofaol", () => {
+    expect(isPromoActive(Date.parse("2026-09-27T12:00:00+05:00"))).toBe(true);
+    expect(isPromoActive(END)).toBe(true);
+    expect(isPromoActive(END + 1000)).toBe(false);
+  });
+
+  it("active: false bo'lsa muddatidan oldin ham o'chadi", () => {
+    expect(isPromoActive(END - 1000, { ...PROMO, active: false })).toBe(false);
+  });
+
+  it("eski narx faqat 800 000 lik atirga, faqat aksiya vaqtida", () => {
+    const on = isPromoActive(END - 1000);
+    expect(promoOldPriceFor(800_000, on)).toBe(1_000_000);
+    expect(promoOldPriceFor(2_420_000, on)).toBeNull(); // original atir
+    expect(promoOldPriceFor(1000, on)).toBeNull(); // test narx
+    expect(promoOldPriceFor(800_000, isPromoActive(END + 1000))).toBeNull();
+  });
+
+  it("qolgan kunlar Toshkent vaqtida: oxirgi kuni 1, tugagach 0", () => {
+    expect(promoDaysLeft(Date.parse("2026-10-31T00:00:01+05:00"))).toBe(1);
+    expect(promoDaysLeft(Date.parse("2026-10-30T23:59:00+05:00"))).toBe(2);
+    expect(promoDaysLeft(Date.parse("2026-09-27T10:00:00+05:00"))).toBe(35);
+    expect(promoDaysLeft(END + 1000)).toBe(0);
+  });
+
+  it("tugash sanasi matni", () => {
+    expect(promoEndLabel("uz")).toBe("31-oktyabrgacha");
+    expect(promoEndLabel("ru")).toBe("до 31 октября");
+  });
+});

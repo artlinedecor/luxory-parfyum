@@ -57,8 +57,9 @@ export function seoProductName(product: Product): string {
   return parts.filter(Boolean).join(" ").replace(/\s{2,}/g, " ").trim();
 }
 
+/** Mijozga ko'rinadigan tur: "klon" so'zi ishlatilmaydi (egasi, 2026-09-27) */
 export function productTypeLabel(product: Pick<Product, "product_type">): string {
-  return product.product_type === "original" ? "Original" : "Premium klon";
+  return product.product_type === "original" ? "Original atir" : "Premium atir";
 }
 
 export function productPriceUzs(product: Pick<Product, "price_usd" | "product_type">): number {
@@ -74,7 +75,7 @@ export function productMetaDescription(product: Product): string {
   const f = getFragranceView(product);
   const price = formatUzs(productPriceUzs(product)).replace(/ /g, " ");
   const notes = f.notes ? [...f.notes.top, ...f.notes.heart, ...f.notes.base].slice(0, 4) : [];
-  const lead = `${seoProductName(product)} — ${productTypeLabel(product).toLowerCase()} atir, ${price} so'm.`;
+  const lead = `${seoProductName(product)} — ${productTypeLabel(product).toLowerCase()}, ${price} so'm.`;
   const pay = " 3, 6 yoki 12 oyga bo'lib to'lash (Uzum Nasiya). Tez yetkazib berish, Toshkent.";
   const notesPart = notes.length ? ` Notalar: ${notes.join(", ")}.` : "";
   return (lead + notesPart + pay).slice(0, 300);
