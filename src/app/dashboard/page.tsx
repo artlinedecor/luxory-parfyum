@@ -69,6 +69,22 @@ export default function DashboardPage() {
     };
 
     loadDashboardData();
+
+    // Telefon brauzeri / o'rnatilgan ilova sahifani xotirada muzlatib qoldiradi:
+    // qaytib kirilganda soatlab eski raqamlar (masalan sverkadan oldingi
+    // "hozir turgan pul") ko'rinib turardi. Ekranga qaytishda qayta yuklaymiz.
+    const onVisible = () => {
+      if (document.visibilityState === "visible") loadDashboardData();
+    };
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) loadDashboardData();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("pageshow", onPageShow);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("pageshow", onPageShow);
+    };
   }, []);
 
   const stats = useMemo(() => {
