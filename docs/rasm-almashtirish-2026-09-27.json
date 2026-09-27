@@ -1,0 +1,668 @@
+[
+  {
+    "id": "b2585b50-e051-4f6e-b790-214a520f69ce",
+    "title": "Chanel Allure Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/b2585b50-e051-4f6e-b790-214a520f69ce.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/b2585b50-e051-4f6e-b790-214a520f69ce.jpg",
+    "source": "https://www.sephora.com/product/allure-P9549?skuId=388512",
+    "old_size": "300x400",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "6ddcdb3a-5923-49d3-82d2-fe0a231f35b2",
+    "title": "Dior J'adore Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/6ddcdb3a-5923-49d3-82d2-fe0a231f35b2.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/6ddcdb3a-5923-49d3-82d2-fe0a231f35b2.jpg",
+    "source": "https://www.sephora.com/product/j-adore-eau-de-parfum-P6430?skuId=2836880",
+    "old_size": "289x800",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "21c17b57-2907-4e16-ab29-28dccb8fb73e",
+    "title": "Dior Homme Intense Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/21c17b57-2907-4e16-ab29-28dccb8fb73e.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/21c17b57-2907-4e16-ab29-28dccb8fb73e.jpg",
+    "source": "https://www.sephora.com/product/dior-homme-intense-edp-P524935?skuId=2939486",
+    "old_size": "268x464",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "c59a9b59-de3b-46a8-8e2e-32ba59ba3d47",
+    "title": "Chanel Chance Eau Tendre Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/c59a9b59-de3b-46a8-8e2e-32ba59ba3d47.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/c59a9b59-de3b-46a8-8e2e-32ba59ba3d47.jpg",
+    "source": "https://www.sephora.com/product/chance-eau-tendre-P258612?skuId=1237379",
+    "old_size": "615x800",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "e5856c4a-b526-4c38-a701-501b484656e4",
+    "title": "YSL Black Opium Eau de Parfum 90 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/e5856c4a-b526-4c38-a701-501b484656e4.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/e5856c4a-b526-4c38-a701-501b484656e4.jpg",
+    "source": "https://www.sephora.com/product/black-opium-P394534?skuId=1688852",
+    "old_size": "555x776",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "51deaa5d-dccf-43e3-bf61-57b7b8b7b832",
+    "title": "Tom Ford Tobacco Vanille Eau de Parfum 50 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/51deaa5d-dccf-43e3-bf61-57b7b8b7b832.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/51deaa5d-dccf-43e3-bf61-57b7b8b7b832.jpg",
+    "source": "https://www.sephora.com/product/tobacco-vanille-P393151?skuId=1449289",
+    "old_size": "345x729",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "3a91eca2-ca1c-467b-bd9c-2dad920e9823",
+    "title": "PRADA PARADOXE VIRTUAL FLOWER 90ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/prada_paradoxe_virtual_flower_90ml_1784113736730.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/3a91eca2-ca1c-467b-bd9c-2dad920e9823.jpg",
+    "source": "https://www.sephora.com/product/prada-paradoxe-virtual-flower-eau-de-parfum-P512423?skuId=2799286",
+    "old_size": "500x500",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "77764c4b-58d3-4064-bf40-c7c3a4c03bd4",
+    "title": "Tom Ford Black Orchid Eau de Parfum 50 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/77764c4b-58d3-4064-bf40-c7c3a4c03bd4.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/77764c4b-58d3-4064-bf40-c7c3a4c03bd4.jpg",
+    "source": "https://www.sephora.com/product/black-orchid-P183301?skuId=1007723",
+    "old_size": "398x800",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "d00d2b9c-ae49-4a3e-8073-6ffec9dd7239",
+    "title": "Tom Ford Oud Wood Eau de Parfum 50 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/d00d2b9c-ae49-4a3e-8073-6ffec9dd7239.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/d00d2b9c-ae49-4a3e-8073-6ffec9dd7239.jpg",
+    "source": "https://www.sephora.com/product/oud-wood-P393167?skuId=1565902",
+    "old_size": "322x701",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "5138ed60-8dd9-43d9-b6af-9a4ed3f7a51d",
+    "title": "CHLOE NOMADE 75ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/chloe_nomade_75ml_1784113741359.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/5138ed60-8dd9-43d9-b6af-9a4ed3f7a51d.jpg",
+    "source": "https://www.sephora.com/product/nomade-eau-de-parfum-P428451?skuId=2037471",
+    "old_size": "600x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "af370234-1a34-413b-9e88-c877641b1f09",
+    "title": "YSL MYSLF 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/ysl_myslf_100ml_1784113706179.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/af370234-1a34-413b-9e88-c877641b1f09.jpg",
+    "source": "https://www.sephora.com/product/myslf-eau-de-parfum-P507223?skuId=2706273",
+    "old_size": "600x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "8c6cfaf5-1c6a-479b-af90-5d55d8d24061",
+    "title": "Giorgio Armani Code Eau de Toilette 125 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/8c6cfaf5-1c6a-479b-af90-5d55d8d24061.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/8c6cfaf5-1c6a-479b-af90-5d55d8d24061.jpg",
+    "source": "https://www.sephora.com/product/armani-code-eau-de-toilette-P505214?skuId=2644979",
+    "old_size": "279x783",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "ba36f991-bc22-4813-888f-e0f56b8aa3a5",
+    "title": "Versace Dylan Blue Pour Homme Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/ba36f991-bc22-4813-888f-e0f56b8aa3a5.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/ba36f991-bc22-4813-888f-e0f56b8aa3a5.jpg",
+    "source": "https://www.sephora.com/product/dylan-blue-P411325?skuId=1849207",
+    "old_size": "260x479",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "39386c4a-04cc-4465-a150-ced5b761ee52",
+    "title": "Paco Rabanne Invictus Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/39386c4a-04cc-4465-a150-ced5b761ee52.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/39386c4a-04cc-4465-a150-ced5b761ee52.jpg",
+    "source": "https://www.sephora.com/product/invictus-P389110?skuId=1605906",
+    "old_size": "500x676",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "76614d60-c8ad-40cf-9fd4-d557652fab00",
+    "title": "Versace Eros Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/76614d60-c8ad-40cf-9fd4-d557652fab00.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/76614d60-c8ad-40cf-9fd4-d557652fab00.jpg",
+    "source": "https://www.sephora.com/product/eros-P382751?skuId=1513225",
+    "old_size": "610x800",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "e84ef63d-188a-41ea-b827-1d0f3962e83d",
+    "title": "PACO RABANNE MILLION 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/paco_rabanne_million_100ml_1784113711640.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/e84ef63d-188a-41ea-b827-1d0f3962e83d.jpg",
+    "source": "https://www.sephora.com/product/1-million-P269120?skuId=1200773",
+    "old_size": "600x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "aaa3bd3c-e7ba-47c7-a7b5-20bb2baff342",
+    "title": "Jean Paul Gaultier Le Male Eau de Toilette 125 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/aaa3bd3c-e7ba-47c7-a7b5-20bb2baff342.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/aaa3bd3c-e7ba-47c7-a7b5-20bb2baff342.jpg",
+    "source": "https://www.sephora.com/product/jean-paul-gaultier-le-male-eau-de-toilette-P510785?skuId=2022820",
+    "old_size": "254x527",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "e5ab2418-6800-4357-9173-ed354dbf9b31",
+    "title": "Carolina Herrera Good Girl Eau de Parfum 80 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/e5ab2418-6800-4357-9173-ed354dbf9b31.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/e5ab2418-6800-4357-9173-ed354dbf9b31.jpg",
+    "source": "https://www.sephora.com/product/good-girl-P420533?skuId=1960707",
+    "old_size": "580x866",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "45aabe41-9537-400f-80f9-777c19125c34",
+    "title": "Burberry Her Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/45aabe41-9537-400f-80f9-777c19125c34.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/45aabe41-9537-400f-80f9-777c19125c34.jpg",
+    "source": "https://www.sephora.com/product/her-eau-de-parfum-P437631?skuId=2160455",
+    "old_size": "430x540",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "9a7c2d9e-5bdc-465a-99f6-bd1aa261e24c",
+    "title": "BLEU DE CHANEL PARFUM",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/9a7c2d9e-5bdc-465a-99f6-bd1aa261e24c.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/9a7c2d9e-5bdc-465a-99f6-bd1aa261e24c.jpg",
+    "source": "https://www.sephora.com/product/bleu-de-chanel-parfum-P432089?skuId=2065423",
+    "old_size": "381x458",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "bfd3f45c-fe55-4f21-9eca-75ec5fcde273",
+    "title": "Maison Margiela Replica By the Fireplace Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/bfd3f45c-fe55-4f21-9eca-75ec5fcde273.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/bfd3f45c-fe55-4f21-9eca-75ec5fcde273.jpg",
+    "source": "https://www.sephora.com/product/replica-by-fireplace-P404758?skuId=1788058",
+    "old_size": "493x657",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "8630f1f8-2b4d-46ac-9744-c0dd1c381e77",
+    "title": "Dior Sauvage Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/8630f1f8-2b4d-46ac-9744-c0dd1c381e77.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/8630f1f8-2b4d-46ac-9744-c0dd1c381e77.jpg",
+    "source": "https://www.sephora.com/product/sauvage-eau-de-parfum-P428500?skuId=2038123",
+    "old_size": "401x537",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "fd2e7236-9cbc-4054-9035-c7b12689829e",
+    "title": "GIORGIO ARMANI ACQUA DI GIO 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/fd2e7236-9cbc-4054-9035-c7b12689829e.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/fd2e7236-9cbc-4054-9035-c7b12689829e.jpg",
+    "source": "https://www.sephora.com/product/acqua-di-gio-pour-homme-P12430?skuId=397299",
+    "old_size": "353x478",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "1d06bc6c-e4ec-4f6f-8f4f-7d9411ace6c1",
+    "title": "Lancome La Vie Est Belle Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/1d06bc6c-e4ec-4f6f-8f4f-7d9411ace6c1.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/1d06bc6c-e4ec-4f6f-8f4f-7d9411ace6c1.jpg",
+    "source": "https://www.sephora.com/product/la-vie-est-belle-P375939?skuId=1459999",
+    "old_size": "585x585",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "87cc7ba0-c7fd-4da0-adf3-6190684c0a0a",
+    "title": "Dior Hypnotic Poison Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/87cc7ba0-c7fd-4da0-adf3-6190684c0a0a.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/87cc7ba0-c7fd-4da0-adf3-6190684c0a0a.jpg",
+    "source": "https://www.sephora.com/product/hypnotic-poison-P4484?skuId=260885",
+    "old_size": "367x464",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "1d9dbfb0-80cc-4c9e-aa93-11123dad5a04",
+    "title": "Chanel Bleu de Chanel Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/1d9dbfb0-80cc-4c9e-aa93-11123dad5a04.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/1d9dbfb0-80cc-4c9e-aa93-11123dad5a04.jpg",
+    "source": "https://www.sephora.com/product/bleu-de-chanel-eau-de-parfum-P394949?skuId=1695972",
+    "old_size": "300x400",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "e8adbc9b-62a8-44c6-9b06-b7a26bfdd1d9",
+    "title": "MAISON MARGIELA REPLICA BEACH WALK 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/maison_margiela_replica_beach_walk_100ml_1784113734613.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/e8adbc9b-62a8-44c6-9b06-b7a26bfdd1d9.jpg",
+    "source": "https://www.sephora.com/product/replica-beach-walk-P385358?skuId=1593144",
+    "old_size": "600x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "536f0f2e-1c53-4dda-9ab7-9b84c21ee714",
+    "title": "PRADA PARADOXE INTENSE 90ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/prada_paradoxe_intense_90ml_1784113736141.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/536f0f2e-1c53-4dda-9ab7-9b84c21ee714.jpg",
+    "source": "https://www.sephora.com/product/paradoxe-intense-eau-de-parfum-P507819?skuId=2690352",
+    "old_size": "500x500",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "68681cb3-147a-4390-966b-a399561a6b8f",
+    "title": "YSL Y L'ELIXIR 60ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/68681cb3-147a-4390-966b-a399561a6b8f.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/68681cb3-147a-4390-966b-a399561a6b8f.jpg",
+    "source": "https://www.sephora.com/product/yves-saint-laurent-y-elixir-P510617?skuId=2738789",
+    "old_size": "542x542",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "a2cb8ec7-5066-4292-9a54-25b38681d126",
+    "title": "VIKTOR & ROLF SPICEBOMB EXTREME 90ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/a2cb8ec7-5066-4292-9a54-25b38681d126.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/a2cb8ec7-5066-4292-9a54-25b38681d126.jpg",
+    "source": "https://www.sephora.com/product/spicebomb-extreme-P405501?skuId=1798479",
+    "old_size": "461x777",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "666c23c8-8c3a-4ace-9ef6-1b88c0687f46",
+    "title": "VIKTOR & ROLF SPICEBOMB 90ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/666c23c8-8c3a-4ace-9ef6-1b88c0687f46.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/666c23c8-8c3a-4ace-9ef6-1b88c0687f46.jpg",
+    "source": "https://www.sephora.com/product/spicebomb-P376737?skuId=1463207",
+    "old_size": "418x720",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "2f5dc2fc-b526-4dc5-8812-4bdfb84012f2",
+    "title": "Versace Bright Crystal",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/2f5dc2fc-b526-4dc5-8812-4bdfb84012f2.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/2f5dc2fc-b526-4dc5-8812-4bdfb84012f2.jpg",
+    "source": "https://www.sephora.com/product/bright-crystal-P163103?skuId=1063619",
+    "old_size": "470x521",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "40697d2a-eafb-4f44-b18a-ee0bbfd00a87",
+    "title": "VERSACE CRYSTAL NOIR",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/40697d2a-eafb-4f44-b18a-ee0bbfd00a87.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/40697d2a-eafb-4f44-b18a-ee0bbfd00a87.jpg",
+    "source": "https://www.sephora.com/product/crystal-noir-P307000?skuId=1406586",
+    "old_size": "720x720",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "e308040a-213a-4120-90d2-cfa951018fd1",
+    "title": "BYREDO BAL D’AFRIQUE",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/e308040a-213a-4120-90d2-cfa951018fd1.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/e308040a-213a-4120-90d2-cfa951018fd1.jpg",
+    "source": "https://www.sephora.com/product/bal-d-afrique-edp-P520060?skuId=2924793",
+    "old_size": "400x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "628e4768-9a6a-4f28-b4d4-e8c47453e171",
+    "title": "COCO MADEMOISELLE CHANEL",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/628e4768-9a6a-4f28-b4d4-e8c47453e171.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/628e4768-9a6a-4f28-b4d4-e8c47453e171.jpg",
+    "source": "https://www.sephora.com/product/coco-mademoiselle-P12495?skuId=513168",
+    "old_size": "399x597",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "4bf3913d-3c34-4464-8966-0b8274bd2578",
+    "title": "DIOR SAUVAGE ELIXIR 60 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/4bf3913d-3c34-4464-8966-0b8274bd2578.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/4bf3913d-3c34-4464-8966-0b8274bd2578.jpg",
+    "source": "https://www.sephora.com/product/dior-sauvage-elixir-P475526?skuId=2467454",
+    "old_size": "425x720",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "7898c8f8-fc78-45fa-9fea-5b223b544225",
+    "title": "CHANEL COCO NOIR 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/7898c8f8-fc78-45fa-9fea-5b223b544225.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/7898c8f8-fc78-45fa-9fea-5b223b544225.jpg",
+    "source": "https://www.sephora.com/product/coco-noir-P392141?skuId=1663640",
+    "old_size": "300x423",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "6487330d-7901-45ed-84c3-478b935b1dd5",
+    "title": "KILIAN CAN'T STOP LOVING YOU 50ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/kilian_can_t_stop_loving_you_50ml_1784113735144.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/6487330d-7901-45ed-84c3-478b935b1dd5.jpg",
+    "source": "https://www.sephora.com/product/can-t-stop-loving-you-P504776?skuId=2600542",
+    "old_size": "600x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "31ef242d-3bbf-4f31-a53a-4cd969c144f9",
+    "title": "Giorgio Armani Stronger With You Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/31ef242d-3bbf-4f31-a53a-4cd969c144f9.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/31ef242d-3bbf-4f31-a53a-4cd969c144f9.jpg",
+    "source": "https://www.sephora.com/product/emporio-armani-stronger-with-you-P421783?skuId=1977628",
+    "old_size": "500x676",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "db2e44b8-61b2-4883-a04e-17f4d40d3c01",
+    "title": "YSL La Nuit de L'Homme Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/db2e44b8-61b2-4883-a04e-17f4d40d3c01.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/db2e44b8-61b2-4883-a04e-17f4d40d3c01.jpg",
+    "source": "https://www.sephora.com/product/la-nuit-de-l-homme-P243320?skuId=1200716",
+    "old_size": "379x591",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "b581ae7a-822f-45c0-be7e-5c9395e06d95",
+    "title": "YSL Y 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/b581ae7a-822f-45c0-be7e-5c9395e06d95.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/b581ae7a-822f-45c0-be7e-5c9395e06d95.jpg",
+    "source": "https://www.sephora.com/product/y-eau-de-parfum-P436005?skuId=2099885",
+    "old_size": "257x516",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "a9325aa5-c16e-428a-9234-fd412f271228",
+    "title": "Montale Intense Cafe Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/a9325aa5-c16e-428a-9234-fd412f271228.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/a9325aa5-c16e-428a-9234-fd412f271228.jpg",
+    "source": "https://www.sephora.com/product/intense-cafe-eau-de-parfum-P513027?skuId=2821981",
+    "old_size": "750x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "64b08a6d-f343-499f-88a5-413fa575456e",
+    "title": "Tom Ford Ombre Leather Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/64b08a6d-f343-499f-88a5-413fa575456e.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/64b08a6d-f343-499f-88a5-413fa575456e.jpg",
+    "source": "https://www.sephora.com/product/ombre-leather-P433663?skuId=2101327",
+    "old_size": "700x700",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "bc373b43-2e6e-4768-a0be-2a684cd88ec3",
+    "title": "Kilian Love Don't Be Shy Eau de Parfum 50 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/bc373b43-2e6e-4768-a0be-2a684cd88ec3.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/bc373b43-2e6e-4768-a0be-2a684cd88ec3.jpg",
+    "source": "https://www.sephora.com/product/love-don-t-be-shy-P429621?skuId=2320133",
+    "old_size": "1000x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "27ac5f26-126d-47c6-afd8-5ec34e846fbe",
+    "title": "Kilian Angels' Share Eau de Parfum 50 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/27ac5f26-126d-47c6-afd8-5ec34e846fbe.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/27ac5f26-126d-47c6-afd8-5ec34e846fbe.jpg",
+    "source": "https://www.sephora.com/product/kilian-angels-share-eau-de-parfum-P465332?skuId=2362838",
+    "old_size": "887x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "a1a2d5b8-3cc5-4240-904f-bf7a596d115a",
+    "title": "Dior Miss Dior Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/a1a2d5b8-3cc5-4240-904f-bf7a596d115a.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/a1a2d5b8-3cc5-4240-904f-bf7a596d115a.jpg",
+    "source": "https://www.sephora.com/product/miss-dior-eau-de-parfum-P525938?skuId=3008331",
+    "old_size": "955x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "ddcd0640-1d0b-4376-ab4f-dcb928399229",
+    "title": "Lancome Idole Eau de Parfum 50 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/ddcd0640-1d0b-4376-ab4f-dcb928399229.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/ddcd0640-1d0b-4376-ab4f-dcb928399229.jpg",
+    "source": "https://www.sephora.com/product/idole-P448111?skuId=2249621",
+    "old_size": "1000x953",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "1c39a59a-fc19-41e7-ad37-7a1a1fc48559",
+    "title": "Gucci Bloom Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/1c39a59a-fc19-41e7-ad37-7a1a1fc48559.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/1c39a59a-fc19-41e7-ad37-7a1a1fc48559.jpg",
+    "source": "https://www.sephora.com/product/bloom-eau-de-parfum-for-her-P422093?skuId=1964840",
+    "old_size": "820x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "f5c6a9b6-e86a-4fdd-a020-b914de58bb4d",
+    "title": "Gucci Flora Gorgeous Gardenia Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/f5c6a9b6-e86a-4fdd-a020-b914de58bb4d.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/f5c6a9b6-e86a-4fdd-a020-b914de58bb4d.jpg",
+    "source": "https://www.sephora.com/product/gucci-flora-by-gucci-gorgeous-gardenia-eau-de-parfum-P474051?skuId=2470714",
+    "old_size": "632x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "95a57a34-96c5-4b97-a1b6-071862da3059",
+    "title": "Paco Rabanne Phantom Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/95a57a34-96c5-4b97-a1b6-071862da3059.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/95a57a34-96c5-4b97-a1b6-071862da3059.jpg",
+    "source": "https://www.sephora.com/product/paco-rabanne-phantom-eau-de-toilette-P475147?skuId=2468189",
+    "old_size": "1000x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "58640daa-f38b-49be-8e9b-f0509c8d256a",
+    "title": "Valentino Donna Born in Roma Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/58640daa-f38b-49be-8e9b-f0509c8d256a.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/58640daa-f38b-49be-8e9b-f0509c8d256a.jpg",
+    "source": "https://www.sephora.com/product/born-in-roma-P449116?skuId=2249696",
+    "old_size": "802x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "0fee1f87-073a-4dd8-96f5-03525624a4c0",
+    "title": "Valentino Uomo Born in Roma Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/0fee1f87-073a-4dd8-96f5-03525624a4c0.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/0fee1f87-073a-4dd8-96f5-03525624a4c0.jpg",
+    "source": "https://www.sephora.com/product/valentino-uomo-born-in-roma-P452943?skuId=2302099",
+    "old_size": "652x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "91aa7785-ecdf-44c1-8904-9e3c8fcaf838",
+    "title": "Dolce & Gabbana Light Blue Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/91aa7785-ecdf-44c1-8904-9e3c8fcaf838.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/91aa7785-ecdf-44c1-8904-9e3c8fcaf838.jpg",
+    "source": "https://www.sephora.com/product/light-blue-eau-de-toilette-P516183?skuId=2863280",
+    "old_size": "677x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "d00b9988-0f88-42df-9b1d-ab3a56d99451",
+    "title": "Chanel Allure Homme Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/d00b9988-0f88-42df-9b1d-ab3a56d99451.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/d00b9988-0f88-42df-9b1d-ab3a56d99451.jpg",
+    "source": "https://www.sephora.com/product/allure-homme-P12539?skuId=274555",
+    "old_size": "1000x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "d6fdbcd9-5643-46aa-b4ee-e1d591848d7e",
+    "title": "PARFUMS DE MARLY ALTHAIR 125ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/parfums_de_marly_althair_125ml_1784113710988.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/d6fdbcd9-5643-46aa-b4ee-e1d591848d7e.jpg",
+    "source": "https://parfums-de-marly.com/products/althair",
+    "old_size": "600x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "b8e50646-b1f6-42bd-abd0-3b95b18ba85f",
+    "title": "PARFUMS DE MARLY CASSILI 75ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/b8e50646-b1f6-42bd-abd0-3b95b18ba85f.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/b8e50646-b1f6-42bd-abd0-3b95b18ba85f.jpg",
+    "source": "https://parfums-de-marly.com/products/cassili",
+    "old_size": "355x500",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "96017648-8543-45b2-9c54-1c09db345ec7",
+    "title": "PARFUMS DE MARLY PEGASUS EXCLUSIF 125ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/96017648-8543-45b2-9c54-1c09db345ec7.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/96017648-8543-45b2-9c54-1c09db345ec7.jpg",
+    "source": "https://parfums-de-marly.com/products/pegasus-exclusif",
+    "old_size": "720x720",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "fa712418-2599-4ead-ab85-62160f169c42",
+    "title": "Parfums de Marly Layton Eau de Parfum 125 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/fa712418-2599-4ead-ab85-62160f169c42.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/fa712418-2599-4ead-ab85-62160f169c42.jpg",
+    "source": "https://parfums-de-marly.com/products/layton",
+    "old_size": "444x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "a8a9947b-6588-474f-8f4b-7f1163bd0a76",
+    "title": "Parfums de Marly Herod Eau de Parfum 125 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/a8a9947b-6588-474f-8f4b-7f1163bd0a76.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/a8a9947b-6588-474f-8f4b-7f1163bd0a76.jpg",
+    "source": "https://parfums-de-marly.com/products/herod",
+    "old_size": "800x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "9119994d-acf6-4497-9325-9881eb581777",
+    "title": "Initio Side Effect Eau de Parfum 90 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/9119994d-acf6-4497-9325-9881eb581777.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/9119994d-acf6-4497-9325-9881eb581777.jpg",
+    "source": "https://initioparfums.com/products/side-effect",
+    "old_size": "229x405",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "782621e0-f8b8-4e40-aeec-c2ea9dd91619",
+    "title": "Xerjoff Naxos Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/782621e0-f8b8-4e40-aeec-c2ea9dd91619.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/782621e0-f8b8-4e40-aeec-c2ea9dd91619.jpg",
+    "source": "https://xerjoff.com/products/naxos-eau-de-parfum",
+    "old_size": "774x1000",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "26a58fcf-8450-4b15-9b6a-a3b6f3190f21",
+    "title": "XERJOFF TORINO 21 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/26a58fcf-8450-4b15-9b6a-a3b6f3190f21.jpg?v=3",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/26a58fcf-8450-4b15-9b6a-a3b6f3190f21.jpg",
+    "source": "https://xerjoff.com/products/torino21-eau-de-parfum",
+    "old_size": "558x771",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "928b4a7b-3c82-4c34-ae41-c3aae305c95b",
+    "title": "Xerjoff Erba Pura Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/928b4a7b-3c82-4c34-ae41-c3aae305c95b.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/928b4a7b-3c82-4c34-ae41-c3aae305c95b.jpg",
+    "source": "https://xerjoff.com/products/erba-pura-eau-de-parfum",
+    "old_size": "706x781",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "f0f386a1-974a-4380-ae53-bf33735dfebf",
+    "title": "VILHELM PARFUMERIE CHIMILKA 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/f0f386a1-974a-4380-ae53-bf33735dfebf.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/f0f386a1-974a-4380-ae53-bf33735dfebf.jpg",
+    "source": "https://www.vilhelmparfumerie.com/products/chimilka",
+    "old_size": "720x720",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "b0936140-8eeb-4ebf-a834-1ed3c0d63587",
+    "title": "THOMAS KOSMALA №4 CANDY 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/thomas_kosmala__4_candy_100ml_1784113680836.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/b0936140-8eeb-4ebf-a834-1ed3c0d63587.jpg",
+    "source": "https://www.thomaskosmala.com/products/candy-maria",
+    "old_size": "600x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "2822cb1f-6d52-4225-8955-8919cad548a5",
+    "title": "MOLINARD LE REVE NIRMALA 75ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/molinard_le_reve_nirmala_75ml_1784113722913.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/2822cb1f-6d52-4225-8955-8919cad548a5.jpg",
+    "source": "https://www.molinard.com/products/nirmala",
+    "old_size": "458x458",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "65f12743-918d-4d65-b970-eef69d2f91fd",
+    "title": "MOLINARD NIRMALA 75ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/molinard_nirmala_75ml_1784113723397.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/65f12743-918d-4d65-b970-eef69d2f91fd.jpg",
+    "source": "https://www.molinard.com/products/nirmala-1",
+    "old_size": "500x500",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "8832c622-0f1e-4622-a8e8-51c0de8ec91d",
+    "title": "LES SOEURS DE NOE FORBIDDEN NECTAR 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/8832c622-0f1e-4622-a8e8-51c0de8ec91d_c.webp",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/8832c622-0f1e-4622-a8e8-51c0de8ec91d.jpg",
+    "source": "https://www.lessoeursdenoe.com/products/forbidden-nectar",
+    "old_size": "600x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "cabb6fd8-ce7c-4702-9716-eee0b92d5bdf",
+    "title": "LES SOEURS DE NOE RED BERRIES ELIXIR 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/cabb6fd8-ce7c-4702-9716-eee0b92d5bdf_c.webp",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/cabb6fd8-ce7c-4702-9716-eee0b92d5bdf.jpg",
+    "source": "https://www.lessoeursdenoe.com/products/red-berries-elixir",
+    "old_size": "600x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "59ac38c0-ee1d-4843-94b1-e314a5b454b9",
+    "title": "ROSENDO MATEU INCENSE WOOD 100ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/rosendo_mateu_incense_wood_100ml_1784113682577.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/59ac38c0-ee1d-4843-94b1-e314a5b454b9.jpg",
+    "source": "https://www.perfumeonline.ca/products/rosendo-mateu-incense-wood",
+    "old_size": "600x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "ee803a1f-dfc1-4ab4-b97e-4aefdc9a7b4b",
+    "title": "ORMONDE JAYNE 3. TSARINA INTENSIVO 50ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-26/ee803a1f-dfc1-4ab4-b97e-4aefdc9a7b4b.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/ee803a1f-dfc1-4ab4-b97e-4aefdc9a7b4b.jpg",
+    "source": "https://www.perfumeonline.ca/products/ormonde-jayne-tsarina-intensivo",
+    "old_size": "400x400",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "6d7c63fd-fef5-4540-8d1b-a648ccadfd7f",
+    "title": "KILIAN GOLD KNIGHT 50ML",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/kilian_gold_knight_50ml_1784113695015.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/6d7c63fd-fef5-4540-8d1b-a648ccadfd7f.jpg",
+    "source": "https://www.perfumeonline.ca/products/kilian-gold-knight",
+    "old_size": "600x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "8cb0ad18-4df1-4193-ba9a-69584818ca67",
+    "title": "Carolina Herrera 212 VIP Men Eau de Toilette 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/8cb0ad18-4df1-4193-ba9a-69584818ca67.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/8cb0ad18-4df1-4193-ba9a-69584818ca67.jpg",
+    "source": "https://www.notino.co.uk/carolina-herrera/212-vip-men-eau-de-toilette-for-men/p-75296/",
+    "old_size": "450x600",
+    "new_size": "900x1200"
+  },
+  {
+    "id": "89ad4a78-d319-449c-b073-da57607c208c",
+    "title": "Giorgio Armani Si Eau de Parfum 100 ml",
+    "old_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/added-2026-09-26/89ad4a78-d319-449c-b073-da57607c208c.jpg",
+    "new_image_url": "https://zfcfqkzqvfttzgthnqpo.supabase.co/storage/v1/object/public/product-images/public/replaced-2026-09-27/89ad4a78-d319-449c-b073-da57607c208c.jpg",
+    "source": "https://www.notino.co.uk/armani/si-eau-de-parfum-for-women/p-405484/",
+    "old_size": "341x511",
+    "new_size": "900x1200"
+  }
+]
