@@ -39,3 +39,16 @@ Bot: Instagram @elore_parfumes, botId `01a0cf0f-4962-716b-a290-6dde8241ce2b`. AI
 - Tugmalar: Instagram DM'da URL tugma avtomatizatsiya xabarida bo'ladi ("Atirni ko'rish",
   "Bo'lib to'lash"). AI agent o'zi faqat tezkor javob tugmalari (`generateButtons`) yasaydi.
 - Video joylangandan keyin qilinadi — media ID kerak.
+
+## Har bir atirga statik KB yozuvi (2026-09-27)
+- "fast" model havolani o'zi yasashda adashadi, statik yozuv esa ishonchli ishlaydi. Shuning uchun
+  katalogdagi har bir atirga alohida yozuv qo'shildi (228 ta yangi + 14 ta oldingi, jami 270 yozuv).
+- Format: savol — `<Nom> bormi? <lotin xato yozilishi>, <o'zbek kirill>, <ruscha> есть?`;
+  javob — `Ha, bor 😊 <Nom> — <hid yo'nalishi>. Narxi 800 000 so'm, bo'lib to'lash mumkin, hozir 0 so'm.`
+  + bo'sh qator + `https://parfumelux.uz/a/<slug>`. Hid yo'nalishi faqat bazadagi notalardan; notalar yo'q bo'lsa yozilmaydi.
+- Har bir slug jonli tekshirilgan: `/a/<slug>` aynan shu mahsulotning `/catalog/<id>` sahifasiga olib boradi.
+  Ro'yxat, datasetId va slug'lar: `docs/chatplace-kb-atirlar-2026-09-27.json`.
+- **Yangi atir qo'shilsa, unga ham shu formatda yozuv qo'shish va global qoidadagi KATALOG ro'yxatiga nomini qo'shish kerak.**
+  Atir o'chirilsa yoki tugasa — uning yozuvini ham o'chirish.
+- Qo'shilmaganlar: Bleu de Chanel EDP (mavjud "Bleu de Chanel" yozuvi Parfum'ga olib boradi) va
+  Clive Christian XXI Art Deco Blonde Amber (Blonde Amber bilan takror).
