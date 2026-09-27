@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Heart, Truck, ShieldCheck, CreditCard, Smartphone } from "lucide-react";
+import { ChevronLeft, Heart, Truck, ShieldCheck, CreditCard, Smartphone, Timer } from "lucide-react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n-context";
@@ -30,6 +30,7 @@ import FragrancePyramid from "@/components/FragrancePyramid";
 import AccordBars from "@/components/AccordBars";
 import { UzumMark } from "@/components/PaymentLogos";
 import { PromoOldPrice, PromoPercentBadge } from "@/components/PromoPrice";
+import PromoCountdown from "@/components/PromoCountdown";
 import { promoEndLabel, promoOldPriceFor } from "@/config/promo";
 import { usePromoActive } from "@/lib/use-promo";
 
@@ -155,13 +156,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         <button
           type="button"
           onClick={() => handleBuyNow("uzum")}
-          className={`btn btn-uzum flex-1 normal-case tracking-normal text-sm ${compact ? "min-h-[52px] px-4" : ""}`}
+          className={`btn btn-uzum cta-glint flex-1 normal-case tracking-normal text-sm ${compact ? "min-h-[52px] px-4" : ""}`}
         >
           <UzumMark size={22} />
           {ru ? "Купить в рассрочку" : "Bo'lib to'lash"}
         </button>
       ) : (
-        <button type="button" onClick={() => handleBuyNow("card")} className={`btn btn-primary flex-1 ${compact ? "min-h-[52px] px-4" : ""}`}>
+        <button type="button" onClick={() => handleBuyNow("card")} className={`btn btn-primary cta-glint flex-1 ${compact ? "min-h-[52px] px-4" : ""}`}>
           {ru ? "Оформить заказ" : "Buyurtma berish"}
         </button>
       )}
@@ -202,7 +203,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   return (
     <>
       <Header />
-      <main className="min-h-screen pt-[4.5rem] sm:pt-24 pb-44 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+      <main className="min-h-screen pt-[4.5rem] sm:pt-24 pb-52 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
         {/* Orqaga */}
         <Link
           href="/catalog"
@@ -299,13 +300,16 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             {/* Narx va bo'lib to'lash */}
             <div className="space-y-2.5">
               {oldPriceUzs && (
-                <p className="flex items-center gap-2 text-[13px] font-semibold text-[#4b00c7] dark:text-[#b58cff]">
-                  <PromoPercentBadge />
-                  <span>
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[13px]">
+                  <PromoPercentBadge shine />
+                  <span className="font-semibold text-[#4b00c7] dark:text-[#b58cff]" title={promoEndLabel(ru ? "ru" : "uz")}>
                     {ru ? "Октябрьская акция" : "Oktyabr aksiyasi"}
-                    <span className="font-normal text-muted-foreground"> · {promoEndLabel(ru ? "ru" : "uz")}</span>
                   </span>
-                </p>
+                  {/* Qaytarib sanash — joy band, raqamlar mount'dan keyin */}
+                  <span className="ml-auto inline-flex min-h-[26px] items-center rounded-full bg-[#1d1433] px-2.5 text-white dark:bg-white/10">
+                    <PromoCountdown lang={ru ? "ru" : "uz"} variant="compact" />
+                  </span>
+                </div>
               )}
               <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <span className="text-4xl font-semibold text-foreground tabular-nums tracking-tight">{formatUzs(priceUzs)}</span>
@@ -339,7 +343,20 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </ul>
 
             {/* Harakatlar — desktop'da shu yerda, mobil'da pastki panelda */}
-            <div className="hidden md:flex gap-2.5">{buyButtons(false)}</div>
+            <div className="hidden md:block">
+              <div className="flex gap-2.5">{buyButtons(false)}</div>
+              {UZUM_ENABLED && (
+                <div className="mt-3 rounded-xl bg-[#6100FF]/[0.06] px-4 py-3">
+                  <p className="text-sm font-semibold text-foreground">
+                    {ru ? "Закажите сегодня — сейчас платите 0 сум" : "Bugun buyurtma bering — hozir 0 so'm to'laysiz"}
+                  </p>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    {/* "3 · 6 · 12 oy" — yuqoridagi Uzum satrida bor, takrorlanmaydi */}
+                    {ru ? "Карта не нужна · телефон + SMS · 2 минуты" : "Karta shart emas · telefon + SMS · 2 daqiqa"}
+                  </p>
+                </div>
+              )}
+            </div>
 
             <div className="flex gap-2.5">
               <button
@@ -450,8 +467,16 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         className="fixed inset-x-0 z-40 md:hidden border-t border-border bg-background/95 backdrop-blur-md px-4 pt-2.5 pb-2.5"
         style={{ bottom: "calc(4.25rem + env(safe-area-inset-bottom))" }}
       >
-        <div className="flex items-center justify-between text-xs mb-2">
-          <span className="text-muted-foreground truncate pr-2">{displayName}</span>
+        <div className="flex items-center justify-between gap-2 text-xs mb-2">
+          {oldPriceUzs ? (
+            /* Aksiya vaqtida nom o'rnida — tugashigacha qolgan vaqt (ixcham) */
+            <span className="inline-flex min-w-0 items-center gap-1 text-[#4b00c7] dark:text-[#b58cff]">
+              <Timer aria-hidden className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+              <PromoCountdown lang={ru ? "ru" : "uz"} variant="compact" />
+            </span>
+          ) : (
+            <span className="text-muted-foreground truncate pr-2">{displayName}</span>
+          )}
           <span className="whitespace-nowrap">
             {oldPriceUzs && (
               <PromoOldPrice amount={oldPriceUzs} ru={ru} className="mr-1.5 text-muted-foreground" />
@@ -460,6 +485,14 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </span>
         </div>
         <div className="flex gap-2">{buyButtons(true)}</div>
+        {UZUM_ENABLED && (
+          <p className="mt-1.5 truncate text-center text-[11px] leading-tight text-muted-foreground">
+            <b className="font-semibold text-foreground">
+              {ru ? "Закажите сегодня — сейчас 0 сум" : "Bugun buyurtma bering — hozir 0 so'm"}
+            </b>
+            {ru ? " · карта не нужна" : " · karta shart emas"}
+          </p>
+        )}
       </div>
       <BottomNav />
       <div className="h-20 md:hidden" />

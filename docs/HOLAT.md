@@ -48,6 +48,11 @@ Sabablari va keyingi ish (tartib bo'yicha):
 - Tugaydi: **2026-10-31 23:59 (Toshkent)** — o'zi yo'qoladi. Sozlama: `src/config/promo.ts`
   (`active: false` — muddatidan oldin o'chirish). Bosh sahifa ISR 1 soat (`src/app/page.tsx`).
 - Mijozga "klon" yozilmaydi — "Premium atir" (seo, i18n, savat, meta, llms.txt).
+- Kuchaytirildi (PR "aksiya-countdown"): countdown kun·soat·daqiqa (lenta, narx bloki, pastki panel —
+  `PromoCountdown.tsx`), "Bugun buyurtma bering — hozir 0 so'm" satrlari, CSS motion
+  (−20% yaltirash, CTA shimmer, raqam almashuvi, lenta kirishi, kartalar scroll'da) — reduced-motion'da o'chadi.
+  Lenta Suspense'dan chiqarildi: React 19.2 katta Suspense bo'lagini kechiktirib CLS 0.27 berardi.
+  Bosh sahifada qolgan CLS ~0.09 — hero sarlavhasi shrift almashuvida qator o'zgaradi (eski muammo).
 
 ## Egasi qarorlari (buzmang)
 - Mijozga faqat tasdiqlangan va'dalar: "Tez yetkazib berish", "Telefon + SMS · 2 daqiqa",

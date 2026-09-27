@@ -40,11 +40,12 @@ export default function HeroSection({ productCount, products }: { productCount: 
   return (
     <section id="hero" className="px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24">
       <div className="mx-auto max-w-6xl">
-        {/* Oktyabr aksiyasi (config/promo.ts). Suspense: keshlangan HTML aksiya
-            tugagandan keyin ochilsa, nomuvofiqlik faqat shu bo'lakda tuzatiladi */}
-        <Suspense fallback={null}>
-          <PromoBanner />
-        </Suspense>
+        {/* Oktyabr aksiyasi (config/promo.ts). Suspense'ga O'RALMAYDI: React 19.2
+            katta (~1 KB+) Suspense bo'lagini HTML oxiriga chiqarib, keyinroq
+            joyiga qo'yadi — birinchi kadrdan keyin lenta "tushib" hero'ni pastga
+            suradi (CLS ~0.27, 375px). Tugagan aksiya keshlangan HTML'da qolsa,
+            React bir marta client'da qayta chizadi — xato emas. */}
+        <PromoBanner />
 
         <div className="relative overflow-hidden rounded-[28px] bg-[#6100ff] text-white">
           {/* Yumshoq doiralar — tekis rang zerikarli bo'lmasin */}
