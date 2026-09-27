@@ -61,6 +61,10 @@ Sabablari va keyingi ish (tartib bo'yicha):
 - 49 ta mashhur atir qo'shildi (Tygar, Miss Dior, Allure...) — `docs/yangi-atirlar-2026-09-26.json`
   (rasm va notalar Fragrantica'dan, rasm `product-images/public/added-2026-09-26/`). Yana 2 takroriy yashirildi — `docs/takroriy-atirlar-2-2026-09-26.json`.
   Eski yashirin kartochkalar (Tygar ×2, J'adore, Chance Eau Tendre) yashirinligicha qoldi.
+- 2026-09-27: 74 ta past sifatli/noto'g'ri rasm almashtirildi (Chanel Allure 300×400 → 900×1200 va h.k.; Acqua di Giò'da
+  Profondo flakoni turgan edi) — `docs/rasm-almashtirish-2026-09-27.json`, fayllar `product-images/public/replaced-2026-09-27/`.
+  Manba: Sephora, brend saytlari (PdM, Xerjoff, Initio...), Notino. Hamma rasm 900×1200 oq kanvas, faqat flakon.
+  Qolganlari (Chase, HFC, Milton-Lloyd, LV, Clive Christian, Amouage, Creed va b.) uchun oq fonli, qutisiz yirik rasm topilmadi.
 
 ## Hisob-kitob (dashboard)
 - Buxgalteriya kursi 11 870 (dashboard'da o'zgartiriladi, `app_settings.usd_to_uzs`);

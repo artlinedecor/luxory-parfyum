@@ -1,0 +1,2314 @@
+{
+  "date": "2026-09-27",
+  "botId": "01a0cf0f-4962-716b-a290-6dde8241ce2b",
+  "note": "Har bir atir uchun statik KB yozuvi ('<nom> bormi?'). Slug'lar https://parfumelux.uz/a/<slug> orqali jonli tekshirilgan: /catalog/<productId> ga olib boradi.",
+  "added": [
+    {
+      "productId": "698f4a4e-2048-40eb-93d2-ff834de52b14",
+      "title": "AFTERNOON SWIM Louis Vuitton",
+      "name": "Louis Vuitton Afternoon Swim",
+      "slug": "lv-afternoon-swim",
+      "url": "https://parfumelux.uz/a/lv-afternoon-swim",
+      "datasetId": "01a0e1f2-c84a-73ba-b59f-223b92f87bf1",
+      "scent": "sitrusli, fresh",
+      "scentSource": "description"
+    },
+    {
+      "productId": "567af3e0-7ce0-40e6-88b9-252468d0f725",
+      "title": "AMOUAGE DIA 40 WOMAN 100ML",
+      "name": "Amouage Dia Woman",
+      "slug": "amouage-dia",
+      "url": "https://parfumelux.uz/a/amouage-dia",
+      "datasetId": "01a0e1f3-0109-7095-a5db-8c0298b37736",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "c136084a-a9f4-4414-ae36-ea069a051245",
+      "title": "AMOUAGE EPIC 56 100ML",
+      "name": "Amouage Epic 56",
+      "slug": "amouage-epic",
+      "url": "https://parfumelux.uz/a/amouage-epic",
+      "datasetId": "01a0e1f3-02d2-71d4-8e85-c26ad6b9ec21",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "57caf0b7-d64f-47a1-ac22-de6bd79fb910",
+      "title": "Amouage Interlude Man Eau de Parfum 100 ml",
+      "name": "Amouage Interlude Man",
+      "slug": "amouage-interlude-man",
+      "url": "https://parfumelux.uz/a/amouage-interlude-man",
+      "datasetId": "01a0e1f3-04c9-7334-95ef-9a40e5b3a407",
+      "scent": "sharqona, yog'ochli, oud",
+      "scentSource": "description"
+    },
+    {
+      "productId": "ec43416c-d193-4a3f-b8d9-cf1ed5001055",
+      "title": "AMOUAGE LOVE DELIGHT 100ML",
+      "name": "Amouage Love Delight",
+      "slug": "amouage-love-delight",
+      "url": "https://parfumelux.uz/a/amouage-love-delight",
+      "datasetId": "01a0e1f3-06f9-7264-aac6-2bcc2e45b3a4",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "581a7946-8b35-42a8-a028-ea575c2e0a53",
+      "title": "AMOUAGE REFLECTION 45 MAN 100ML",
+      "name": "Amouage Reflection 45 Man",
+      "slug": "amouage-reflection",
+      "url": "https://parfumelux.uz/a/amouage-reflection",
+      "datasetId": "01a0e1f3-0980-7242-bb52-4c474b8a0cd9",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "d88a643c-7b7d-44ed-a58b-0c454c8542cb",
+      "title": "ARABESQUE BACARA OUD 50ML",
+      "name": "Arabesque Bacara Oud",
+      "slug": "arabesque-bacara-oud",
+      "url": "https://parfumelux.uz/a/arabesque-bacara-oud",
+      "datasetId": "01a0e1f3-0bb4-73f4-b294-7b4c1c15d583",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "3db0e735-4133-4cfd-81a5-7c2260b16951",
+      "title": "ARABESQUE DION 50ML",
+      "name": "Arabesque Dion",
+      "slug": "arabesque-dion",
+      "url": "https://parfumelux.uz/a/arabesque-dion",
+      "datasetId": "01a0e1f3-399a-724c-917c-fbbf3e495f20",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "8608b480-a593-47d6-998b-a66fd2654a5d",
+      "title": "ARABESQUE GECKO 50ML",
+      "name": "Arabesque Gecko",
+      "slug": "arabesque-gecko",
+      "url": "https://parfumelux.uz/a/arabesque-gecko",
+      "datasetId": "01a0e1f3-3c77-72d2-ba4d-3feace759ee2",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "e14db3bc-7c36-4282-a05a-24ba79172622",
+      "title": "ARABESQUE PEARL 50ML",
+      "name": "Arabesque Pearl",
+      "slug": "arabesque-pearl",
+      "url": "https://parfumelux.uz/a/arabesque-pearl",
+      "datasetId": "01a0e1f3-3f20-712e-a8e0-8d03b9321f55",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "9e838f94-8b47-4bb0-af65-7544b0924ee9",
+      "title": "ATTAR COLLECTION ANNABELLA 100ML",
+      "name": "Attar Collection Annabella",
+      "slug": "attar-collection-annabella",
+      "url": "https://parfumelux.uz/a/attar-collection-annabella",
+      "datasetId": "01a0e1f3-41f8-73a1-8bd7-c61ed1cca3d1",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "9c4fef71-9f4c-499a-b212-7546284f623d",
+      "title": "ATTAR COLLECTION DUNA SECRETS 80ML",
+      "name": "Attar Collection Duna Secrets",
+      "slug": "attar-collection-duna-secrets",
+      "url": "https://parfumelux.uz/a/attar-collection-duna-secrets",
+      "datasetId": "01a0e1f3-4ddb-7300-b279-b288d5bd8e06",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "1ddeb7fb-cbf9-4142-8384-b58a7a7cf36e",
+      "title": "ATTAR COLLECTION SECOND SKIN 80ML",
+      "name": "Attar Collection Second Skin",
+      "slug": "attar-collection-second-skin",
+      "url": "https://parfumelux.uz/a/attar-collection-second-skin",
+      "datasetId": "01a0e231-231c-7284-97b9-f0a550079019",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "b6a2448e-f45c-42c1-b21d-d0614cd7d50e",
+      "title": "ATTAR COLLECTION SLATE BLUE 80ML",
+      "name": "Attar Collection Slate Blue",
+      "slug": "attar-collection-slate-blue",
+      "url": "https://parfumelux.uz/a/attar-collection-slate-blue",
+      "datasetId": "01a0e231-25ec-7069-aaf9-290583c90e80",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "6e32d20e-f032-4e3f-8067-7ac04dfcaac8",
+      "title": "BOADICEA THE VICTORIOUS BLUE SAPPHIRE 100ML",
+      "name": "Boadicea the Victorious Blue Sapphire",
+      "slug": "boadicea-blue-sapphire",
+      "url": "https://parfumelux.uz/a/boadicea-blue-sapphire",
+      "datasetId": "01a0e231-2876-71e6-9153-69da0c055c3d",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "d98cf329-fd6e-42bb-905a-db7d2001a085",
+      "title": "BULGARI POUR HOMME 100ML",
+      "name": "Bvlgari Pour Homme",
+      "slug": "bvlgari-pour-homme",
+      "url": "https://parfumelux.uz/a/bvlgari-pour-homme",
+      "datasetId": "01a0e231-2aaf-72a9-8515-e60b8d12303c",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "45aabe41-9537-400f-80f9-777c19125c34",
+      "title": "Burberry Her Eau de Parfum 100 ml",
+      "name": "Burberry Her",
+      "slug": "burberry-her",
+      "url": "https://parfumelux.uz/a/burberry-her",
+      "datasetId": "01a0e231-2ce5-7103-920b-3ee3d2f14527",
+      "scent": "mevali, shirin, gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "e308040a-213a-4120-90d2-cfa951018fd1",
+      "title": "BYREDO BAL D’AFRIQUE",
+      "name": "Byredo Bal d'Afrique",
+      "slug": "byredo-bal-dafrique",
+      "url": "https://parfumelux.uz/a/byredo-bal-dafrique",
+      "datasetId": "01a0e231-2f34-7051-be59-dd5d46dcfdf7",
+      "scent": "fresh, gulli, yog'ochli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "fdb8446e-c588-40b0-ba61-6d5219d8dd6c",
+      "title": "CAROLINA HERRERA 212 MEN HEROES FOREVER YOUNG 90ML",
+      "name": "Carolina Herrera 212 Men Heroes Forever Young",
+      "slug": "carolina-herrera-212-heroes",
+      "url": "https://parfumelux.uz/a/carolina-herrera-212-heroes",
+      "datasetId": "01a0e231-3186-73e8-a1f9-d4cc44824492",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "8cb0ad18-4df1-4193-ba9a-69584818ca67",
+      "title": "Carolina Herrera 212 VIP Men Eau de Toilette 100 ml",
+      "name": "Carolina Herrera 212 VIP Men",
+      "slug": "carolina-herrera-212-vip-men",
+      "url": "https://parfumelux.uz/a/carolina-herrera-212-vip-men",
+      "datasetId": "01a0e231-33e5-71ea-89e2-8f4764062198",
+      "scent": "sharqona, yog'ochli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "e5ab2418-6800-4357-9173-ed354dbf9b31",
+      "title": "Carolina Herrera Good Girl Eau de Parfum 80 ml",
+      "name": "Carolina Herrera Good Girl",
+      "slug": "carolina-herrera-good-girl",
+      "url": "https://parfumelux.uz/a/carolina-herrera-good-girl",
+      "datasetId": "01a0e231-82ee-737b-8a01-6c2883677247",
+      "scent": "sharqona, gulli, shirin",
+      "scentSource": "description"
+    },
+    {
+      "productId": "539a8b2e-baff-41cf-ac4b-b28ea2e4b9e1",
+      "title": "CAROLINA HERRERA WOMEN 100ML",
+      "name": "Carolina Herrera Women",
+      "slug": "carolina-herrera-women",
+      "url": "https://parfumelux.uz/a/carolina-herrera-women",
+      "datasetId": "01a0e231-856b-7341-8b45-6348389293d5",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "d00b9988-0f88-42df-9b1d-ab3a56d99451",
+      "title": "Chanel Allure Homme Eau de Toilette 100 ml",
+      "name": "Chanel Allure Homme",
+      "slug": "chanel-allure-homme",
+      "url": "https://parfumelux.uz/a/chanel-allure-homme",
+      "datasetId": "01a0e231-8776-7114-876c-c8e9d021c436",
+      "scent": "sharqona, yog'ochli, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "ef7e2936-8797-43ac-baa7-a684e10f7692",
+      "title": "CHANEL ALLURE HOMME SPORT 100ML",
+      "name": "Chanel Allure Homme Sport",
+      "slug": "chanel-allure-homme-sport",
+      "url": "https://parfumelux.uz/a/chanel-allure-homme-sport",
+      "datasetId": "01a0e231-89c3-7145-b66a-b65b3fa41327",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "60a60d9b-3378-4130-a358-50421e21f9f0",
+      "title": "CHANEL CHANCE EAU SPLENDIDE",
+      "name": "Chanel Chance Eau Splendide",
+      "slug": "chanel-chance-splendide",
+      "url": "https://parfumelux.uz/a/chanel-chance-splendide",
+      "datasetId": "01a0e231-8bcf-7361-8c9e-547ccf8179bf",
+      "scent": "mevali, gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "c59a9b59-de3b-46a8-8e2e-32ba59ba3d47",
+      "title": "Chanel Chance Eau Tendre Eau de Toilette 100 ml",
+      "name": "Chanel Chance Eau Tendre",
+      "slug": "chanel-chance-tendre",
+      "url": "https://parfumelux.uz/a/chanel-chance-tendre",
+      "datasetId": "01a0e231-9636-72b8-bf46-f7e9fa107081",
+      "scent": "gulli, mevali, fresh",
+      "scentSource": "description"
+    },
+    {
+      "productId": "7898c8f8-fc78-45fa-9fea-5b223b544225",
+      "title": "CHANEL COCO NOIR 100ML",
+      "name": "Chanel Coco Noir",
+      "slug": "chanel-coco-noir",
+      "url": "https://parfumelux.uz/a/chanel-coco-noir",
+      "datasetId": "01a0e231-9938-71d1-899c-d6be66dfec2f",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "73114df1-96e3-4ef8-ac26-0dce4dda2b1b",
+      "title": "CHANEL №5 100ML",
+      "name": "Chanel №5",
+      "slug": "chanel-no5",
+      "url": "https://parfumelux.uz/a/chanel-no5",
+      "datasetId": "01a0e231-9b25-7379-b3a1-ae8341b52de4",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "4d73664e-9111-4186-a0aa-434908cda71e",
+      "title": "Chase BLACK BISHOP 100ML",
+      "name": "Chase Black Bishop",
+      "slug": "chase-black-bishop",
+      "url": "https://parfumelux.uz/a/chase-black-bishop",
+      "datasetId": "01a0e231-9d91-718d-9c3a-30dff376680a",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "bcf0512a-10c4-48f0-b171-91789dbe788d",
+      "title": "Chase BLACK KING 100ML",
+      "name": "Chase Black King",
+      "slug": "chase-black-king",
+      "url": "https://parfumelux.uz/a/chase-black-king",
+      "datasetId": "01a0e231-9fd9-71d8-966a-f4727b907eee",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "cf8e3310-3350-46a0-a176-1e6f442980d3",
+      "title": "Chase BLACK KNIGHT 100ML",
+      "name": "Chase Black Knight",
+      "slug": "chase-black-knight",
+      "url": "https://parfumelux.uz/a/chase-black-knight",
+      "datasetId": "01a0e231-e8a8-7139-b18e-ed3b8cebfa97",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "b38415dc-f5a1-42d8-ab9b-89b3a8027cf1",
+      "title": "Chase BLACK QUEEN 100ML",
+      "name": "Chase Black Queen",
+      "slug": "chase-black-queen",
+      "url": "https://parfumelux.uz/a/chase-black-queen",
+      "datasetId": "01a0e231-ea9f-73bf-850e-322d78a4f7e6",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "493bd858-fa62-4688-a421-14194ac3d432",
+      "title": "Chase BLACK ROOK 100ML",
+      "name": "Chase Black Rook",
+      "slug": "chase-black-rook",
+      "url": "https://parfumelux.uz/a/chase-black-rook",
+      "datasetId": "01a0e231-ec94-7222-a909-86e70db7323a",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "215a6004-ac4e-4700-80ec-63bad745f905",
+      "title": "Chase WHITE BISHOP 100ML",
+      "name": "Chase White Bishop",
+      "slug": "chase-white-bishop",
+      "url": "https://parfumelux.uz/a/chase-white-bishop",
+      "datasetId": "01a0e231-ef02-7217-82f0-9c703ab5128a",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "293700ac-dedd-4eb3-816e-b91f1dd87e1f",
+      "title": "Chase WHITE KING 100ML",
+      "name": "Chase White King",
+      "slug": "chase-white-king",
+      "url": "https://parfumelux.uz/a/chase-white-king",
+      "datasetId": "01a0e231-f154-7263-a061-14e140a25262",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "ddf292f8-97ad-4202-a024-d28be9080451",
+      "title": "Chase WHITE KNIGHT 100ML",
+      "name": "Chase White Knight",
+      "slug": "chase-white-knight",
+      "url": "https://parfumelux.uz/a/chase-white-knight",
+      "datasetId": "01a0e231-f3ad-71e7-b8b2-e739cc116d86",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "c59e01cd-5f21-46af-be51-f98ff6896380",
+      "title": "Chase WHITE QUEEN 100ML",
+      "name": "Chase White Queen",
+      "slug": "chase-white-queen",
+      "url": "https://parfumelux.uz/a/chase-white-queen",
+      "datasetId": "01a0e231-f731-7365-86f0-2ea7c63169a5",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "2026fd83-f9c1-4999-b729-6e12c368530b",
+      "title": "Chase WHITE ROOK 100ML",
+      "name": "Chase White Rook",
+      "slug": "chase-white-rook",
+      "url": "https://parfumelux.uz/a/chase-white-rook",
+      "datasetId": "01a0e231-fa66-7212-bf8c-666fa444ac29",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "5138ed60-8dd9-43d9-b6af-9a4ed3f7a51d",
+      "title": "CHLOE NOMADE 75ML",
+      "name": "Chloé Nomade",
+      "slug": "chloe-nomade",
+      "url": "https://parfumelux.uz/a/chloe-nomade",
+      "datasetId": "01a0e231-fd5c-724f-98e6-87fa96f18fc0",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "a17fcf07-9570-479d-9ced-8d8153deda8d",
+      "title": "CLINIQUE HAPPY 100ML",
+      "name": "Clinique Happy",
+      "slug": "clinique-happy",
+      "url": "https://parfumelux.uz/a/clinique-happy",
+      "datasetId": "01a0e231-fff0-7300-8e61-79deca308aa1",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "06463ceb-5bd2-4348-ac84-54969b7caabd",
+      "title": "CLIVE CHRISTIAN 1872 MASCULINE 50ML",
+      "name": "Clive Christian 1872 Masculine",
+      "slug": "clive-christian-1872-masculine",
+      "url": "https://parfumelux.uz/a/clive-christian-1872-masculine",
+      "datasetId": "01a0e232-52d6-72f3-8121-50541efbee2f",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "5819fe45-b315-4a42-9cd6-c22a24a50cae",
+      "title": "Clive Christian Jump Up And Kiss Me Hedonistic (2021)",
+      "name": "Clive Christian Jump Up And Kiss Me Hedonistic",
+      "slug": "clive-christian-jump-up-kiss-me",
+      "url": "https://parfumelux.uz/a/clive-christian-jump-up-kiss-me",
+      "datasetId": "01a0e232-553d-721a-b109-377a24a31980",
+      "scent": "shirin, yog'ochli, teri",
+      "scentSource": "description"
+    },
+    {
+      "productId": "8706672d-dad2-45b8-b1c8-604fadf63e02",
+      "title": "Clive Christian No.1 50 ml",
+      "name": "Clive Christian No.1",
+      "slug": "clive-christian-no-1",
+      "url": "https://parfumelux.uz/a/clive-christian-no-1",
+      "datasetId": "01a0e232-579d-7274-b5ac-6ad701052bc8",
+      "scent": "gulli, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "d49b7945-8a2b-4c1b-9480-e4e80de0ca9f",
+      "title": "CLIVE CHRISTIAN X FEMININE 50ML",
+      "name": "Clive Christian X Feminine",
+      "slug": "clive-christian-x-feminine",
+      "url": "https://parfumelux.uz/a/clive-christian-x-feminine",
+      "datasetId": "01a0e232-59a6-71c0-92ae-456d3c258867",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "9bfbb463-4eab-484b-949a-21c1a228c312",
+      "title": "CLIVE CHRISTIAN X MASCULINE 50ML",
+      "name": "Clive Christian X Masculine",
+      "slug": "clive-christian-x-masculine",
+      "url": "https://parfumelux.uz/a/clive-christian-x-masculine",
+      "datasetId": "01a0e232-5c15-73b8-b8f5-3bbd26c49242",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "0eb7b781-0acf-4c47-846b-b1055cec48ad",
+      "title": "Clive Christian XXI Blonde Amber 50ML",
+      "name": "Clive Christian XXI Blonde Amber",
+      "slug": "clive-christian-blonde-amber",
+      "url": "https://parfumelux.uz/a/clive-christian-blonde-amber",
+      "datasetId": "01a0e232-5f15-7016-9a1c-7ff9fae3e2a8",
+      "scent": "amberli, sharqona",
+      "scentSource": "description"
+    },
+    {
+      "productId": "a7007579-88fa-47da-be67-8f5042d72034",
+      "title": "Creed Aventus for Her Eau de Parfum 75 ml",
+      "name": "Creed Aventus for Her",
+      "slug": "creed-aventus-for-her",
+      "url": "https://parfumelux.uz/a/creed-aventus-for-her",
+      "datasetId": "01a0e232-6160-704d-b8be-cfc022a5c270",
+      "scent": "mevali, gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "e0c3ca0c-c8c6-4e2e-bac4-bf2958b00281",
+      "title": "CREED EROLFA 100ML",
+      "name": "Creed Erolfa",
+      "slug": "creed-erolfa",
+      "url": "https://parfumelux.uz/a/creed-erolfa",
+      "datasetId": "01a0e232-6427-73f8-b75f-9fe2529dd409",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "43463849-23ee-4e87-acaa-2148ebdac308",
+      "title": "Creed Silver Mountain Water Eau de Parfum 100 ml",
+      "name": "Creed Silver Mountain Water",
+      "slug": "creed-silver-mountain-water",
+      "url": "https://parfumelux.uz/a/creed-silver-mountain-water",
+      "datasetId": "01a0e232-673c-73d3-9a86-be9a3db0613b",
+      "scent": "fresh, sitrusli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "92ffa51a-50b8-474d-9706-e3b939a35690",
+      "title": "CREED TABAROME MILLESIME 100ML",
+      "name": "Creed Tabarome Millésime",
+      "slug": "creed-tabarome",
+      "url": "https://parfumelux.uz/a/creed-tabarome",
+      "datasetId": "01a0e232-6dba-71b8-9080-6ef6e4a387c0",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "21c17b57-2907-4e16-ab29-28dccb8fb73e",
+      "title": "Dior Homme Intense Eau de Parfum 100 ml",
+      "name": "Dior Homme Intense",
+      "slug": "dior-homme-intense",
+      "url": "https://parfumelux.uz/a/dior-homme-intense",
+      "datasetId": "01a0e232-c059-725c-ab34-b9870cb6b4e9",
+      "scent": "gulli, yog'ochli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "87cc7ba0-c7fd-4da0-adf3-6190684c0a0a",
+      "title": "Dior Hypnotic Poison Eau de Toilette 100 ml",
+      "name": "Dior Hypnotic Poison",
+      "slug": "dior-hypnotic-poison",
+      "url": "https://parfumelux.uz/a/dior-hypnotic-poison",
+      "datasetId": "01a0e232-c1fe-7080-ad8a-ee6c4cc67cd4",
+      "scent": "sharqona, vanilli, shirin",
+      "scentSource": "description"
+    },
+    {
+      "productId": "6ddcdb3a-5923-49d3-82d2-fe0a231f35b2",
+      "title": "Dior J'adore Eau de Parfum 100 ml",
+      "name": "Dior J'adore",
+      "slug": "dior-jadore",
+      "url": "https://parfumelux.uz/a/dior-jadore",
+      "datasetId": "01a0e232-c3c8-73c7-aee3-950fc60446c8",
+      "scent": "gulli, mevali",
+      "scentSource": "description"
+    },
+    {
+      "productId": "91aa7785-ecdf-44c1-8904-9e3c8fcaf838",
+      "title": "Dolce & Gabbana Light Blue Eau de Toilette 100 ml",
+      "name": "Dolce & Gabbana Light Blue",
+      "slug": "dolce-gabbana-light-blue",
+      "url": "https://parfumelux.uz/a/dolce-gabbana-light-blue",
+      "datasetId": "01a0e232-c5ec-736d-9ba6-0cdf2d20b40e",
+      "scent": "fresh, sitrusli, gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "df03c2d2-4537-425e-b3ce-5be3a07df3a9",
+      "title": "ESSENTIAL PARFUMS AMBRE LATTE 100ML",
+      "name": "Essential Parfums Ambre Latte",
+      "slug": "essential-parfums-ambre-latte",
+      "url": "https://parfumelux.uz/a/essential-parfums-ambre-latte",
+      "datasetId": "01a0e232-c8ae-73b1-8f86-c5035189d316",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "041aaf88-f700-4079-9d1f-fc7375b78434",
+      "title": "Essential Parfums Bois Impérial 100 ml",
+      "name": "Essential Parfums Bois Impérial",
+      "slug": "essential-parfums-bois-imperial",
+      "url": "https://parfumelux.uz/a/essential-parfums-bois-imperial",
+      "datasetId": "01a0e232-cb9b-738a-adad-ec5b82ef0abf",
+      "scent": "yog'ochli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "bb87a510-dfa0-4013-a9ff-3e9f0ed83a78",
+      "title": "ESSENTIAL PARFUMS NICE BERGAMOTE 30ML",
+      "name": "Essential Parfums Nice Bergamote",
+      "slug": "essential-parfums-nice-bergamote",
+      "url": "https://parfumelux.uz/a/essential-parfums-nice-bergamote",
+      "datasetId": "01a0e232-cd9c-7049-a2be-a3e512b63f53",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "3970cb6f-b142-46e7-a468-e0a8ffa614c7",
+      "title": "ESTE LAUDER PLEASURES 75ML+30ML",
+      "name": "Estée Lauder Pleasures",
+      "slug": "estee-lauder-pleasures",
+      "url": "https://parfumelux.uz/a/estee-lauder-pleasures",
+      "datasetId": "01a0e232-d132-7055-a5f6-b3917ca2ad3e",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "3b2f416c-0199-4ad8-8740-39c0b2806042",
+      "title": "Ex Nihilo Fleur Narcotique",
+      "name": "Ex Nihilo Fleur Narcotique",
+      "slug": "ex-nihilo-fleur-narcotique",
+      "url": "https://parfumelux.uz/a/ex-nihilo-fleur-narcotique",
+      "datasetId": "01a0e232-d4bf-729d-98df-3eab98b14aff",
+      "scent": "gulli, mevali, fresh",
+      "scentSource": "description"
+    },
+    {
+      "productId": "6ebd9e50-52bc-4a2f-aa29-ec98ca83a879",
+      "title": "Ex Nihilo The Hedonist Extrait de Parfum 100ml",
+      "name": "Ex Nihilo The Hedonist",
+      "slug": "ex-nihilo-hedonist",
+      "url": "https://parfumelux.uz/a/ex-nihilo-hedonist",
+      "datasetId": "01a0e232-d710-72f5-809a-456c9cb3cf78",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "fd2e7236-9cbc-4054-9035-c7b12689829e",
+      "title": "GIORGIO ARMANI ACQUA DI GIO 100ML",
+      "name": "Giorgio Armani Acqua di Gio",
+      "slug": "armani-acqua-di-gio",
+      "url": "https://parfumelux.uz/a/armani-acqua-di-gio",
+      "datasetId": "01a0e233-2791-70c2-9b6e-d821e8e5e4e3",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "8c6cfaf5-1c6a-479b-af90-5d55d8d24061",
+      "title": "Giorgio Armani Code Eau de Toilette 125 ml",
+      "name": "Giorgio Armani Code",
+      "slug": "armani-code",
+      "url": "https://parfumelux.uz/a/armani-code",
+      "datasetId": "01a0e233-2979-7321-8993-ef177111e64d",
+      "scent": "sharqona, teri",
+      "scentSource": "description"
+    },
+    {
+      "productId": "5b2a2f92-6f98-45b6-924b-7f51d1aa4965",
+      "title": "GIORGIO ARMANI LUI MEN 100ML",
+      "name": "Giorgio Armani Lui Men",
+      "slug": "armani-lui",
+      "url": "https://parfumelux.uz/a/armani-lui",
+      "datasetId": "01a0e233-2b72-70fe-8b28-689419811c86",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "89ad4a78-d319-449c-b073-da57607c208c",
+      "title": "Giorgio Armani Si Eau de Parfum 100 ml",
+      "name": "Giorgio Armani Si",
+      "slug": "armani-si",
+      "url": "https://parfumelux.uz/a/armani-si",
+      "datasetId": "01a0e233-2d91-70e2-a778-e18a7187947f",
+      "scent": "mevali, gulli, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "31ef242d-3bbf-4f31-a53a-4cd969c144f9",
+      "title": "Giorgio Armani Stronger With You Eau de Toilette 100 ml",
+      "name": "Emporio Armani Stronger With You",
+      "slug": "armani-stronger-with-you",
+      "url": "https://parfumelux.uz/a/armani-stronger-with-you",
+      "datasetId": "01a0e233-2f6f-724d-9c98-84d0bf8fcabc",
+      "scent": "shirin, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "5b655968-1de4-4574-b839-9fdb7e844bb5",
+      "title": "GIVENCHY GENTLEMAN 100ML",
+      "name": "Givenchy Gentleman",
+      "slug": "givenchy-gentleman",
+      "url": "https://parfumelux.uz/a/givenchy-gentleman",
+      "datasetId": "01a0e233-3156-7080-a6fc-c20ed6b0ce5d",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "a765501e-493d-4424-a661-ce46a3a6379d",
+      "title": "GIVENCHY L'INTERDIT 100ML",
+      "name": "Givenchy L'Interdit",
+      "slug": "givenchy-linterdit",
+      "url": "https://parfumelux.uz/a/givenchy-linterdit",
+      "datasetId": "01a0e233-3394-70f0-9860-7b731974f531",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "80639e92-583c-47cf-9a9a-5a8fd5fc3b69",
+      "title": "GIVENCHY SOCIETY EXTREME 100ML",
+      "name": "Givenchy Society Extreme",
+      "slug": "givenchy-society-extreme",
+      "url": "https://parfumelux.uz/a/givenchy-society-extreme",
+      "datasetId": "01a0e233-358e-72a1-a9aa-883fe4486aa0",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "92896c8e-48a1-42d0-8661-bdf1a74a493d",
+      "title": "Good Girl Gone Bad by Kilian",
+      "name": "Kilian Good Girl Gone Bad",
+      "slug": "kilian-good-girl-gone-bad",
+      "url": "https://parfumelux.uz/a/kilian-good-girl-gone-bad",
+      "datasetId": "01a0e233-37e2-707e-b564-cddc0dc0386f",
+      "scent": "gulli, amberli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "daaff1cd-98ab-4db1-8b79-72c2cdeffd63",
+      "title": "GRITTI BECAUSE I'M FREE 100ML",
+      "name": "Gritti Because I'm Free",
+      "slug": "gritti-because-im-free",
+      "url": "https://parfumelux.uz/a/gritti-because-im-free",
+      "datasetId": "01a0e233-3bb7-7161-a3ce-ad1257f7c941",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "5240378e-88fa-44b2-aabc-13752690e4cb",
+      "title": "GRITTI HYSTERICA 100ML",
+      "name": "Gritti Hysterica",
+      "slug": "gritti-hysterica",
+      "url": "https://parfumelux.uz/a/gritti-hysterica",
+      "datasetId": "01a0e233-91d1-7251-9d91-f601f79ada7a",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "1c39a59a-fc19-41e7-ad37-7a1a1fc48559",
+      "title": "Gucci Bloom Eau de Parfum 100 ml",
+      "name": "Gucci Bloom",
+      "slug": "gucci-bloom",
+      "url": "https://parfumelux.uz/a/gucci-bloom",
+      "datasetId": "01a0e233-9516-7240-9d8f-3577ae56feeb",
+      "scent": "gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "f5c6a9b6-e86a-4fdd-a020-b914de58bb4d",
+      "title": "Gucci Flora Gorgeous Gardenia Eau de Parfum 100 ml",
+      "name": "Gucci Flora Gorgeous Gardenia",
+      "slug": "gucci-flora-gorgeous-gardenia",
+      "url": "https://parfumelux.uz/a/gucci-flora-gorgeous-gardenia",
+      "datasetId": "01a0e233-97ff-7240-80a7-5b32e5285fbf",
+      "scent": "gulli, shirin, mevali",
+      "scentSource": "description"
+    },
+    {
+      "productId": "f54356e0-007e-4e29-aab2-26c6c6aa00ed",
+      "title": "GUCCI GUILTY ABSOLUTE MEN 90ML",
+      "name": "Gucci Guilty Absolute",
+      "slug": "gucci-guilty-absolute",
+      "url": "https://parfumelux.uz/a/gucci-guilty-absolute",
+      "datasetId": "01a0e233-9ba8-70cc-a92f-a1e43157abef",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "19c44132-a004-42e6-a788-eb36b344b189",
+      "title": "GUERLAIN LHOMME IDEAL 100ML",
+      "name": "Guerlain L'Homme Idéal",
+      "slug": "guerlain-lhomme-ideal",
+      "url": "https://parfumelux.uz/a/guerlain-lhomme-ideal",
+      "datasetId": "01a0e233-9e9c-7268-a003-a84159eea01a",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "29767af0-df71-4402-83b1-75795bbfd9a3",
+      "title": "Hfc Beautiful And Wild 75ml",
+      "name": "HFC Beautiful And Wild",
+      "slug": "hfc-beautiful-and-wild",
+      "url": "https://parfumelux.uz/a/hfc-beautiful-and-wild",
+      "datasetId": "01a0e233-a2cd-7166-9665-360ddf69f67b",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "d4d31301-7cca-4fe4-9c3c-bfac96c470bf",
+      "title": "HFC DAZZLING GIRLS 75ML",
+      "name": "HFC Dazzling Girls",
+      "slug": "hfc-dazzling-girls",
+      "url": "https://parfumelux.uz/a/hfc-dazzling-girls",
+      "datasetId": "01a0e233-a5ab-7007-8812-344526c0fff7",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "a61a1210-6235-4e30-b1de-a9e5508ae6aa",
+      "title": "HFC Devil's Intrigue 75 ml",
+      "name": "HFC Devil's Intrigue",
+      "slug": "hfc-devils-intrigue",
+      "url": "https://parfumelux.uz/a/hfc-devils-intrigue",
+      "datasetId": "01a0e233-a825-7135-85dd-c8459611343d",
+      "scent": "shirin, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "7e43df9a-38ad-4383-b2a8-f0799203b240",
+      "title": "HFC DRY WOOD 75ML",
+      "name": "HFC Dry Wood",
+      "slug": "hfc-dry-wood",
+      "url": "https://parfumelux.uz/a/hfc-dry-wood",
+      "datasetId": "01a0e233-aad1-70f0-a1e5-95984db722e6",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "3191adfb-63e0-4bb1-b318-42147b4d8889",
+      "title": "HFC Paris Delisitrige",
+      "name": "HFC Paris Delisitrige",
+      "slug": "hfc-paris-delisitrige",
+      "url": "https://parfumelux.uz/a/hfc-paris-delisitrige",
+      "datasetId": "01a0e233-ad96-7277-b26c-1c9b98e736c1",
+      "scent": "gulli, mevali, amberli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "90d72235-b913-47c3-a63e-5aa36b941f7c",
+      "title": "Hfc Proposal 75ml",
+      "name": "HFC Proposal",
+      "slug": "hfc-proposal",
+      "url": "https://parfumelux.uz/a/hfc-proposal",
+      "datasetId": "01a0e234-1013-705b-a0b9-90e89555296b",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "47e83b8a-4856-425a-b8c2-091612089572",
+      "title": "HFC SWEET & SPOILED 75ML",
+      "name": "HFC Sweet & Spoiled",
+      "slug": "hfc-sweet-spoiled",
+      "url": "https://parfumelux.uz/a/hfc-sweet-spoiled",
+      "datasetId": "01a0e234-120c-7299-9eed-4918daaa1978",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "884caa20-bafd-43a8-8f34-da9f7354782b",
+      "title": "HFC VOODOO CHIC 75ML",
+      "name": "HFC Voodoo Chic",
+      "slug": "hfc-voodoo-chic",
+      "url": "https://parfumelux.uz/a/hfc-voodoo-chic",
+      "datasetId": "01a0e234-1468-73d0-87a0-94ccf153bada",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "bb6751ef-c56c-4cde-9fb7-e45dec577488",
+      "title": "HFC WRAP ME IN DREAMS SET",
+      "name": "HFC Wrap Me In Dreams",
+      "slug": "hfc-wrap-me-in-dreams",
+      "url": "https://parfumelux.uz/a/hfc-wrap-me-in-dreams",
+      "datasetId": "01a0e234-1695-72b6-ab3c-15e2ef0770c2",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "49b5e75c-d31d-42a0-bdcc-467731316509",
+      "title": "HISTOIRES DE PARFUMS 1472 120ML",
+      "name": "Histoires de Parfums 1472",
+      "slug": "histoires-de-parfums-1472",
+      "url": "https://parfumelux.uz/a/histoires-de-parfums-1472",
+      "datasetId": "01a0e234-1887-7371-a6d4-fe9e258da382",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "9c0debc2-aa96-4097-a8d7-24276995bcd5",
+      "title": "HISTOIRES DE PARFUMS MUSIC HALL LE 120 ML",
+      "name": "Histoires de Parfums Music Hall",
+      "slug": "histoires-de-parfums-music-hall",
+      "url": "https://parfumelux.uz/a/histoires-de-parfums-music-hall",
+      "datasetId": "01a0e234-1a89-7063-b14c-8d7efa5ee218",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "e9efb4f9-de23-4822-a028-c96a759aa57d",
+      "title": "HORMONE GABA 100 ml",
+      "name": "Hormone Paris GABA",
+      "slug": "hormone-gaba",
+      "url": "https://parfumelux.uz/a/hormone-gaba",
+      "datasetId": "01a0e234-1db9-7372-bce5-b99bb0f7741c",
+      "scent": "gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "3b775b7d-877f-447c-ad9a-3778b5812de1",
+      "title": "HUGO BOSS BOSS BOTTLED NIGHT 100ML",
+      "name": "Hugo Boss Boss Bottled Night",
+      "slug": "hugo-boss-bottled-night",
+      "url": "https://parfumelux.uz/a/hugo-boss-bottled-night",
+      "datasetId": "01a0e234-1fb9-70e3-a6e1-603518d37e88",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "c4b85dbd-84e2-4cc4-9947-55a960033359",
+      "title": "HUGO BOSS BOSS BOTTLED UNLIMITED 100ML",
+      "name": "Hugo Boss Boss Bottled Unlimited",
+      "slug": "hugo-boss-bottled-unlimited",
+      "url": "https://parfumelux.uz/a/hugo-boss-bottled-unlimited",
+      "datasetId": "01a0e234-2190-738d-b94d-2463382ec17a",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "6ef03717-f8bb-4c26-b4e5-1d10c6c44f5a",
+      "title": "HUGO BOSS BOSS THE SCENT 100ML EDP",
+      "name": "Hugo Boss Boss The Scent EDP",
+      "slug": "hugo-boss-the-scent-edp",
+      "url": "https://parfumelux.uz/a/hugo-boss-the-scent-edp",
+      "datasetId": "01a0e234-23cd-73ec-974f-cb838038f1d8",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "02c2513c-61fd-4887-8a4f-ec59db41f940",
+      "title": "HUGO BOSS BOSS THE SCENT 100ML EDT",
+      "name": "Hugo Boss Boss The Scent EDT",
+      "slug": "hugo-boss-the-scent-edt",
+      "url": "https://parfumelux.uz/a/hugo-boss-the-scent-edt",
+      "datasetId": "01a0e234-778a-7352-89d0-6b75e6baf576",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "1dc954ef-228c-4bfb-bd4e-056bbf6bc303",
+      "title": "HUGO BOSS HUGO MAN 125ML",
+      "name": "Hugo Boss Hugo Man",
+      "slug": "hugo-boss-hugo-man",
+      "url": "https://parfumelux.uz/a/hugo-boss-hugo-man",
+      "datasetId": "01a0e234-79a1-70bb-9615-71895bda2db0",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "e6130bc4-9447-45b1-8c2e-2a8222a86b3d",
+      "title": "HUGO BOSS MAN 100ML",
+      "name": "Hugo Boss Man",
+      "slug": "hugo-boss-man-100ml",
+      "url": "https://parfumelux.uz/a/hugo-boss-man-100ml",
+      "datasetId": "01a0e234-83f0-7031-b57f-448287e46c1a",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "9119994d-acf6-4497-9325-9881eb581777",
+      "title": "Initio Side Effect Eau de Parfum 90 ml",
+      "name": "Initio Side Effect",
+      "slug": "initio-side-effect",
+      "url": "https://parfumelux.uz/a/initio-side-effect",
+      "datasetId": "01a0e234-8644-7063-a47b-376ab08d0580",
+      "scent": "sharqona, shirin",
+      "scentSource": "description"
+    },
+    {
+      "productId": "aaa3bd3c-e7ba-47c7-a7b5-20bb2baff342",
+      "title": "Jean Paul Gaultier Le Male Eau de Toilette 125 ml",
+      "name": "Jean Paul Gaultier Le Male",
+      "slug": "jean-paul-gaultier-le-male",
+      "url": "https://parfumelux.uz/a/jean-paul-gaultier-le-male",
+      "datasetId": "01a0e234-88bb-7221-8c4c-d95b6ce24ec5",
+      "scent": "sharqona, vanilli, shirin",
+      "scentSource": "description"
+    },
+    {
+      "productId": "196b52a0-5718-47ac-98b7-0f6cf37e0450",
+      "title": "Jean Paul Gaultier Scandal Eau de Parfum 80 ml",
+      "name": "Jean Paul Gaultier Scandal",
+      "slug": "jean-paul-gaultier-scandal",
+      "url": "https://parfumelux.uz/a/jean-paul-gaultier-scandal",
+      "datasetId": "01a0e234-8bc1-7048-87a7-fd5fcaeaa326",
+      "scent": "gulli, shirin",
+      "scentSource": "description"
+    },
+    {
+      "productId": "e3a7b55d-0ddf-4e48-8896-98c440b72c57",
+      "title": "JULIETTE HAS A GUN CITIZEN QUEEN 100ML",
+      "name": "Juliette Has A Gun Citizen Queen",
+      "slug": "juliette-has-a-gun-citizen-queen",
+      "url": "https://parfumelux.uz/a/juliette-has-a-gun-citizen-queen",
+      "datasetId": "01a0e234-8e31-70db-8d40-1b7b57b59e4b",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "f4b2ca00-83a7-40f8-a2f4-1fe4815edcba",
+      "title": "JULIETTE HAS A GUN MAD MADAME 100ML",
+      "name": "Juliette Has A Gun Mad Madame",
+      "slug": "juliette-has-a-gun-mad-madame",
+      "url": "https://parfumelux.uz/a/juliette-has-a-gun-mad-madame",
+      "datasetId": "01a0e234-9036-7109-a021-7e1eddc4195a",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "5a539a19-bfaf-4780-92bb-60a69e5de668",
+      "title": "JULIETTE HAS A GUN NOT A PERFUME 100ML",
+      "name": "Juliette Has A Gun Not A Perfume",
+      "slug": "juliette-has-a-gun-not-a-perfume",
+      "url": "https://parfumelux.uz/a/juliette-has-a-gun-not-a-perfume",
+      "datasetId": "01a0e234-9314-71d1-bdbf-8cdca30d9d8b",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "4f6cd611-12e7-4b07-b94f-b67db3fcc1ed",
+      "title": "KAJAL HOMME II 100ML",
+      "name": "Kajal Homme II",
+      "slug": "kajal-homme-ii",
+      "url": "https://parfumelux.uz/a/kajal-homme-ii",
+      "datasetId": "01a0e234-96d7-7081-b378-c2ba221b639e",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "4a84e00f-a51f-45c6-882b-2944afa9d921",
+      "title": "Kayali Vanilla 28 Eau de Parfum 100 ml",
+      "name": "Kayali Vanilla 28",
+      "slug": "kayali-vanilla-28",
+      "url": "https://parfumelux.uz/a/kayali-vanilla-28",
+      "datasetId": "01a0e234-ea62-7308-91e4-b4e7163a1ffc",
+      "scent": "vanilli, shirin, amberli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "27ac5f26-126d-47c6-afd8-5ec34e846fbe",
+      "title": "Kilian Angels' Share Eau de Parfum 50 ml",
+      "name": "Kilian Angels' Share",
+      "slug": "kilian-angels-share",
+      "url": "https://parfumelux.uz/a/kilian-angels-share",
+      "datasetId": "01a0e234-edcc-7387-9d2a-5fb039ec4a2a",
+      "scent": "shirin, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "6487330d-7901-45ed-84c3-478b935b1dd5",
+      "title": "KILIAN CAN'T STOP LOVING YOU 50ML",
+      "name": "Kilian Can't Stop Loving You",
+      "slug": "kilian-cant-stop-loving-you",
+      "url": "https://parfumelux.uz/a/kilian-cant-stop-loving-you",
+      "datasetId": "01a0e234-f1f8-72f7-aa7b-899579562c70",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "6d7c63fd-fef5-4540-8d1b-a648ccadfd7f",
+      "title": "KILIAN GOLD KNIGHT 50ML",
+      "name": "Kilian Gold Knight",
+      "slug": "kilian-gold-knight",
+      "url": "https://parfumelux.uz/a/kilian-gold-knight",
+      "datasetId": "01a0e234-f548-735a-b129-c070d99da95f",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "bc373b43-2e6e-4768-a0be-2a684cd88ec3",
+      "title": "Kilian Love Don't Be Shy Eau de Parfum 50 ml",
+      "name": "Kilian Love Don't Be Shy",
+      "slug": "kilian-love-dont-be-shy",
+      "url": "https://parfumelux.uz/a/kilian-love-dont-be-shy",
+      "datasetId": "01a0e234-f807-706c-9e7d-5ccdd342a7ed",
+      "scent": "shirin, vanilli, gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "51e2d180-a915-45f0-bad7-4a0c8fd4cc8a",
+      "title": "LACOSTE LHOMME 100ML",
+      "name": "Lacoste L'Homme",
+      "slug": "lacoste-lhomme",
+      "url": "https://parfumelux.uz/a/lacoste-lhomme",
+      "datasetId": "01a0e234-fc53-72d3-9992-381166036435",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "5173eb37-fbd2-44aa-b176-9218830cc577",
+      "title": "Lady Sexy 100 ml",
+      "name": "Lady Sexy",
+      "slug": "lady-sexy",
+      "url": "https://parfumelux.uz/a/lady-sexy",
+      "datasetId": "01a0e235-003e-7366-90e6-d88d10823e3d",
+      "scent": "shirin",
+      "scentSource": "description"
+    },
+    {
+      "productId": "ddcd0640-1d0b-4376-ab4f-dcb928399229",
+      "title": "Lancome Idole Eau de Parfum 50 ml",
+      "name": "Lancôme Idôle",
+      "slug": "lancome-idole",
+      "url": "https://parfumelux.uz/a/lancome-idole",
+      "datasetId": "01a0e235-02ec-72fc-a5a7-65888073b119",
+      "scent": "gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "7b3cc474-9ab7-4b30-ad3b-75d5b2892f61",
+      "title": "LANCOME LA NUIT TRESOR 100ML",
+      "name": "Lancôme La Nuit Trésor",
+      "slug": "lancome-la-nuit-tresor",
+      "url": "https://parfumelux.uz/a/lancome-la-nuit-tresor",
+      "datasetId": "01a0e235-0561-7020-aa3d-f169a5d5f449",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "1d06bc6c-e4ec-4f6f-8f4f-7d9411ace6c1",
+      "title": "Lancome La Vie Est Belle Eau de Parfum 100 ml",
+      "name": "Lancôme La Vie Est Belle",
+      "slug": "lancome-la-vie-est-belle",
+      "url": "https://parfumelux.uz/a/lancome-la-vie-est-belle",
+      "datasetId": "01a0e235-0a31-7029-8e41-94648266ecaf",
+      "scent": "gulli, mevali, shirin",
+      "scentSource": "description"
+    },
+    {
+      "productId": "0e8bd603-eba1-4aba-8443-c9f958cd5abb",
+      "title": "LANCOME LA VIE EST BELLE EN ROSE 50ML",
+      "name": "Lancôme La Vie Est Belle En Rose",
+      "slug": "lancome-la-vie-est-belle-en-rose",
+      "url": "https://parfumelux.uz/a/lancome-la-vie-est-belle-en-rose",
+      "datasetId": "01a0e235-5d75-72d3-9e80-e9c3695a8783",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "0bea128c-86f8-45a8-953a-ec281bd875a5",
+      "title": "LANCOME POEME 100ML",
+      "name": "Lancôme Poême",
+      "slug": "lancome-poeme",
+      "url": "https://parfumelux.uz/a/lancome-poeme",
+      "datasetId": "01a0e235-6008-711c-b152-05f52486cace",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "fa6917f3-6748-4a77-bfcd-450b9d43e5c2",
+      "title": "LATTAFA AMEERAT AL ARAB 100ML",
+      "name": "Lattafa Ameerat Al Arab",
+      "slug": "lattafa-ameerat-al-arab",
+      "url": "https://parfumelux.uz/a/lattafa-ameerat-al-arab",
+      "datasetId": "01a0e235-6f7c-73e9-8014-6051ec67414e",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "4a724134-8f2c-4b8f-9f30-9f8a80d75cb8",
+      "title": "Le Labo Santal 33 Eau de Parfum 50 ml",
+      "name": "Le Labo Santal 33",
+      "slug": "le-labo-santal-33",
+      "url": "https://parfumelux.uz/a/le-labo-santal-33",
+      "datasetId": "01a0e235-7330-7392-adad-3d297fc39413",
+      "scent": "yog'ochli, teri",
+      "scentSource": "description"
+    },
+    {
+      "productId": "8832c622-0f1e-4622-a8e8-51c0de8ec91d",
+      "title": "LES SOEURS DE NOE FORBIDDEN NECTAR 100ML",
+      "name": "Les Soeurs de Noé Forbidden Nectar",
+      "slug": "les-soeurs-de-noe-forbidden-nectar",
+      "url": "https://parfumelux.uz/a/les-soeurs-de-noe-forbidden-nectar",
+      "datasetId": "01a0e235-76f1-7048-a73a-e2e52be5c2ca",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "cabb6fd8-ce7c-4702-9716-eee0b92d5bdf",
+      "title": "LES SOEURS DE NOE RED BERRIES ELIXIR 100ML",
+      "name": "Les Soeurs de Noé Red Berries Elixir",
+      "slug": "les-soeurs-de-noe-red-berries",
+      "url": "https://parfumelux.uz/a/les-soeurs-de-noe-red-berries",
+      "datasetId": "01a0e235-793a-71ac-bcbc-14694462cd18",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "f883af3e-24ae-47e7-bf3c-3d61ec41b9c8",
+      "title": "Louis Vuitton Ambre Levant Eau de Parfum 100 ml",
+      "name": "Louis Vuitton Ambre Levant",
+      "slug": "lv-ambre-levant",
+      "url": "https://parfumelux.uz/a/lv-ambre-levant",
+      "datasetId": "01a0e235-7d09-735a-a536-019f979873fa",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "130dcb36-cfed-44d6-9f21-afe2aceeebf7",
+      "title": "Louis Vuitton Apogée Eau de Parfum 100 ml",
+      "name": "Louis Vuitton Apogée",
+      "slug": "lv-apogee",
+      "url": "https://parfumelux.uz/a/lv-apogee",
+      "datasetId": "01a0e235-804f-707c-9b82-e1652cecbddb",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "31720525-a837-4ce4-bc86-0a244797a7d8",
+      "title": "Louis Vuitton Attrape-Reves Eau De Parfum 100 ml",
+      "name": "Louis Vuitton Attrape-Rêves",
+      "slug": "lv-attrape-reves",
+      "url": "https://parfumelux.uz/a/lv-attrape-reves",
+      "datasetId": "01a0e235-82f3-73b6-878e-27e898ac66e4",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "ab34e49d-7e10-41fb-ac67-405892225543",
+      "title": "Louis Vuitton California Dream Eau De Parfum",
+      "name": "Louis Vuitton California Dream",
+      "slug": "lv-california-dream",
+      "url": "https://parfumelux.uz/a/lv-california-dream",
+      "datasetId": "01a0e235-855e-737e-b073-e68dfceaafe9",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "9569631b-7582-47d1-9036-190eadbf109c",
+      "title": "Louis Vuitton City Of Stars Eau de Parfum 100 ml",
+      "name": "Louis Vuitton City Of Stars",
+      "slug": "lv-city-of-stars",
+      "url": "https://parfumelux.uz/a/lv-city-of-stars",
+      "datasetId": "01a0e235-d5d7-734d-8361-40bd4ed60415",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "b239e3e4-9d7f-404f-881e-97884b4a1874",
+      "title": "Louis Vuitton Cosmic Cloud Extrait de Parfum 100 ml",
+      "name": "Louis Vuitton Cosmic Cloud",
+      "slug": "lv-cosmic-cloud",
+      "url": "https://parfumelux.uz/a/lv-cosmic-cloud",
+      "datasetId": "01a0e235-d858-7069-9be9-31f0f7972a19",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "8c2b6cc8-db60-482c-a79d-757d558b1b51",
+      "title": "Louis Vuitton Dancing Blossom Extrait de Parfum",
+      "name": "Louis Vuitton Dancing Blossom",
+      "slug": "lv-dancing-blossom",
+      "url": "https://parfumelux.uz/a/lv-dancing-blossom",
+      "datasetId": "01a0e235-dad9-7072-8077-a8c3ea041fd9",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "1c48d88b-cf75-4805-8068-b5b2ea7097f2",
+      "title": "Louis Vuitton eLVes 100 ml",
+      "name": "Louis Vuitton eLVes",
+      "slug": "lv-elves",
+      "url": "https://parfumelux.uz/a/lv-elves",
+      "datasetId": "01a0e235-dd7a-7173-bab3-1fb23c3a4fca",
+      "scent": "gulli, mevali",
+      "scentSource": "description"
+    },
+    {
+      "productId": "4dcaac9b-6453-4839-8f7f-535580f28ba7",
+      "title": "Louis Vuitton L’Immensite Eau De Parfum 100 ml",
+      "name": "Louis Vuitton L'Immensité",
+      "slug": "lv-limmensite",
+      "url": "https://parfumelux.uz/a/lv-limmensite",
+      "datasetId": "01a0e235-dfef-70bd-b96f-138f5fd5a166",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "e62f8c25-fc97-4d84-844c-f4fb37afad05",
+      "title": "Louis Vuitton LV Lovers",
+      "name": "Louis Vuitton LV Lovers",
+      "slug": "lv-lovers",
+      "url": "https://parfumelux.uz/a/lv-lovers",
+      "datasetId": "01a0e235-e27a-728c-ba74-e5da2382dc2f",
+      "scent": "yog'ochli, amberli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "0ca35013-f4ad-406c-a7ab-ff13e707ef54",
+      "title": "Louis Vuitton Matiere Noire Eau de Parfum 100 ml",
+      "name": "Louis Vuitton Matière Noire",
+      "slug": "lv-matiere-noire",
+      "url": "https://parfumelux.uz/a/lv-matiere-noire",
+      "datasetId": "01a0e235-e54d-7360-96f3-2423dfee1262",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "3dbbcb87-dac8-4452-8e5e-860b21931f72",
+      "title": "Louis Vuitton Meteore Eau De Parfum 100 ml",
+      "name": "Louis Vuitton Météore",
+      "slug": "lv-meteore",
+      "url": "https://parfumelux.uz/a/lv-meteore",
+      "datasetId": "01a0e235-e7fc-7397-9147-7d71d4f7460d",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "4c9089e2-a3ee-4334-b774-ae6d05d98143",
+      "title": "Louis Vuitton Nouveau Monde 100 ml",
+      "name": "Louis Vuitton Nouveau Monde",
+      "slug": "lv-nouveau-monde",
+      "url": "https://parfumelux.uz/a/lv-nouveau-monde",
+      "datasetId": "01a0e235-eb90-733e-9276-072a065c74a8",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "ebdcf5d6-a8cf-4bf3-9c2a-470f986ff681",
+      "title": "Louis Vuitton Ombre Nomade Eau De Parfum",
+      "name": "Louis Vuitton Ombre Nomade",
+      "slug": "lv-ombre-nomade",
+      "url": "https://parfumelux.uz/a/lv-ombre-nomade",
+      "datasetId": "01a0e235-edc4-7225-b2d3-ae5bc0bac4e4",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "796d5216-9b63-4718-a307-cee27c0667e8",
+      "title": "Louis Vuitton On The Beach Eau de Parfum 100 ml",
+      "name": "Louis Vuitton On The Beach",
+      "slug": "lv-on-the-beach",
+      "url": "https://parfumelux.uz/a/lv-on-the-beach",
+      "datasetId": "01a0e236-4007-7069-9c61-d635ef6e79df",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "30f57439-59a3-45f0-b045-2e4708b0a26c",
+      "title": "Louis Vuitton Orage Eau De Parfum 100 ml",
+      "name": "Louis Vuitton Orage",
+      "slug": "lv-orage",
+      "url": "https://parfumelux.uz/a/lv-orage",
+      "datasetId": "01a0e236-42d3-73f1-ae05-1fc5bff419c5",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "5f28585e-9494-4f69-a6b3-ecae0eaf1800",
+      "title": "Louis Vuitton Stellar Times Extrait de Parfum 100 ml",
+      "name": "Louis Vuitton Stellar Times",
+      "slug": "lv-stellar-times",
+      "url": "https://parfumelux.uz/a/lv-stellar-times",
+      "datasetId": "01a0e236-44c9-7014-bc5c-bb174dfba98d",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "f4950aea-d3ee-4cde-bbfe-be18f84c3a38",
+      "title": "Louis Vuitton Symphony Extrait de Parfum 100 ml",
+      "name": "Louis Vuitton Symphony",
+      "slug": "lv-symphony",
+      "url": "https://parfumelux.uz/a/lv-symphony",
+      "datasetId": "01a0e236-4739-7233-a0c3-d7607a7ed875",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "2e1e0252-3139-4865-8db7-53293f53e79c",
+      "title": "PACIFIC CHILL — Louis Vuitton",
+      "name": "Louis Vuitton Pacific Chill",
+      "slug": "lv-pacific-chill",
+      "url": "https://parfumelux.uz/a/lv-pacific-chill",
+      "datasetId": "01a0e236-4940-700d-a0e9-893482841747",
+      "scent": "fresh, sitrusli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "ef24ca79-05a3-4fb2-b249-73a809239101",
+      "title": "M.MICALLEF YLANG IN GOLD 100ML",
+      "name": "M.Micallef Ylang In Gold",
+      "slug": "micallef-ylang-in-gold",
+      "url": "https://parfumelux.uz/a/micallef-ylang-in-gold",
+      "datasetId": "01a0e236-4bd2-71cf-a194-8c256a696a35",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "921616b8-f4b5-49b4-b0aa-8515c205ce34",
+      "title": "Maison Crivelli Oud Maracujá",
+      "name": "Maison Crivelli Oud Maracujá",
+      "slug": "maison-crivelli-oud-maracuja",
+      "url": "https://parfumelux.uz/a/maison-crivelli-oud-maracuja",
+      "datasetId": "01a0e236-4e27-73b8-8c72-c1a33caf1b90",
+      "scent": "mevali, oud, teri",
+      "scentSource": "description"
+    },
+    {
+      "productId": "edcd169b-b43f-4541-bdb0-ae0368436ee0",
+      "title": "Maison Crivelli Patchouli Magnetik",
+      "name": "Maison Crivelli Patchouli Magnetik",
+      "slug": "maison-crivelli-patchouli-magnetik",
+      "url": "https://parfumelux.uz/a/maison-crivelli-patchouli-magnetik",
+      "datasetId": "01a0e236-52d2-7080-af42-b3753bed4cab",
+      "scent": "yog'ochli, mevali",
+      "scentSource": "description"
+    },
+    {
+      "productId": "e8adbc9b-62a8-44c6-9b06-b7a26bfdd1d9",
+      "title": "MAISON MARGIELA REPLICA BEACH WALK 100ML",
+      "name": "Maison Margiela Replica Beach Walk",
+      "slug": "margiela-beach-walk",
+      "url": "https://parfumelux.uz/a/margiela-beach-walk",
+      "datasetId": "01a0e236-555a-727e-b3ac-7ee68a018687",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "bfd3f45c-fe55-4f21-9eca-75ec5fcde273",
+      "title": "Maison Margiela Replica By the Fireplace Eau de Toilette 100 ml",
+      "name": "Maison Margiela Replica By the Fireplace",
+      "slug": "margiela-fireplace",
+      "url": "https://parfumelux.uz/a/margiela-fireplace",
+      "datasetId": "01a0e236-577e-7220-a00e-8963697529e1",
+      "scent": "yog'ochli, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "f67685be-cb53-4845-8e6f-ca6a35ab1d42",
+      "title": "MARC-ANTOINE BARROIS — TILIA",
+      "name": "Marc-Antoine Barrois Tilia",
+      "slug": "marc-antoine-barrois-tilia",
+      "url": "https://parfumelux.uz/a/marc-antoine-barrois-tilia",
+      "datasetId": "01a0e236-ac15-73ef-ba1c-0af4b61de8aa",
+      "scent": "gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "67c85431-4c23-4ec9-a038-62e18a64c2eb",
+      "title": "Marc-Antoine Barrois Aldebaran",
+      "name": "Marc-Antoine Barrois Aldebaran",
+      "slug": "marc-antoine-barrois-aldebaran",
+      "url": "https://parfumelux.uz/a/marc-antoine-barrois-aldebaran",
+      "datasetId": "01a0e236-ae86-731d-b926-742f366ea2c6",
+      "scent": "fresh, gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "36419703-4d90-4b63-971a-7b9c83353e25",
+      "title": "MARC-ANTOINE BARROIS ENCELADE 100ML",
+      "name": "Marc-Antoine Barrois Encelade",
+      "slug": "marc-antoine-barrois-encelade",
+      "url": "https://parfumelux.uz/a/marc-antoine-barrois-encelade",
+      "datasetId": "01a0e236-b06d-73b7-bf0e-fd0e883628f3",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "864f8a72-4b22-4d57-8beb-d6929c4f67be",
+      "title": "Marc-Antoine Barrois Ganymede",
+      "name": "Marc-Antoine Barrois Ganymede",
+      "slug": "marc-antoine-barrois-ganymede",
+      "url": "https://parfumelux.uz/a/marc-antoine-barrois-ganymede",
+      "datasetId": "01a0e236-b2d8-7298-ac07-d1eab0b9a526",
+      "scent": "sitrusli, yog'ochli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "bf3ecc87-acf8-4e4a-8f43-2bec79b32a92",
+      "title": "MATIERE PREMIERE VANILLA POWDER 100ML",
+      "name": "Matière Première Vanilla Powder",
+      "slug": "matiere-premiere-vanilla-powder",
+      "url": "https://parfumelux.uz/a/matiere-premiere-vanilla-powder",
+      "datasetId": "01a0e236-b547-7093-af96-2d7bb0c50b70",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "6c6d4b37-bdd7-467c-979c-fe6122e62f16",
+      "title": "MFK AMYRIS HOMME 70ML",
+      "name": "MFK Amyris Homme",
+      "slug": "mfk-amyris-homme",
+      "url": "https://parfumelux.uz/a/mfk-amyris-homme",
+      "datasetId": "01a0e236-b764-7281-a2cf-004c825e336f",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "033cc20a-fd3d-49f1-b0af-3216fdd49c09",
+      "title": "MFK APOM 70ML",
+      "name": "MFK APOM",
+      "slug": "mfk-apom",
+      "url": "https://parfumelux.uz/a/mfk-apom",
+      "datasetId": "01a0e236-b9e6-722d-b3b1-dd90afe990d9",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "9c2163af-4c61-47c3-ba26-d1ec411c608c",
+      "title": "MILTON-LLOYD COLOUR ME DARK RED 100ML",
+      "name": "Milton-Lloyd Colour Me Dark Red",
+      "slug": "milton-lloyd-colour-me-dark-red",
+      "url": "https://parfumelux.uz/a/milton-lloyd-colour-me-dark-red",
+      "datasetId": "01a0e236-bbec-72ff-8e0e-a63d4e04dbf4",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "925713e2-ac91-495d-bced-8e19c41eeb65",
+      "title": "MILTON-LLOYD COLOUR ME GREEN 90ML",
+      "name": "Milton-Lloyd Colour Me Green",
+      "slug": "milton-lloyd-colour-me-green",
+      "url": "https://parfumelux.uz/a/milton-lloyd-colour-me-green",
+      "datasetId": "01a0e236-bde6-704f-b145-fcb35a3a46e9",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "2e9f02ab-5514-4463-831a-953af0c31a85",
+      "title": "MILTON-LLOYD COLOUR ME OUD 90ML",
+      "name": "Milton-Lloyd Colour Me Oud",
+      "slug": "milton-lloyd-colour-me-oud",
+      "url": "https://parfumelux.uz/a/milton-lloyd-colour-me-oud",
+      "datasetId": "01a0e236-bfdd-70f8-a0f9-d7d42d7655e0",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "07f55253-84c3-4e99-bdfb-def29f4242b1",
+      "title": "MILTON-LLOYD PERFUMER'S CHOISE MOJO 83ML",
+      "name": "Milton-Lloyd Perfumer's Choice Mojo",
+      "slug": "milton-lloyd-mojo",
+      "url": "https://parfumelux.uz/a/milton-lloyd-mojo",
+      "datasetId": "01a0e237-28ae-7360-9f10-709e343ec97c",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "2822cb1f-6d52-4225-8955-8919cad548a5",
+      "title": "MOLINARD LE REVE NIRMALA 75ML",
+      "name": "Molinard Le Rêve Nirmala",
+      "slug": "molinard-le-reve-nirmala",
+      "url": "https://parfumelux.uz/a/molinard-le-reve-nirmala",
+      "datasetId": "01a0e237-2acc-725a-9fe9-e49f3e9a2a49",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "65f12743-918d-4d65-b970-eef69d2f91fd",
+      "title": "MOLINARD NIRMALA 75ML",
+      "name": "Molinard Nirmala",
+      "slug": "molinard-nirmala",
+      "url": "https://parfumelux.uz/a/molinard-nirmala",
+      "datasetId": "01a0e237-2d1b-700a-9066-78e71c6ad0b9",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "a9325aa5-c16e-428a-9234-fd412f271228",
+      "title": "Montale Intense Cafe Eau de Parfum 100 ml",
+      "name": "Montale Intense Cafe",
+      "slug": "montale-intense-cafe",
+      "url": "https://parfumelux.uz/a/montale-intense-cafe",
+      "datasetId": "01a0e237-2f69-7392-995b-93bb1c87b138",
+      "scent": "sharqona, vanilli, gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "922d71f7-fe2b-4ab5-af85-e736f96c4dd3",
+      "title": "MONTALE PARIS AOUD QUEEN ROSES 100ML",
+      "name": "Montale Aoud Queen Roses",
+      "slug": "montale-aoud-queen-roses",
+      "url": "https://parfumelux.uz/a/montale-aoud-queen-roses",
+      "datasetId": "01a0e237-319d-708c-9b87-179a03e08d4b",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "eb4c799a-2b0a-4c00-8339-9913c319e06b",
+      "title": "MONTALE PARIS ARABIANS ROSE LEATHER 100ML",
+      "name": "Montale Arabians Rose Leather",
+      "slug": "montale-arabians-rose-leather",
+      "url": "https://parfumelux.uz/a/montale-arabians-rose-leather",
+      "datasetId": "01a0e237-34e1-70c9-8a64-6867c974faed",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "1a7f455e-1537-4434-a050-de035054e600",
+      "title": "MONTALE PARIS BEAST LOVE 100ML",
+      "name": "Montale Beast Love",
+      "slug": "montale-beast-love",
+      "url": "https://parfumelux.uz/a/montale-beast-love",
+      "datasetId": "01a0e237-36ee-7398-8773-53bd0d692bc6",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "fb7f7ad5-3968-408f-b092-b68cd1cc62b2",
+      "title": "MONTALE PARIS CRAZY IN LOVE 100ML",
+      "name": "Montale Crazy In Love",
+      "slug": "montale-crazy-in-love",
+      "url": "https://parfumelux.uz/a/montale-crazy-in-love",
+      "datasetId": "01a0e237-38e0-7235-84b9-4a4044bfc93b",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "6ffcced4-5e64-4f8e-bd9c-4a3ba604e9be",
+      "title": "MONTALE ROSES MUSC INTENSE 100ML",
+      "name": "Montale Roses Musk Intense",
+      "slug": "montale-roses-musc-intense",
+      "url": "https://parfumelux.uz/a/montale-roses-musc-intense",
+      "datasetId": "01a0e237-3b90-7025-b1f7-d6d4ee97c131",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "ed4fc197-0c92-4ac5-8e85-04b4403a00cb",
+      "title": "MONTBLANC INDIVIDUEL 75ML",
+      "name": "Montblanc Individuel",
+      "slug": "montblanc-individuel",
+      "url": "https://parfumelux.uz/a/montblanc-individuel",
+      "datasetId": "01a0e237-3dad-732f-afa9-47fc2655dfee",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "93079ad7-b941-4931-bd46-0af44ddb9559",
+      "title": "MONTBLANC SIGNATURE 90ML",
+      "name": "Montblanc Signature",
+      "slug": "montblanc-signature",
+      "url": "https://parfumelux.uz/a/montblanc-signature",
+      "datasetId": "01a0e237-906c-7136-a5bf-a059b48ee766",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "1cdfb8cd-5c3b-4659-98b9-1273efa88c48",
+      "title": "MOSCHINO UOMO 125ML",
+      "name": "Moschino Uomo",
+      "slug": "moschino-uomo",
+      "url": "https://parfumelux.uz/a/moschino-uomo",
+      "datasetId": "01a0e237-927f-729b-8316-f3d409cdd4d7",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "36f62cbc-55b1-40d4-908f-aa00b3e58128",
+      "title": "My Burberry Blush Eau De Parfum",
+      "name": "My Burberry Blush",
+      "slug": "my-burberry-blush",
+      "url": "https://parfumelux.uz/a/my-burberry-blush",
+      "datasetId": "01a0e237-9480-732d-ac83-d2cd1eeac18f",
+      "scent": "mevali, gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "286298ee-ddcf-43b9-83ac-fb0fc07d7587",
+      "title": "NISHANE FAN YOUR FLAMES X 50ML",
+      "name": "Nishane Fan Your Flames X",
+      "slug": "nishane-fan-your-flames",
+      "url": "https://parfumelux.uz/a/nishane-fan-your-flames",
+      "datasetId": "01a0e237-971b-71dc-84f1-66da7aa57c46",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "3ea57f85-bdd0-43d4-94ca-b338c5e42e67",
+      "title": "Nishane Hacivat Extrait de Parfum 100 ml",
+      "name": "Nishane Hacivat",
+      "slug": "nishane-hacivat",
+      "url": "https://parfumelux.uz/a/nishane-hacivat",
+      "datasetId": "01a0e237-9930-733f-82ef-d1f88b054419",
+      "scent": "mevali, yog'ochli, fresh",
+      "scentSource": "description"
+    },
+    {
+      "productId": "2dc1104d-59d8-4eca-9133-535fc146d7ee",
+      "title": "NISHANE KREDO 100ML",
+      "name": "Nishane Kredo",
+      "slug": "nishane-kredo",
+      "url": "https://parfumelux.uz/a/nishane-kredo",
+      "datasetId": "01a0e237-9b5b-723a-bffd-337d7c20fdc0",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "2463a349-3267-4a4f-8fc8-a209a3ee37da",
+      "title": "NISHANE TERO 100ML",
+      "name": "Nishane Tero",
+      "slug": "nishane-tero",
+      "url": "https://parfumelux.uz/a/nishane-tero",
+      "datasetId": "01a0e237-9d56-71d5-b135-763db7ba40ff",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "2c7c0d85-31e0-49be-8bbc-cadf53481d26",
+      "title": "NOBILE 1942 SANDALO NOBILE 100ML",
+      "name": "Nobile 1942 Sandalo Nobile",
+      "slug": "nobile-1942-sandalo",
+      "url": "https://parfumelux.uz/a/nobile-1942-sandalo",
+      "datasetId": "01a0e237-9f46-7048-aea3-17cfa83b9713",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "53f6cb66-6f99-4590-8ae4-9779a2b014ff",
+      "title": "NOBLE ROYALE SOLEIL ROYAL 100ML",
+      "name": "Noble Royale Soleil Royal",
+      "slug": "noble-royale-soleil-royal",
+      "url": "https://parfumelux.uz/a/noble-royale-soleil-royal",
+      "datasetId": "01a0e237-a208-7254-a16a-11b4f6f21cc1",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "ee803a1f-dfc1-4ab4-b97e-4aefdc9a7b4b",
+      "title": "ORMONDE JAYNE 3. TSARINA INTENSIVO 50ML",
+      "name": "Ormonde Jayne Tsarina Intensivo",
+      "slug": "ormonde-jayne-tsarina",
+      "url": "https://parfumelux.uz/a/ormonde-jayne-tsarina",
+      "datasetId": "01a0e237-a420-7196-af9b-84015d59fc6b",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "39386c4a-04cc-4465-a150-ced5b761ee52",
+      "title": "Paco Rabanne Invictus Eau de Toilette 100 ml",
+      "name": "Paco Rabanne Invictus",
+      "slug": "paco-rabanne-invictus",
+      "url": "https://parfumelux.uz/a/paco-rabanne-invictus",
+      "datasetId": "01a0e237-f741-73eb-a866-2a6d75f76ae5",
+      "scent": "fresh, yog'ochli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "473a330f-41cb-4783-af83-c3087864dafa",
+      "title": "PACO RABANNE LADY MILLION 80ML",
+      "name": "Paco Rabanne Lady Million",
+      "slug": "paco-rabanne-lady-million",
+      "url": "https://parfumelux.uz/a/paco-rabanne-lady-million",
+      "datasetId": "01a0e237-fa09-724d-aaa9-767b1e886b02",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "e84ef63d-188a-41ea-b827-1d0f3962e83d",
+      "title": "PACO RABANNE MILLION 100ML",
+      "name": "Paco Rabanne 1 Million",
+      "slug": "paco-rabanne-million",
+      "url": "https://parfumelux.uz/a/paco-rabanne-million",
+      "datasetId": "01a0e237-fc8c-70c2-9cbb-41bd06108c5a",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "95a57a34-96c5-4b97-a1b6-071862da3059",
+      "title": "Paco Rabanne Phantom Eau de Toilette 100 ml",
+      "name": "Paco Rabanne Phantom",
+      "slug": "paco-rabanne-phantom",
+      "url": "https://parfumelux.uz/a/paco-rabanne-phantom",
+      "datasetId": "01a0e237-ff4e-71b8-af32-7131d543b817",
+      "scent": "fresh, yog'ochli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "27731f92-e3af-4b42-a429-14b0c5365cae",
+      "title": "PANTHEON ROMA AUREA 100ML",
+      "name": "Pantheon Roma Aurea",
+      "slug": "pantheon-roma-aurea",
+      "url": "https://parfumelux.uz/a/pantheon-roma-aurea",
+      "datasetId": "01a0e238-018a-72c0-9091-6d1545c0ae2f",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "60ccfa02-0763-4eeb-a644-773b368cb4da",
+      "title": "PANTHEON ROMA M 100ML",
+      "name": "Pantheon Roma M",
+      "slug": "pantheon-roma-m",
+      "url": "https://parfumelux.uz/a/pantheon-roma-m",
+      "datasetId": "01a0e238-03ec-7055-b115-e1d7c06205e6",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "52dd19c3-d0d6-4d84-abfd-8d7e0d90cb72",
+      "title": "PANTHEON ROMA R 100ML",
+      "name": "Pantheon Roma R",
+      "slug": "pantheon-roma-r",
+      "url": "https://parfumelux.uz/a/pantheon-roma-r",
+      "datasetId": "01a0e238-0608-7053-935b-e37af6f2cf56",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "d6fdbcd9-5643-46aa-b4ee-e1d591848d7e",
+      "title": "PARFUMS DE MARLY ALTHAIR 125ML",
+      "name": "Parfums de Marly Althaïr",
+      "slug": "pdm-althair",
+      "url": "https://parfumelux.uz/a/pdm-althair",
+      "datasetId": "01a0e238-085b-7144-9a8b-d5cef98d856b",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "42acd2e3-a6b2-4c3c-bbe6-cd11234c2fd2",
+      "title": "PARFUMS DE MARLY BYERLEY 125ML",
+      "name": "Parfums de Marly Byerley",
+      "slug": "pdm-byerley",
+      "url": "https://parfumelux.uz/a/pdm-byerley",
+      "datasetId": "01a0e238-0aa9-718b-bf64-8565a3535b61",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "b8e50646-b1f6-42bd-abd0-3b95b18ba85f",
+      "title": "PARFUMS DE MARLY CASSILI 75ML",
+      "name": "Parfums de Marly Cassili",
+      "slug": "pdm-cassili",
+      "url": "https://parfumelux.uz/a/pdm-cassili",
+      "datasetId": "01a0e238-0ca6-70e7-acf7-5430518db6cd",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "a8a9947b-6588-474f-8f4b-7f1163bd0a76",
+      "title": "Parfums de Marly Herod Eau de Parfum 125 ml",
+      "name": "Parfums de Marly Herod",
+      "slug": "pdm-herod",
+      "url": "https://parfumelux.uz/a/pdm-herod",
+      "datasetId": "01a0e238-6292-7312-a02f-8e3c9beae133",
+      "scent": "yog'ochli, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "fa712418-2599-4ead-ab85-62160f169c42",
+      "title": "Parfums de Marly Layton Eau de Parfum 125 ml",
+      "name": "Parfums de Marly Layton",
+      "slug": "pdm-layton",
+      "url": "https://parfumelux.uz/a/pdm-layton",
+      "datasetId": "01a0e238-649e-71b8-831d-0f84d2ae266b",
+      "scent": "sharqona, gulli, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "96017648-8543-45b2-9c54-1c09db345ec7",
+      "title": "PARFUMS DE MARLY PEGASUS EXCLUSIF 125ML",
+      "name": "Parfums de Marly Pegasus Exclusif",
+      "slug": "pdm-pegasus",
+      "url": "https://parfumelux.uz/a/pdm-pegasus",
+      "datasetId": "01a0e238-66d6-723b-a8d5-75a6c5ded6ae",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "536f0f2e-1c53-4dda-9ab7-9b84c21ee714",
+      "title": "PRADA PARADOXE INTENSE 90ML",
+      "name": "Prada Paradoxe Intense",
+      "slug": "prada-paradoxe-intense",
+      "url": "https://parfumelux.uz/a/prada-paradoxe-intense",
+      "datasetId": "01a0e238-6925-7112-bb80-0551875c7bb8",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "3a91eca2-ca1c-467b-bd9c-2dad920e9823",
+      "title": "PRADA PARADOXE VIRTUAL FLOWER 90ML",
+      "name": "Prada Paradoxe Virtual Flower",
+      "slug": "prada-paradoxe-virtual-flower",
+      "url": "https://parfumelux.uz/a/prada-paradoxe-virtual-flower",
+      "datasetId": "01a0e238-6b44-70ab-bc54-033931b3b756",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "86ba06db-f478-40c0-97b7-c65d5d4ca351",
+      "title": "ROJA 51 ESSENCE DE PARFUM 100ML",
+      "name": "Roja 51",
+      "slug": "roja-51",
+      "url": "https://parfumelux.uz/a/roja-51",
+      "datasetId": "01a0e238-6dee-7141-83ab-e079e6d1e1c9",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "2fc728d2-51af-4b71-9498-6f10a0e99366",
+      "title": "ROJA ELYSIUM POUR HOMME 100ML",
+      "name": "Roja Elysium Pour Homme",
+      "slug": "roja-elysium",
+      "url": "https://parfumelux.uz/a/roja-elysium",
+      "datasetId": "01a0e238-700d-734e-a2ce-591f5b0ee9c5",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "762bf3e3-a4fa-4ca6-9d77-de73bc4a81a8",
+      "title": "ROJA SCANDAL POUR HOMME 50ML",
+      "name": "Roja Scandal Pour Homme",
+      "slug": "roja-scandal",
+      "url": "https://parfumelux.uz/a/roja-scandal",
+      "datasetId": "01a0e238-724a-7204-a9dd-780f3fffb0bf",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "6cd450d2-4c23-4cc9-a247-6c9294388e6e",
+      "title": "ROJA VETIVER PARFUM COLOGNE 100ML",
+      "name": "Roja Vetiver Parfum Cologne",
+      "slug": "roja-vetiver",
+      "url": "https://parfumelux.uz/a/roja-vetiver",
+      "datasetId": "01a0e238-753e-731a-9ac7-924b400ca56a",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "59ac38c0-ee1d-4843-94b1-e314a5b454b9",
+      "title": "ROSENDO MATEU INCENSE WOOD 100ML",
+      "name": "Rosendo Mateu Incense Wood",
+      "slug": "rosendo-mateu-incense-wood",
+      "url": "https://parfumelux.uz/a/rosendo-mateu-incense-wood",
+      "datasetId": "01a0e238-7830-71a3-8650-6a681c298071",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "924b565b-65a3-4637-a24b-f7a1e540198b",
+      "title": "SOPHIE LA GIRAF EAU DE SOIN 50ML",
+      "name": "Sophie la Girafe Eau de Soin",
+      "slug": "sophie-la-giraf",
+      "url": "https://parfumelux.uz/a/sophie-la-giraf",
+      "datasetId": "01a0e238-d55e-72fe-b2f5-75296e889cbf",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "8aee5ed8-cebf-48bc-aecf-c314d42c7482",
+      "title": "SPIRIT OF KINGS SAGIRA 100ML",
+      "name": "Spirit of Kings Sagira",
+      "slug": "spirit-of-kings-sagira",
+      "url": "https://parfumelux.uz/a/spirit-of-kings-sagira",
+      "datasetId": "01a0e238-d7f4-7187-a836-9b8cff14ffd4",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "7c3804d1-81b4-4cb2-b466-9cef7d612106",
+      "title": "THE HARMONIST FLORAE NEBULAE 50ML",
+      "name": "The Harmonist Florae Nebulae",
+      "slug": "harmonist-florae-nebulae",
+      "url": "https://parfumelux.uz/a/harmonist-florae-nebulae",
+      "datasetId": "01a0e238-d9f3-70d1-9bab-da08c0f6190d",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "617156e9-5ad3-4ed2-8ebe-ca2e58374821",
+      "title": "THE HARMONIST OUD NEBULA 50ML",
+      "name": "The Harmonist Oud Nebula",
+      "slug": "harmonist-oud-nebula",
+      "url": "https://parfumelux.uz/a/harmonist-oud-nebula",
+      "datasetId": "01a0e238-dbe3-7190-9873-e617f46672a3",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "b0936140-8eeb-4ebf-a834-1ed3c0d63587",
+      "title": "THOMAS KOSMALA №4 CANDY 100ML",
+      "name": "Thomas Kosmala №4 Candy",
+      "slug": "thomas-kosmala-candy",
+      "url": "https://parfumelux.uz/a/thomas-kosmala-candy",
+      "datasetId": "01a0e238-de55-72ad-8b10-babd1713818e",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "6e308a1b-e192-4102-81cf-df981b1cd20d",
+      "title": "TIZIANA TERENZI CAS 100ML",
+      "name": "Tiziana Terenzi Cas",
+      "slug": "tiziana-terenzi-cas",
+      "url": "https://parfumelux.uz/a/tiziana-terenzi-cas",
+      "datasetId": "01a0e238-e0b9-72f6-805a-e7b8774a73e1",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "429f4c4e-55ee-4ff1-96c0-f2cc56a51048",
+      "title": "TIZIANA TERENZI KIRKE OVERDOSE 100ML",
+      "name": "Tiziana Terenzi Kirke Overdose",
+      "slug": "tiziana-terenzi-kirke-overdose",
+      "url": "https://parfumelux.uz/a/tiziana-terenzi-kirke-overdose",
+      "datasetId": "01a0e238-e33c-7291-ad98-92a751888762",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "77764c4b-58d3-4064-bf40-c7c3a4c03bd4",
+      "title": "Tom Ford Black Orchid Eau de Parfum 50 ml",
+      "name": "Tom Ford Black Orchid",
+      "slug": "tom-ford-black-orchid",
+      "url": "https://parfumelux.uz/a/tom-ford-black-orchid",
+      "datasetId": "01a0e238-e65c-71a0-85bf-c4f0508d1ca9",
+      "scent": "gulli, sharqona",
+      "scentSource": "description"
+    },
+    {
+      "productId": "5b324216-eb6b-4186-a8b0-050af286181c",
+      "title": "TOM FORD BOIS PACIFIQUE 100ML",
+      "name": "Tom Ford Bois Pacifique",
+      "slug": "tom-ford-bois-pacifique",
+      "url": "https://parfumelux.uz/a/tom-ford-bois-pacifique",
+      "datasetId": "01a0e238-ea2a-7055-a145-c3d8b763a52b",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "7e36f748-b5f6-4b13-998f-6ac1f0ecccc6",
+      "title": "TOM FORD CAFE ROSE 100ML",
+      "name": "Tom Ford Café Rose",
+      "slug": "tom-ford-cafe-rose",
+      "url": "https://parfumelux.uz/a/tom-ford-cafe-rose",
+      "datasetId": "01a0e238-ece2-7263-81bc-f95259479b76",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "90b7009b-5ff0-4ec8-91cd-922ecfece5f8",
+      "title": "TOM FORD LOST CHERRY GIFT SET 100ML",
+      "name": "Tom Ford Lost Cherry",
+      "slug": "tom-ford-lost-cherry",
+      "url": "https://parfumelux.uz/a/tom-ford-lost-cherry",
+      "datasetId": "01a0e239-49e6-7258-a996-241a23fd9cc1",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "64b08a6d-f343-499f-88a5-413fa575456e",
+      "title": "Tom Ford Ombre Leather Eau de Parfum 100 ml",
+      "name": "Tom Ford Ombré Leather",
+      "slug": "tom-ford-ombre-leather",
+      "url": "https://parfumelux.uz/a/tom-ford-ombre-leather",
+      "datasetId": "01a0e239-4c14-7125-a7ec-bb65e705e3e8",
+      "scent": "teri, amberli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "d00d2b9c-ae49-4a3e-8073-6ffec9dd7239",
+      "title": "Tom Ford Oud Wood Eau de Parfum 50 ml",
+      "name": "Tom Ford Oud Wood",
+      "slug": "tom-ford-oud-wood",
+      "url": "https://parfumelux.uz/a/tom-ford-oud-wood",
+      "datasetId": "01a0e239-4e14-73de-b1b7-f99406b45be7",
+      "scent": "oud, yog'ochli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "1d3a58c9-0a90-4579-8408-27e61c42c54d",
+      "title": "TOM FORD ROSE D'AMALFI 100ML",
+      "name": "Tom Ford Rose d'Amalfi",
+      "slug": "tom-ford-rose-amalfi",
+      "url": "https://parfumelux.uz/a/tom-ford-rose-amalfi",
+      "datasetId": "01a0e239-4ff4-71a3-a9b4-a14bbdc2d598",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "f5fb51c0-0b8d-46d6-9797-2cc1faf188cb",
+      "title": "TOM FORD VELVET ORCHID 100ML",
+      "name": "Tom Ford Velvet Orchid",
+      "slug": "tom-ford-velvet-orchid",
+      "url": "https://parfumelux.uz/a/tom-ford-velvet-orchid",
+      "datasetId": "01a0e239-53c3-7320-9333-1c0736dc71d7",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "58640daa-f38b-49be-8e9b-f0509c8d256a",
+      "title": "Valentino Donna Born in Roma Eau de Parfum 100 ml",
+      "name": "Valentino Donna Born in Roma",
+      "slug": "valentino-donna-born-in-roma",
+      "url": "https://parfumelux.uz/a/valentino-donna-born-in-roma",
+      "datasetId": "01a0e239-55c7-7368-a3df-b7f0b0747f77",
+      "scent": "sharqona, gulli, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "0fee1f87-073a-4dd8-96f5-03525624a4c0",
+      "title": "Valentino Uomo Born in Roma Eau de Toilette 100 ml",
+      "name": "Valentino Uomo Born in Roma",
+      "slug": "valentino-uomo-born-in-roma",
+      "url": "https://parfumelux.uz/a/valentino-uomo-born-in-roma",
+      "datasetId": "01a0e239-57c1-73df-871a-b11221293da2",
+      "scent": "yog'ochli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "2f5dc2fc-b526-4dc5-8812-4bdfb84012f2",
+      "title": "Versace Bright Crystal",
+      "name": "Versace Bright Crystal",
+      "slug": "versace-bright-crystal",
+      "url": "https://parfumelux.uz/a/versace-bright-crystal",
+      "datasetId": "01a0e239-59f1-70ee-a14f-656c31787fc4",
+      "scent": "fresh, gulli, mevali",
+      "scentSource": "description"
+    },
+    {
+      "productId": "40697d2a-eafb-4f44-b18a-ee0bbfd00a87",
+      "title": "VERSACE CRYSTAL NOIR",
+      "name": "Versace Crystal Noir",
+      "slug": "versace-crystal-noir",
+      "url": "https://parfumelux.uz/a/versace-crystal-noir",
+      "datasetId": "01a0e239-5c01-707a-9f04-2b2b66379e12",
+      "scent": "gulli, amberli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "ba36f991-bc22-4813-888f-e0f56b8aa3a5",
+      "title": "Versace Dylan Blue Pour Homme Eau de Toilette 100 ml",
+      "name": "Versace Dylan Blue Pour Homme",
+      "slug": "versace-dylan-blue",
+      "url": "https://parfumelux.uz/a/versace-dylan-blue",
+      "datasetId": "01a0e239-5e9f-7247-b3a6-ae1d815c8cb9",
+      "scent": "fresh, yog'ochli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "76614d60-c8ad-40cf-9fd4-d557652fab00",
+      "title": "Versace Eros Eau de Toilette 100 ml",
+      "name": "Versace Eros",
+      "slug": "versace-eros",
+      "url": "https://parfumelux.uz/a/versace-eros",
+      "datasetId": "01a0e239-b94a-70ba-a00e-58a7e1c2797e",
+      "scent": "fresh, shirin, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "42852cf0-b949-46d6-ab70-8281cca7cc6a",
+      "title": "VICTORIA'S SECRET BOMBSHELL INTENSE 50ML",
+      "name": "Victoria's Secret Bombshell Intense",
+      "slug": "victorias-secret-bombshell-intense",
+      "url": "https://parfumelux.uz/a/victorias-secret-bombshell-intense",
+      "datasetId": "01a0e239-bb64-7332-863f-1c8f7392429d",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "0a32d0e0-9b8e-4f38-81f6-384eacdddc2f",
+      "title": "VS HIM DEEP WATER 50ML",
+      "name": "VS Him Deep Water",
+      "slug": "vs-him-deep-water",
+      "url": "https://parfumelux.uz/a/vs-him-deep-water",
+      "datasetId": "01a0e239-bda6-7049-83bb-9d3d04851de0",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "666c23c8-8c3a-4ace-9ef6-1b88c0687f46",
+      "title": "VIKTOR & ROLF SPICEBOMB 90ML",
+      "name": "Viktor & Rolf Spicebomb",
+      "slug": "viktor-rolf-spicebomb",
+      "url": "https://parfumelux.uz/a/viktor-rolf-spicebomb",
+      "datasetId": "01a0e239-bfb3-70ba-a42b-ddcd59bf7331",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "a2cb8ec7-5066-4292-9a54-25b38681d126",
+      "title": "VIKTOR & ROLF SPICEBOMB EXTREME 90ML",
+      "name": "Viktor & Rolf Spicebomb Extreme",
+      "slug": "viktor-rolf-spicebomb-extreme",
+      "url": "https://parfumelux.uz/a/viktor-rolf-spicebomb-extreme",
+      "datasetId": "01a0e239-c3f1-7307-9c9d-bb69393ce3cf",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "f0f386a1-974a-4380-ae53-bf33735dfebf",
+      "title": "VILHELM PARFUMERIE CHIMILKA 100ML",
+      "name": "Vilhelm Parfumerie Chimilka",
+      "slug": "vilhelm-chimilka",
+      "url": "https://parfumelux.uz/a/vilhelm-chimilka",
+      "datasetId": "01a0e239-c69d-727d-8d7c-483f8377268b",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "e1e7f5fa-310f-4387-9fb0-b84c8fa11be5",
+      "title": "XERJOFF ACCENTO PURPLE",
+      "name": "Xerjoff Accento Purple",
+      "slug": "xerjoff-accento",
+      "url": "https://parfumelux.uz/a/xerjoff-accento",
+      "datasetId": "01a0e239-c8d1-7110-b04e-6f66ccd411ef",
+      "scent": "mevali, gulli, oud",
+      "scentSource": "description"
+    },
+    {
+      "productId": "ed5beceb-389b-4c6d-bb97-f141212363fb",
+      "title": "Xerjoff Alexandria II 100 ml",
+      "name": "Xerjoff Alexandria II",
+      "slug": "xerjoff-alexandria-ii",
+      "url": "https://parfumelux.uz/a/xerjoff-alexandria-ii",
+      "datasetId": "01a0e239-cabb-71c1-be30-a6c6fca97b69",
+      "scent": "sharqona, oud, amberli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "928b4a7b-3c82-4c34-ae41-c3aae305c95b",
+      "title": "Xerjoff Erba Pura Eau de Parfum 100 ml",
+      "name": "Xerjoff Erba Pura",
+      "slug": "xerjoff-erba-pura",
+      "url": "https://parfumelux.uz/a/xerjoff-erba-pura",
+      "datasetId": "01a0e239-cd7c-735b-81b4-2526ebd6585e",
+      "scent": "sitrusli, mevali, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "0c75b4fb-0cbc-4c5a-8858-c4a560af42cf",
+      "title": "XERJOFF MORE THAN WORDS",
+      "name": "Xerjoff More Than Words",
+      "slug": "xerjoff-more-than-words",
+      "url": "https://parfumelux.uz/a/xerjoff-more-than-words",
+      "datasetId": "01a0e239-d011-7150-8849-f3835c5a020a",
+      "scent": "mevali, oud, gulli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "782621e0-f8b8-4e40-aeec-c2ea9dd91619",
+      "title": "Xerjoff Naxos Eau de Parfum 100 ml",
+      "name": "Xerjoff Naxos",
+      "slug": "xerjoff-naxos",
+      "url": "https://parfumelux.uz/a/xerjoff-naxos",
+      "datasetId": "01a0e23a-18b6-73b0-aeaa-9ad6a3aea60a",
+      "scent": "shirin, sitrusli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "26a58fcf-8450-4b15-9b6a-a3b6f3190f21",
+      "title": "XERJOFF TORINO 21 100ML",
+      "name": "Xerjoff Torino 21",
+      "slug": "xerjoff-torino-21",
+      "url": "https://parfumelux.uz/a/xerjoff-torino-21",
+      "datasetId": "01a0e23a-1cc2-71bd-9475-bfbf7facc64e",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "db2e44b8-61b2-4883-a04e-17f4d40d3c01",
+      "title": "YSL La Nuit de L'Homme Eau de Toilette 100 ml",
+      "name": "YSL La Nuit de L'Homme",
+      "slug": "ysl-la-nuit-de-lhomme",
+      "url": "https://parfumelux.uz/a/ysl-la-nuit-de-lhomme",
+      "datasetId": "01a0e23a-5019-73ae-bd90-5377f3377cbc",
+      "scent": "yog'ochli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "5b20536f-099b-44b4-a772-5f1b10097a92",
+      "title": "YSL Libre Eau De Parfum",
+      "name": "YSL Libre",
+      "slug": "ysl-libre",
+      "url": "https://parfumelux.uz/a/ysl-libre",
+      "datasetId": "01a0e23a-560e-73c2-b749-a6451cbaa2f3",
+      "scent": "gulli, sitrusli, vanilli",
+      "scentSource": "description"
+    },
+    {
+      "productId": "af370234-1a34-413b-9e88-c877641b1f09",
+      "title": "YSL MYSLF 100ML",
+      "name": "YSL MYSLF",
+      "slug": "ysl-myslf",
+      "url": "https://parfumelux.uz/a/ysl-myslf",
+      "datasetId": "01a0e23a-5935-73ab-9465-9b843e08a5cf",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "b581ae7a-822f-45c0-be7e-5c9395e06d95",
+      "title": "YSL Y 100ML",
+      "name": "YSL Y",
+      "slug": "ysl-y",
+      "url": "https://parfumelux.uz/a/ysl-y",
+      "datasetId": "01a0e23a-5b5d-70db-bab6-ae670bcd9e11",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "68681cb3-147a-4390-966b-a399561a6b8f",
+      "title": "YSL Y L'ELIXIR 60ML",
+      "name": "YSL Y L'Elixir",
+      "slug": "ysl-y-elixir",
+      "url": "https://parfumelux.uz/a/ysl-y-elixir",
+      "datasetId": "01a0e23a-5d85-71b7-8cd2-f3118de835b4",
+      "scent": null,
+      "scentSource": "yo'q"
+    },
+    {
+      "productId": "5b2b4851-2b25-4f1a-ad2b-88e50919a036",
+      "title": "ZARKOPERFUME OUD-COUTURE 100ML",
+      "name": "Zarkoperfume Oud-Couture",
+      "slug": "zarkoperfume-oud-couture",
+      "url": "https://parfumelux.uz/a/zarkoperfume-oud-couture",
+      "datasetId": "01a0e23a-5fa8-7339-be01-099b3b5cb4e6",
+      "scent": null,
+      "scentSource": "yo'q"
+    }
+  ],
+  "skipped": [
+    {
+      "productId": "1d9dbfb0-80cc-4c9e-aa93-11123dad5a04",
+      "title": "Chanel Bleu de Chanel Eau de Parfum 100 ml",
+      "reason": "Mavjud 'Bleu de Chanel bormi?' yozuvi Parfum versiyasiga olib boradi; ikkinchi deyarli bir xil yozuv botni chalg'itadi. Kerak bo'lsa mavjud yozuvga EDP havolasini qo'shish kerak."
+    },
+    {
+      "productId": "86db76e4-e581-4ba4-a066-15cfd5bbc37a",
+      "title": "CLIVE CHRISTIAN XXI ART DECO - BLONDE AMBER 50ML",
+      "reason": "Clive Christian XXI Blonde Amber (0eb7b781) bilan bir xil atir, takror; yozuv 0eb7b781 ga qo'shildi."
+    }
+  ],
+  "existingBefore": [
+    "Bvlgari Tygar",
+    "Chanel Allure",
+    "Miss Dior",
+    "Dior Sauvage (Elixir + EDP)",
+    "MFK Baccarat Rouge 540",
+    "Creed Aventus",
+    "LV Imagination",
+    "Tom Ford Tobacco Vanille",
+    "PDM Delina",
+    "YSL Black Opium",
+    "Bleu de Chanel Parfum",
+    "Amouage Guidance",
+    "Coco Mademoiselle"
+  ]
+}
