@@ -75,3 +75,39 @@ export function promoEndLabel(lang: "uz" | "ru", promo: PromoConfig = PROMO): st
   const m = d.getUTCMonth();
   return lang === "ru" ? `до ${day} ${MONTHS_RU[m]}` : `${day}-${MONTHS_UZ[m]}gacha`;
 }
+
+export type PromoCountdown = {
+  days: number;
+  hours: number;
+  minutes: number;
+};
+
+const MINUTE_MS = 60_000;
+
+/**
+ * Tugashigacha qolgan butun daqiqalar (yuqoriga yaxlitlangan: 30 soniya
+ * qolganda ham "1 daqiqa" — aksiya hali faol turganda "00" ko'rinmasin).
+ * Aksiya nofaol bo'lsa — null.
+ */
+export function promoMinutesLeft(now: number, promo: PromoConfig = PROMO): number | null {
+  if (!isPromoActive(now, promo)) return null;
+  return Math.ceil((Date.parse(promo.endsAt) - now) / MINUTE_MS);
+}
+
+/** Qolgan daqiqalarni kun · soat · daqiqaga bo'ladi. */
+export function splitMinutes(totalMinutes: number): PromoCountdown {
+  const m = Math.max(0, Math.floor(totalMinutes));
+  return {
+    days: Math.floor(m / 1440),
+    hours: Math.floor((m % 1440) / 60),
+    minutes: m % 60,
+  };
+}
+
+/** Keyingi daqiqa o'zgarishigacha ms — countdown taymeri shunga tekislanadi. */
+export function msToNextMinuteTick(now: number, promo: PromoConfig = PROMO): number {
+  const left = Date.parse(promo.endsAt) - now;
+  if (!Number.isFinite(left) || left <= 0) return MINUTE_MS;
+  const rest = left % MINUTE_MS;
+  return rest === 0 ? MINUTE_MS : rest;
+}

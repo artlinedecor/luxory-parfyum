@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { isPromoActive, promoDaysLeft } from "@/config/promo";
+import { isPromoActive, msToNextMinuteTick, promoMinutesLeft } from "@/config/promo";
 
 /**
  * Soat bilan sinxron turadigan "tashqi do'kon": har daqiqada va sahifa
@@ -24,13 +24,35 @@ export function usePromoActive(): boolean {
   return useSyncExternalStore(subscribe, activeNow, activeNow);
 }
 
-const daysNow = () => promoDaysLeft(Date.now());
-const daysOnServer = () => null;
+/**
+ * Countdown obunasi: taymer aynan daqiqa almashadigan paytga tekislanadi
+ * (har soniyada uyg'onmaydi); sahifa qayta ko'ringanda ham yangilanadi.
+ */
+function subscribeMinute(onChange: () => void) {
+  let id = 0;
+  const schedule = () => {
+    id = window.setTimeout(() => {
+      onChange();
+      schedule();
+    }, msToNextMinuteTick(Date.now()) + 20);
+  };
+  schedule();
+  document.addEventListener("visibilitychange", onChange);
+  return () => {
+    window.clearTimeout(id);
+    document.removeEventListener("visibilitychange", onChange);
+  };
+}
+
+const minutesNow = () => promoMinutesLeft(Date.now());
+const minutesOnServer = () => undefined;
 
 /**
- * Qolgan kunlar — faqat client'da (server HTML'da null). Shunda keshlangan
- * sahifada kechagi son qolib ketmaydi va hydration mos keladi.
+ * Tugashigacha qolgan daqiqalar — faqat client'da:
+ * `undefined` — server HTML / hydration (raqam yo'q, joy band turadi),
+ * `null` — aksiya tugagan, son — faol. Keshlangan sahifada eski son
+ * qolib ketmaydi va hydration mos keladi.
  */
-export function usePromoDaysLeft(): number | null {
-  return useSyncExternalStore(subscribe, daysNow, daysOnServer);
+export function usePromoMinutesLeft(): number | null | undefined {
+  return useSyncExternalStore(subscribeMinute, minutesNow, minutesOnServer);
 }

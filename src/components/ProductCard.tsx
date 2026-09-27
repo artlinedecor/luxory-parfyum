@@ -65,7 +65,9 @@ export default function ProductCard({
   const href = `/catalog/${product.id}`;
 
   return (
-    <article className="group lux-card glass-card rounded-2xl overflow-hidden flex flex-col h-full w-full">
+    // card-reveal — scroll'da yumshoq paydo bo'lish (faqat CSS, globals.css).
+    // Birinchi ekrandagi (priority) kartalarga qo'yilmaydi — LCP kechikmasin.
+    <article className={`group lux-card glass-card rounded-2xl overflow-hidden flex flex-col h-full w-full ${priority ? "" : "card-reveal"}`}>
       {/* ── Rasm: 3:4 vertikal, issiq oq fon ──────────────────────
           Havola rasm ustidagi qatlam sifatida qo'yilgan: shunda
           sevimlilar tugmasi havola ICHIDA bo'lmaydi (tugmani havola
