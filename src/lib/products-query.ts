@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
 import type { Product } from "./types";
+import { sortByPopularity } from "./popularity";
 
 /**
  * Ro'yxat uchun eng kam ustunlar — tavsiflar olinmaydi (242KB -> 80KB edi).
@@ -34,7 +35,7 @@ export async function fetchCatalogProducts(): Promise<Product[]> {
       .from("products")
       .select(columns)
       .eq("is_available", true)
-      // 71b22ee: sotuvda bor mahsulotlar ro'yxat boshida
+      // 71b22ee: sotuvda bor mahsulotlar ro'yxat boshida (mashhurlardan keyin — popularity.ts)
       .order("stock", { ascending: false })
       .order("created_at", { ascending: false });
 
@@ -42,7 +43,7 @@ export async function fetchCatalogProducts(): Promise<Product[]> {
     const { data, error } = await run(`${BASE_COLUMNS},${FRAGRANCE_COLUMNS}`);
     if (!error) {
       hasFragranceColumns = true;
-      return (data ?? []) as unknown as Product[];
+      return sortByPopularity((data ?? []) as unknown as Product[]);
     }
     // 42703 = undefined_column: migratsiya hali qo'llanmagan
     hasFragranceColumns = false;
@@ -56,5 +57,5 @@ export async function fetchCatalogProducts(): Promise<Product[]> {
     console.error("Katalog so'rovi xatosi:", error);
     return [];
   }
-  return (data ?? []) as unknown as Product[];
+  return sortByPopularity((data ?? []) as unknown as Product[]);
 }
