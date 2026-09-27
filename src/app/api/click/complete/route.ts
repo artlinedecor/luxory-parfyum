@@ -86,9 +86,7 @@ export async function POST(req: NextRequest) {
       .from('orders')
       .update({
         payment_status: 'paid',
-        // Uzum Nasiya'dagidek: pul tushdi, lekin admin Telegram'da "Tasdiqlash"ni
-        // bosguncha "Kutilmoqda". Tasdiqlansa → processing (jo'natish kerak).
-        status: 'pending'
+        status: 'accepted' // Click — pul tushdi, avtomatik qabul (egasi qarori; tasdiqlash faqat Uzum Nasiya'da)
       })
       .eq('id', merchant_trans_id);
 

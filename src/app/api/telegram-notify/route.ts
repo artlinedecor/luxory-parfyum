@@ -4,9 +4,9 @@ import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from '
 import { getAdminChatIds, sendTelegram, escapeHtml } from "@/lib/telegram";
 
 /**
- * Click orqali to'langan buyurtma — adminlarga Telegram xabari,
- * Uzum Nasiya'dagidek "Tasdiqlash" / "Bekor qilish" tugmalari bilan.
- * Tugmalar telegram-webhook'da: ckok_<order_id> / ckno_<order_id>.
+ * Click orqali to'langan buyurtma — adminlarga Telegram xabari (Uzum bilan bir botda).
+ * Click buyurtmasi avtomatik qabul qilinadi, shuning uchun tugma yo'q —
+ * tasdiqlash tugmalari faqat Uzum Nasiya'da (egasi qarori).
  */
 export async function POST(req: NextRequest) {
   // ⚠️ Audit X11: oldin har kim adminlarga soxta buyurtma xabari
@@ -31,26 +31,19 @@ export async function POST(req: NextRequest) {
 
     const text =
       `💳 <b>YANGI BUYURTMA — Click (to'liq to'landi)</b>\n` +
-      `<i>Pul tushdi, tasdiqlashingizni kutmoqda</i>\n\n` +
+      `<i>Pul tushdi, buyurtma avtomatik qabul qilindi</i>\n\n` +
       `👤 ${escapeHtml(clientName || "—")}\n` +
       `📞 ${escapeHtml(clientPhone || "—")}\n` +
       `📍 ${escapeHtml(region || "")} ${escapeHtml(address || "")}\n\n` +
       `📦 <b>Mahsulotlar:</b>\n${productLines || "—"}\n\n` +
       `💰 Jami: <b>${formatUzs(Number(totalAmount) || 0)} so'm</b>\n` +
       (orderId ? `🔖 Buyurtma: <code>${escapeHtml(String(orderId).slice(0, 8))}</code>\n\n` : `\n`) +
-      `⚠️ Omborda tovar borligini tekshirib tasdiqlang.`;
-
-    const buttons = orderId
-      ? [[
-          { text: "✅ Tasdiqlash", callback_data: `ckok_${orderId}` },
-          { text: "❌ Bekor qilish", callback_data: `ckno_${orderId}` },
-        ]]
-      : undefined;
+      `📦 Jo'natishga tayyorlang.`;
 
     const ids = await getAdminChatIds();
     let delivered = 0;
     for (const id of ids) {
-      if (await sendTelegram(id, text, buttons)) delivered++;
+      if (await sendTelegram(id, text)) delivered++;
     }
     if (delivered === 0) console.error("[click/notify] xabar hech kimga yetib bormadi", { orderId, tried: ids.length });
 
