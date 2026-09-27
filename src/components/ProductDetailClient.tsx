@@ -29,6 +29,9 @@ import BottomNav from "@/components/BottomNav";
 import FragrancePyramid from "@/components/FragrancePyramid";
 import AccordBars from "@/components/AccordBars";
 import { UzumMark } from "@/components/PaymentLogos";
+import { PromoOldPrice, PromoPercentBadge } from "@/components/PromoPrice";
+import { promoEndLabel, promoOldPriceFor } from "@/config/promo";
+import { usePromoActive } from "@/lib/use-promo";
 
 // Uzum kaliti sozlanmagan muhitda (preview) bo'lib to'lash tugmasi ko'rsatilmaydi
 const UZUM_ENABLED = process.env.NEXT_PUBLIC_UZUM_ENABLED === "true";
@@ -61,6 +64,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const priceUzs = isOriginal
     ? calculateOriginalPriceUzs(product.price_usd)
     : calculatePremiumPriceUzs(product.price_usd);
+
+  // Oktyabr aksiyasi — faqat ko'rinish: to'lanadigan narx o'sha 800 000
+  const promoOn = usePromoActive();
+  const oldPriceUzs = promoOldPriceFor(priceUzs, promoOn);
 
   // Bazada bor rasmlar (soxta rakurs qo'shilmaydi)
   const images = [product.image_url, product.image_url_2].filter(
@@ -281,7 +288,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
               <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
                 <span className={`px-2.5 py-1 rounded-full font-semibold ${isOriginal ? "bg-gradient-gold text-[#1a1a1a]" : "bg-foreground/[0.06] text-foreground/80"}`}>
-                  {isOriginal ? (ru ? "Оригинал" : "Original") : (ru ? "Премиум копия" : "Premium klon")}
+                  {isOriginal ? (ru ? "Оригинал" : "Original") : (ru ? "Премиум аромат" : "Premium atir")}
                 </span>
                 {frag.volumeMl && (
                   <span className="px-2.5 py-1 rounded-full bg-foreground/[0.06] text-foreground/70">{formatVolume(frag.volumeMl)}</span>
@@ -291,9 +298,25 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
             {/* Narx va bo'lib to'lash */}
             <div className="space-y-2.5">
-              <p className="flex items-baseline gap-2">
+              {oldPriceUzs && (
+                <p className="flex items-center gap-2 text-[13px] font-semibold text-[#4b00c7] dark:text-[#b58cff]">
+                  <PromoPercentBadge />
+                  <span>
+                    {ru ? "Октябрьская акция" : "Oktyabr aksiyasi"}
+                    <span className="font-normal text-muted-foreground"> · {promoEndLabel(ru ? "ru" : "uz")}</span>
+                  </span>
+                </p>
+              )}
+              <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <span className="text-4xl font-semibold text-foreground tabular-nums tracking-tight">{formatUzs(priceUzs)}</span>
                 <span className="text-sm text-muted-foreground">{ru ? "сум" : "so'm"}</span>
+                {oldPriceUzs && (
+                  <PromoOldPrice
+                    amount={oldPriceUzs}
+                    ru={ru}
+                    className="ml-1 text-lg text-muted-foreground"
+                  />
+                )}
               </p>
               {UZUM_ENABLED && (
                 <p className="inline-flex items-center gap-2 rounded-full bg-[#6100FF]/[0.08] px-3 py-1.5 text-[13px] text-[#4b00c7] dark:text-[#b58cff]">
@@ -429,7 +452,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       >
         <div className="flex items-center justify-between text-xs mb-2">
           <span className="text-muted-foreground truncate pr-2">{displayName}</span>
-          <span className="font-semibold tabular-nums whitespace-nowrap text-foreground">{formatUzs(priceUzs)} {ru ? "сум" : "so'm"}</span>
+          <span className="whitespace-nowrap">
+            {oldPriceUzs && (
+              <PromoOldPrice amount={oldPriceUzs} ru={ru} className="mr-1.5 text-muted-foreground" />
+            )}
+            <span className="font-semibold tabular-nums text-foreground">{formatUzs(priceUzs)} {ru ? "сум" : "so'm"}</span>
+          </span>
         </div>
         <div className="flex gap-2">{buyButtons(true)}</div>
       </div>

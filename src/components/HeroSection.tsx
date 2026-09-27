@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import PromoBanner, { PromoOff } from "@/components/PromoBanner";
 import { ArrowRight, Search } from "lucide-react";
 import { useI18n } from "@/lib/i18n-context";
 import type { Product } from "@/lib/types";
@@ -39,6 +40,12 @@ export default function HeroSection({ productCount, products }: { productCount: 
   return (
     <section id="hero" className="px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24">
       <div className="mx-auto max-w-6xl">
+        {/* Oktyabr aksiyasi (config/promo.ts). Suspense: keshlangan HTML aksiya
+            tugagandan keyin ochilsa, nomuvofiqlik faqat shu bo'lakda tuzatiladi */}
+        <Suspense fallback={null}>
+          <PromoBanner />
+        </Suspense>
+
         <div className="relative overflow-hidden rounded-[28px] bg-[#6100ff] text-white">
           {/* Yumshoq doiralar — tekis rang zerikarli bo'lmasin */}
           <div aria-hidden className="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-white/10" />
@@ -100,17 +107,22 @@ export default function HeroSection({ productCount, products }: { productCount: 
           </div>
         </div>
 
-        {/* Takliflar — faqat haqiqiy shartlar */}
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <div className="rounded-2xl bg-[#1d1433] px-4 py-3 text-white">
-            <p className="font-heading text-[17px] leading-tight sm:text-xl">800 000 {ru ? "сум" : "so'm"}</p>
-            <p className="mt-1 text-[12px] leading-snug text-white/75">{ru ? "любой премиум-аромат — одна цена" : "har qanday premium atir — bitta narx"}</p>
-          </div>
-          <div className="rounded-2xl bg-[#ffd84d] px-4 py-3 text-[#1d1433]">
-            <p className="font-heading text-[17px] leading-tight sm:text-xl">{ru ? "0 сум сразу" : "0 so'm hozir"}</p>
-            <p className="mt-1 text-[12px] leading-snug text-[#1d1433]/75">{ru ? "платите 3, 6 или 12 месяцев" : "3, 6 yoki 12 oyda to'laysiz"}</p>
-          </div>
-        </div>
+        {/* Takliflar — faqat haqiqiy shartlar. Aksiya vaqtida ular yuqoridagi
+            lentada turadi, bu yerda takrorlanmaydi */}
+        <Suspense fallback={null}>
+          <PromoOff>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <div className="rounded-2xl bg-[#1d1433] px-4 py-3 text-white">
+                <p className="font-heading text-[17px] leading-tight sm:text-xl">800 000 {ru ? "сум" : "so'm"}</p>
+                <p className="mt-1 text-[12px] leading-snug text-white/75">{ru ? "любой премиум-аромат — одна цена" : "har qanday premium atir — bitta narx"}</p>
+              </div>
+              <div className="rounded-2xl bg-[#ffd84d] px-4 py-3 text-[#1d1433]">
+                <p className="font-heading text-[17px] leading-tight sm:text-xl">{ru ? "0 сум сразу" : "0 so'm hozir"}</p>
+                <p className="mt-1 text-[12px] leading-snug text-[#1d1433]/75">{ru ? "платите 3, 6 или 12 месяцев" : "3, 6 yoki 12 oyda to'laysiz"}</p>
+              </div>
+            </div>
+          </PromoOff>
+        </Suspense>
 
         {/* Toifalar */}
         <nav aria-label={ru ? "Категории" : "Toifalar"} className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">

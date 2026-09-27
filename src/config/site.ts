@@ -7,7 +7,7 @@
 export const siteConfig = {
   // ── Brend ────────────────────────────────────────
   siteName: "Elore Parfume",
-  siteDescription: "Premium parfyumeriya — Original va Super Klon atirlar do'koni",
+  siteDescription: "Premium parfyumeriya — original va premium atirlar do'koni",
   siteUrl: "https://parfumelux.uz",
   logoInitial: "E",        // Rasm yuklanmasa ko'rinadigan harf
   // Logotip loyiha ichida — sozlamalardagi havola faqat qo'shimcha.
@@ -31,9 +31,9 @@ export const siteConfig = {
   depositAmount: 605000, // Original atirlar uchun zaklad summasi (UZS)
 
   // ── SEO ──────────────────────────────────────────
-  seoTitle: "Elore Parfume — Toshkentda Original va Premium Klon Atirlar, 12 oyga bo'lib to'lash",
+  seoTitle: "Elore Parfume — Toshkentda Original va Premium Atirlar, 12 oyga bo'lib to'lash",
   seoDescription:
-    "Toshkentda original va premium klon atirlar: Tom Ford, Chanel, Dior, Creed va boshqa brendlar. Premium atir — 800 000 so'm, 3, 6 yoki 12 oyga bo'lib to'lash (Uzum Nasiya). Tez yetkazib berish.",
+    "Toshkentda original va premium atirlar: Tom Ford, Chanel, Dior, Creed va boshqa brendlar. Premium atir — 800 000 so'm, 3, 6 yoki 12 oyga bo'lib to'lash (Uzum Nasiya). Tez yetkazib berish.",
   seoKeywords: [
     "Parfume Lux",
     "parfume lux",

@@ -17,6 +17,9 @@ import {
   calculatePremiumPriceUzs,
   formatUzs,
 } from "@/lib/utils";
+import { promoOldPriceFor } from "@/config/promo";
+import { usePromoActive } from "@/lib/use-promo";
+import { PromoOldPrice, PromoPercentBadge } from "@/components/PromoPrice";
 
 interface ProductCardProps {
   product: Product;
@@ -48,6 +51,10 @@ export default function ProductCard({
   const priceUzs = isOriginal
     ? calculateOriginalPriceUzs(product.price_usd)
     : calculatePremiumPriceUzs(product.price_usd);
+
+  // Oktyabr aksiyasi — faqat ko'rinish, narx o'zgarmaydi (config/promo.ts)
+  const promoOn = usePromoActive();
+  const oldPriceUzs = promoOldPriceFor(priceUzs, promoOn);
 
   const primarySrc = imageError
     ? "/products/default.png"
@@ -128,6 +135,11 @@ export default function ProductCard({
           </span>
         )}
 
+        {/* Aksiya belgisi — pastki chapda (original atirlarda aksiya yo'q, joy bo'sh) */}
+        {oldPriceUzs && (
+          <PromoPercentBadge className="absolute bottom-3 left-3 z-[3] pointer-events-none" />
+        )}
+
         {/* Sevimlilar — rasm ustida. Ilgari pastdagi qatorda edi va
             telefonda "Savatchaga" yozuvini siqib, uni kesib qo'yardi. */}
         <button
@@ -177,6 +189,13 @@ export default function ProductCard({
         )}
 
         <div className="mt-auto pt-4">
+          {oldPriceUzs && (
+            <PromoOldPrice
+              amount={oldPriceUzs}
+              ru={lang === "ru"}
+              className="block text-[12px] leading-none text-muted-foreground mb-1"
+            />
+          )}
           <div className="flex items-baseline gap-1.5">
             <span className="text-[17px] font-semibold text-foreground tracking-tight tabular-nums">
               {formatUzs(priceUzs)}

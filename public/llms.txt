@@ -1,7 +1,7 @@
 # Elore Parfume (parfumelux.uz)
 
-> Toshkentdagi atir do'koni: original va premium klon atirlar, 3, 6 yoki 12 oyga bo'lib to'lash (Uzum Nasiya).
-> Магазин парфюмерии в Ташкенте: оригинальные и премиальные клон-ароматы, рассрочка на 3, 6 или 12 месяцев через Uzum Nasiya.
+> Toshkentdagi atir do'koni: original va premium atirlar, 3, 6 yoki 12 oyga bo'lib to'lash (Uzum Nasiya).
+> Магазин парфюмерии в Ташкенте: оригинальные и премиальные ароматы, рассрочка на 3, 6 или 12 месяцев через Uzum Nasiya.
 
 ## Asosiy ma'lumot
 - Nomi: Elore Parfume (avvalgi nomi: Parfume Lux)
@@ -12,7 +12,7 @@
 - Tillar: o'zbekcha, ruscha
 
 ## Narx va to'lov
-- Har qanday premium klon atir — 800 000 so'm (bitta narx).
+- Har qanday premium atir — 800 000 so'm (bitta narx).
 - Original atirlar narxi har bir atir sahifasida ko'rsatilgan.
 - Bo'lib to'lash: Uzum Nasiya orqali 3, 6 yoki 12 oyga, hozir 0 so'm. Kartasiz, naqd pulsiz; telefon raqam va SMS-kod bilan taxminan 2 daqiqada rasmiylashtiriladi.
 - Karta bilan to'lash: Click, Uzcard, Humo.

@@ -42,6 +42,13 @@ Sabablari va keyingi ish (tartib bo'yicha):
 4. Katalogda LCP — birinchi karta rasmi → birinchi 2–4 rasmga `priority`.
 5. Ishlatilmagan JS ~260 KB (asosiy chunk'lar).
 
+## Oktyabr aksiyasi (2026-09-27)
+- Faqat ko'rinish: kartochka/atir sahifasida chizilgan "1 000 000", "−20%", bosh sahifada lenta.
+  Haqiqiy narx o'zgarmagan — 800 000 (savat, Uzum, Click, JSON-LD'da eski narx yo'q).
+- Tugaydi: **2026-10-31 23:59 (Toshkent)** — o'zi yo'qoladi. Sozlama: `src/config/promo.ts`
+  (`active: false` — muddatidan oldin o'chirish). Bosh sahifa ISR 1 soat (`src/app/page.tsx`).
+- Mijozga "klon" yozilmaydi — "Premium atir" (seo, i18n, savat, meta, llms.txt).
+
 ## Egasi qarorlari (buzmang)
 - Mijozga faqat tasdiqlangan va'dalar: "Tez yetkazib berish", "Telefon + SMS · 2 daqiqa",
   "Kartasiz, naqd pulsiz", "800 000 so'm — har qanday premium atir", "0 so'm hozir".

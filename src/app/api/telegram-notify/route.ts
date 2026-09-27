@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
     const productLines = (items || [])
       .map((item: { title: string; product_type: string; quantity: number; price_at_purchase: number }) =>
-        `- ${item.title} (${item.product_type === 'original' ? 'Original atir' : 'Lyuks Premium atir'}) x${item.quantity} — ${formatUzs(item.product_type === 'original' ? calculateOriginalPriceUzs(item.price_at_purchase) : calculatePremiumPriceUzs(item.price_at_purchase))} so'm`
+        `- ${item.title} (${item.product_type === 'original' ? 'Original atir' : 'Premium atir'}) x${item.quantity} — ${formatUzs(item.product_type === 'original' ? calculateOriginalPriceUzs(item.price_at_purchase) : calculatePremiumPriceUzs(item.price_at_purchase))} so'm`
       )
       .join('\n');
 

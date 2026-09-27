@@ -14,6 +14,9 @@ import {
   calculatePremiumPriceUzs,
   formatUzs,
 } from "@/lib/utils";
+import { promoOldPriceFor } from "@/config/promo";
+import { usePromoActive } from "@/lib/use-promo";
+import { PromoOldPrice, PromoPercentBadge } from "@/components/PromoPrice";
 import AccordBars from "./AccordBars";
 
 interface QuickViewDialogProps {
@@ -36,6 +39,7 @@ export default function QuickViewDialog({
 }: QuickViewDialogProps) {
   const { t, lang } = useI18n();
   const wishlist = useWishlist();
+  const promoOn = usePromoActive();
 
   const frag = product ? getFragranceView(product) : null;
   const isOriginal = product?.product_type === "original";
@@ -44,6 +48,7 @@ export default function QuickViewDialog({
       ? calculateOriginalPriceUzs(product.price_usd)
       : calculatePremiumPriceUzs(product.price_usd)
     : 0;
+  const oldPriceUzs = promoOldPriceFor(priceUzs, promoOn);
   const displayName =
     product && lang === "ru" && product.title_ru ? product.title_ru : frag?.name;
   const saved = product ? wishlist.has(product.id) : false;
@@ -111,7 +116,13 @@ export default function QuickViewDialog({
                       {displayName}
                     </Dialog.Title>
 
-                    <div className="mt-5 flex items-baseline gap-1.5">
+                    {oldPriceUzs && (
+                      <div className="mt-5 flex items-center gap-2 text-[13px] text-muted-foreground">
+                        <PromoPercentBadge />
+                        <PromoOldPrice amount={oldPriceUzs} ru={lang === "ru"} withCurrency />
+                      </div>
+                    )}
+                    <div className={`${oldPriceUzs ? "mt-1.5" : "mt-5"} flex items-baseline gap-1.5`}>
                       <span className="text-2xl font-semibold text-foreground tabular-nums">
                         {formatUzs(priceUzs)}
                       </span>

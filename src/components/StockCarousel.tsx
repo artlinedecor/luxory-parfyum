@@ -9,6 +9,9 @@ import { Product } from "@/lib/types";
 import { useI18n } from "@/lib/i18n-context";
 import { getFragranceView } from "@/lib/fragrance";
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
+import { promoOldPriceFor } from "@/config/promo";
+import { usePromoActive } from "@/lib/use-promo";
+import { PromoOldPrice, PromoPercentBadge } from "@/components/PromoPrice";
 
 interface StockCarouselProps {
   products: Product[];
@@ -31,6 +34,7 @@ export default function StockCarousel({ products }: StockCarouselProps) {
     loop: false,
   });
 
+  const promoOn = usePromoActive();
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
 
@@ -124,6 +128,12 @@ export default function StockCarousel({ products }: StockCarouselProps) {
             const frag = getFragranceView(p);
             const name =
               lang === "ru" && p.title_ru ? p.title_ru : frag.name;
+            // Oldin har doim premium narxi chiqardi — original atirlar ham 800 000 ko'rinardi
+            const price =
+              p.product_type === "original"
+                ? calculateOriginalPriceUzs(p.price_usd)
+                : calculatePremiumPriceUzs(p.price_usd);
+            const oldPrice = promoOldPriceFor(price, promoOn);
 
             return (
               <Link
@@ -140,6 +150,7 @@ export default function StockCarousel({ products }: StockCarouselProps) {
                     className="object-contain p-2 transition-transform duration-[600ms] ease-out group-hover/card:scale-[1.04]"
                     sizes="(max-width: 640px) 168px, 192px"
                   />
+                  {oldPrice && <PromoPercentBadge className="absolute bottom-2.5 left-2.5" />}
                 </div>
 
                 <div className="pt-3.5">
@@ -152,8 +163,14 @@ export default function StockCarousel({ products }: StockCarouselProps) {
                     {name}
                   </p>
                   <p className="mt-1.5 text-sm font-semibold text-foreground tabular-nums">
-                    {/* Oldin har doim klon narxi chiqardi — original atirlar ham 800 000 ko'rinardi */}
-                    {formatUzs(p.product_type === "original" ? calculateOriginalPriceUzs(p.price_usd) : calculatePremiumPriceUzs(p.price_usd))}{" "}
+                    {oldPrice && (
+                      <PromoOldPrice
+                        amount={oldPrice}
+                        ru={lang === "ru"}
+                        className="block text-[12px] font-normal text-muted-foreground"
+                      />
+                    )}
+                    {formatUzs(price)}{" "}
                     <span className="eyebrow text-muted-foreground font-normal">
                       {lang === "ru" ? "сум" : "so'm"}
                     </span>

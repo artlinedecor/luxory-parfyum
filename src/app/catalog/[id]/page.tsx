@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     const name = seoProductName(product);
-    const title = `${name} — ${productTypeLabel(product)} atir, bo'lib to'lash | ${siteConfig.siteName}`;
+    const title = `${name} — ${productTypeLabel(product)}, bo'lib to'lash | ${siteConfig.siteName}`;
     const description = productMetaDescription(product);
     const url = productUrl(product);
 
