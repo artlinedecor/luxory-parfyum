@@ -28,8 +28,28 @@ let hasFragranceColumns: boolean | null = null;
  * so'raymiz. Shu tufayli migratsiyadan oldin ham, keyin ham katalog ishlaydi.
  */
 export async function fetchCatalogProducts(): Promise<Product[]> {
-  const supabase = createClient();
+  return queryCatalogProducts(createClient());
+}
 
+/**
+ * Xuddi shu so'rov, lekin clientni tashqaridan oladi.
+ *
+ * NEGA KERAK: katalog va bosh sahifa mahsulotlarni `useEffect` ichida
+ * olardi, ya'ni server HTMLni BO'SH ro'yxat bilan chizardi. Natijada
+ * serverdan kelgan HTMLda bitta ham mahsulot havolasi yo'q edi va
+ * o'rniga "Bu bo'limda hozircha mahsulot yo'q" yozuvi turardi - bu
+ * yolg'on gap, chunki sitemapda 244 ta mahsulot havolasi bor.
+ *
+ * JavaScript ishlatmaydigan botlar (GPTBot, ClaudeBot, PerplexityBot -
+ * uchtasi ham ishlatmaydi) aynan shu bo'sh holatni o'qiydi. Ya'ni AI
+ * yordamchilari "Toshkentda Dior atirini bo'lib to'lab qayerdan olsam
+ * bo'ladi?" degan savolga bu saytdan iqtibos olishi mumkin emas edi.
+ *
+ * Serverda ishlatish uchun `products-query.server.ts` ga qarang.
+ */
+export async function queryCatalogProducts(
+  supabase: ReturnType<typeof createClient>,
+): Promise<Product[]> {
   const run = (columns: string) =>
     supabase
       .from("products")

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import CatalogView from "@/components/CatalogView";
+import { fetchCatalogProductsServer } from "@/lib/products-query.server";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -18,6 +19,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CatalogPage() {
-  return <CatalogView />;
+/**
+ * Mahsulotlar SERVERDA olinadi va CatalogView ga berilaadi.
+ *
+ * Avval CatalogView o'zi `useEffect` da olardi, ya'ni serverdan kelgan
+ * HTMLda ro'yxat bo'sh bo'lib, "Bu bo'limda hozircha mahsulot yo'q"
+ * yozuvi turardi. Bot uchun bu yolg'on javob edi.
+ */
+export default async function CatalogPage() {
+  const initialProducts = await fetchCatalogProductsServer();
+  return <CatalogView initialProducts={initialProducts} />;
 }

@@ -9,14 +9,26 @@ import { fetchCatalogProducts } from "@/lib/products-query";
 import { Product } from "@/lib/types";
 import { useShopSettings } from "@/lib/settings-context";
 
-export default function CatalogView() {
+export default function CatalogView({
+  initialProducts = [],
+}: {
+  /**
+   * Serverda olingan ro'yxat. Shu tufayli mahsulotlar serverdan kelgan
+   * HTMLda bo'ladi - avval bo'sh massiv bilan chizilib, botlarga
+   * "hozircha mahsulot yo'q" degan yolg'on javob ketardi.
+   */
+  initialProducts?: Product[];
+}) {
   const { t } = useI18n();
   const { shopPhone, telegramAdminUsername, telegramChannel } = useShopSettings();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
 
   useEffect(() => {
+    // Serverda ro'yxat kelmagan bo'lsa (masalan Supabase xatosi) klientda
+    // qayta so'raladi. Kelgan bo'lsa ortiqcha so'rov yuborilmaydi.
+    if (initialProducts.length > 0) return;
     fetchCatalogProducts().then(setProducts);
-  }, []);
+  }, [initialProducts.length]);
 
   return (
     <>

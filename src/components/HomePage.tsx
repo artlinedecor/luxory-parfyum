@@ -19,14 +19,29 @@ import Link from "next/link";
 import BrandLogo from "@/components/BrandLogo";
 import Reveal from "@/components/motion/Reveal";
 
-export default function HomePage() {
+export default function HomePage({
+  initialProducts = [],
+}: {
+  /**
+   * Serverda olingan mahsulotlar (app/page.tsx dan keladi).
+   *
+   * Avval ro'yxat faqat `useEffect` da olinardi, ya'ni serverdan kelgan
+   * HTMLda bitta ham mahsulot havolasi bo'lmasdi va o'rniga "Bu bo'limda
+   * hozircha mahsulot yo'q" yozuvi turardi. JavaScript ishlatmaydigan
+   * botlar (GPTBot, ClaudeBot, PerplexityBot) aynan shuni o'qirdi.
+   */
+  initialProducts?: Product[];
+}) {
   const { t, lang } = useI18n();
   const { shopName, shopAddress, telegramAdminUsername, telegramChannel, shopPhone } = useShopSettings();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
 
   useEffect(() => {
+    // Server ro'yxat bermagan bo'lsa (Supabase xatosi) klientda qayta
+    // so'raladi. Bergan bo'lsa ortiqcha so'rov yuborilmaydi.
+    if (initialProducts.length > 0) return;
     fetchCatalogProducts().then(setProducts);
-  }, []);
+  }, [initialProducts.length]);
 
   const localBusinessJsonLd = {
     "@context": "https://schema.org",

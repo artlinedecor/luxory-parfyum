@@ -103,7 +103,23 @@ export function productJsonLd(product: Product) {
       itemCondition: "https://schema.org/NewCondition",
       availability: product.is_available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       seller: { "@type": "Organization", name: siteConfig.siteName, url: siteConfig.siteUrl },
+      // Bo'lib to'lash - do'konning asosiy ustunligi, lekin u sxemada
+      // umuman yo'q edi: faqat sahifa matnida va tavsif satrida turardi.
+      // Matnni o'qiydigan AI uni ko'rardi, sxemani o'qiydigan tizimlar
+      // (masalan savdo yo'naltirilgan javob motorlari) esa ko'rmasdi.
+      acceptedPaymentMethod: [
+        { "@type": "PaymentMethod", name: "Uzum Nasiya — 3, 6 yoki 12 oyga bo'lib to'lash" },
+        { "@type": "PaymentMethod", name: "Naqd pul" },
+        { "@type": "PaymentMethod", name: "Uzcard / Humo" },
+      ],
     },
+    additionalProperty: [
+      {
+        "@type": "PropertyValue",
+        name: "Bo'lib to'lash",
+        value: "3, 6 yoki 12 oy — Uzum Nasiya, karta shart emas, telefon + SMS",
+      },
+    ],
   };
 }
 
