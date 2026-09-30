@@ -199,17 +199,42 @@ const translations: Record<Language, Record<string, string>> = {
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Language>("uz");
+export function I18nProvider({
+  children,
+  initialLang,
+}: {
+  children: ReactNode;
+  /**
+   * Serverda aniqlangan til (masalan `/ru` marshrutidan).
+   *
+   * NEGA KERAK: avval til faqat `localStorage` dan olinardi, ya'ni
+   * SERVERDAN kelgan HTML doim o'zbekcha bo'lardi. Ruscha matn hech
+   * qachon indekslanmaydi: `?lang=ru` hech narsa qilmasdi, `/ru` esa
+   * 404 berardi. Natijada "рассрочка на духи в Ташкенте" kabi
+   * so'rovlarga javob beradigan sahifa mavjud emas edi.
+   *
+   * Berilgan bo'lsa u ustun turadi va `localStorage` ni bosmaydi -
+   * `/ru` manzilini ochgan odam (va bot) ruscha sahifani oladi.
+   */
+  initialLang?: Language;
+}) {
+  const [lang, setLang] = useState<Language>(initialLang ?? "uz");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Marshrut tilni aniq belgilagan bo'lsa - localStorage aralashmaydi.
+    // Aks holda /ru sahifasi o'zbekchaga "sakrab" ketardi.
+    if (initialLang) {
+      document.documentElement.lang = initialLang;
+      setMounted(true);
+      return;
+    }
     const saved = localStorage.getItem("lang") as Language;
     if (saved && (saved === "uz" || saved === "ru")) {
       setLang(saved);
     }
     setMounted(true);
-  }, []);
+  }, [initialLang]);
 
   const handleSetLang = (newLang: Language) => {
     setLang(newLang);

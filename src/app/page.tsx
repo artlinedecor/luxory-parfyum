@@ -1,5 +1,22 @@
+import type { Metadata } from "next";
 import HomePage from "@/components/HomePage";
 import { fetchCatalogProductsServer } from "@/lib/products-query.server";
+
+/**
+ * hreflang juftligi IKKI TOMONLI bo'lishi kerak: o'zbekcha sahifa ham
+ * ruschaga, ruscha ham o'zbekchaga ishora qilsin. Bir tomonlama
+ * ko'rsatma Google tomonidan e'tiborsiz qoldiriladi.
+ */
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "https://parfumelux.uz",
+    languages: {
+      "uz-UZ": "https://parfumelux.uz",
+      "ru-RU": "https://parfumelux.uz/ru",
+      "x-default": "https://parfumelux.uz",
+    },
+  },
+};
 
 /**
  * Bosh sahifa statik (ISR). Soatda bir marta qayta yasaladi — vaqtga bog'liq

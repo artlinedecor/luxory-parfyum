@@ -4,6 +4,22 @@ import { createClient } from '@supabase/supabase-js';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://parfumelux.uz';
   
+  /**
+   * `alternates.languages` — hreflang ning sitemapdagi ko'rinishi.
+   * Google shu orqali o'zbekcha va ruscha versiyalar bir sahifaning
+   * tarjimasi ekanini biladi va ularni dublikat deb hisoblamaydi.
+   *
+   * Avval sitemapda faqat o'zbekcha manzillar bor edi va ruscha
+   * versiya umuman mavjud emasdi (`/ru` 404 qaytarardi).
+   */
+  const tillar = (uzPath: string) => ({
+    languages: {
+      'uz-UZ': `${baseUrl}${uzPath}`,
+      'ru-RU': `${baseUrl}/ru${uzPath}`,
+      'x-default': `${baseUrl}${uzPath}`,
+    },
+  });
+
   // Base routes
   const routes: MetadataRoute.Sitemap = [
     {
@@ -11,12 +27,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
+      alternates: tillar(''),
+    },
+    {
+      url: `${baseUrl}/ru`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+      alternates: tillar(''),
     },
     {
       url: `${baseUrl}/catalog`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
+      alternates: tillar('/catalog'),
+    },
+    {
+      url: `${baseUrl}/ru/catalog`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+      alternates: tillar('/catalog'),
     },
     {
       url: `${baseUrl}/privacy-policy`,

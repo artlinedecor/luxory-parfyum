@@ -9,6 +9,12 @@ export const metadata: Metadata = {
     "Toshkentdagi atirlar katalogi: original va premium atirlar — Tom Ford, Dior, Chanel, Creed va boshqa brendlar. Premium atir 800 000 so'm, 3, 6 yoki 12 oyga bo'lib to'lash.",
   alternates: {
     canonical: "https://parfumelux.uz/catalog",
+    // hreflang juftligi ikki tomonli: /ru/catalog ham bu yerga ishora qiladi
+    languages: {
+      "uz-UZ": "https://parfumelux.uz/catalog",
+      "ru-RU": "https://parfumelux.uz/ru/catalog",
+      "x-default": "https://parfumelux.uz/catalog",
+    },
   },
   openGraph: {
     title: `Atirlar Katalogi — ${siteConfig.siteName}`,
