@@ -31,6 +31,16 @@ export const siteConfig = {
   depositAmount: 605000, // Original atirlar uchun zaklad summasi (UZS)
 
   // ── SEO ──────────────────────────────────────────
+  // Havola ulashilganda (Instagram DM, Telegram) chiqadigan rasm, 1200×630.
+  // Sahifadagi `openGraph` layout'nikini to'liq almashtiradi, shuning uchun
+  // har sahifa buni o'zi qo'shishi kerak. Rasm almashsa fayl NOMINI ham
+  // almashtiring — Instagram eski URL'ni keshlab qoladi.
+  ogImage: {
+    url: "/og-elore.jpg",
+    width: 1200,
+    height: 630,
+    alt: "Elore Parfume — sevimli atiringizni saytimizdan tanlang",
+  },
   seoTitle: "Elore Parfume — Toshkentda Original va Premium Atirlar, 12 oyga bo'lib to'lash",
   seoDescription:
     "Toshkentda original va premium atirlar: Tom Ford, Chanel, Dior, Creed va boshqa brendlar. Premium atir — 800 000 so'm, 3, 6 yoki 12 oyga bo'lib to'lash (Uzum Nasiya). Tez yetkazib berish.",

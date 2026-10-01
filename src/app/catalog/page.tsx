@@ -22,6 +22,7 @@ export const metadata: Metadata = {
       "Original va premium atirlar katalogi. 3, 6 yoki 12 oyga bo'lib to'lash.",
     url: "https://parfumelux.uz/catalog",
     siteName: siteConfig.siteName,
+    images: [siteConfig.ogImage],
   },
 };
 

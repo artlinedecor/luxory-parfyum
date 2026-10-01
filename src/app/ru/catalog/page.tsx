@@ -31,6 +31,7 @@ export const metadata: Metadata = {
     description: RU_DESC,
     url: "https://parfumelux.uz/ru/catalog",
     siteName: siteConfig.siteName,
+    images: [siteConfig.ogImage],
     locale: "ru_RU",
   },
 };

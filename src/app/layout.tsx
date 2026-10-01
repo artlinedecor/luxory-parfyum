@@ -41,14 +41,7 @@ export const metadata: Metadata = {
     description: siteConfig.seoDescription,
     url: siteConfig.siteUrl,
     siteName: siteConfig.siteName,
-    images: [
-      {
-        url: "/hero.webp",
-        width: 1200,
-        height: 630,
-        alt: siteConfig.siteName,
-      },
-    ],
+    images: [siteConfig.ogImage],
     locale: "uz_UZ",
     type: "website",
   },
@@ -56,7 +49,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteConfig.seoTitle,
     description: siteConfig.seoDescription,
-    images: ["/hero.webp"],
+    images: [siteConfig.ogImage.url],
   },
   verification: {
     google: "3CAgz1XkqiojYhPFeqPz52IlpY03fJUlMzchSDJ8XcY",
