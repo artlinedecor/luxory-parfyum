@@ -269,7 +269,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     }`}
                     aria-label={`${i + 1}-rasm`}
                   >
-                    <Image src={src} alt="Rasm" fill className="object-contain" sizes="64px" />
+                    <Image src={src} alt={`${displayName} — ${i + 1}-rasm`} fill loading="lazy" className="object-contain" sizes="64px" />
                   </button>
                 ))}
               </div>

@@ -33,6 +33,21 @@ const nextConfig: NextConfig = {
     deviceSizes: [390, 640, 750, 828, 1080, 1200],
     imageSizes: [16, 32, 64, 96, 128, 256],
   },
+  /**
+   * Yagona asosiy manzil: https://parfumelux.uz (www'siz). Vercel domen
+   * sozlamasi ham shunday qilishi kerak — bu kod darajasidagi kafolat,
+   * Google/Yandex www va www'siz versiyani dublikat deb ko'rmasin.
+   */
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.parfumelux.uz" }],
+        destination: "https://parfumelux.uz/:path*",
+        permanent: true,
+      },
+    ];
+  },
   compress: true,
   poweredByHeader: false,
 };

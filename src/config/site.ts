@@ -41,6 +41,14 @@ export const siteConfig = {
     height: 630,
     alt: "Elore Parfume — sevimli atiringizni saytimizdan tanlang",
   },
+  // Qidiruv tizimlari tasdiqlash kodlari (Search Console / Yandex Webmaster).
+  // Env (NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION / NEXT_PUBLIC_YANDEX_VERIFICATION)
+  // berilsa o'sha ishlatiladi; bo'sh qiymat bo'lsa meta teg umuman chiqmaydi.
+  // Bu qiymatlar avval layout.tsx ichida qattiq yozilgan edi — o'zgarmagan.
+  googleSiteVerification: "3CAgz1XkqiojYhPFeqPz52IlpY03fJUlMzchSDJ8XcY",
+  yandexVerification: "a1ae49387e10bf4b",
+  facebookDomainVerification: "jws9hd9fxfxfdbjfsrdv85jmsyhyxf",
+
   seoTitle: "Elore Parfume — Toshkentda Original va Premium Atirlar, 12 oyga bo'lib to'lash",
   seoDescription:
     "Toshkentda original va premium atirlar: Tom Ford, Chanel, Dior, Creed va boshqa brendlar. Premium atir — 800 000 so'm, 3, 6 yoki 12 oyga bo'lib to'lash (Uzum Nasiya). Tez yetkazib berish.",
