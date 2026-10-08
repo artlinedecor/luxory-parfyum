@@ -70,15 +70,49 @@ export function productUrl(product: Pick<Product, "id">): string {
   return `${siteConfig.siteUrl}/catalog/${product.id}`;
 }
 
-/** Faqat tasdiqlangan va'dalar (docs/HOLAT.md "Egasi qarorlari"). */
+/** Google/Yandex qidiruv natijasida kesilmaydigan chegaralar. */
+export const TITLE_MAX = 60;
+export const DESCRIPTION_MAX = 160;
+
+/**
+ * Mahsulot sahifasi sarlavhasi. Avval har doim
+ * "<nom> — <tur>, bo'lib to'lash | <do'kon>" edi va ko'p atirlarda
+ * 60 belgidan oshib, qidiruvda kesilardi. Endi sig'adigan eng to'liq
+ * variant tanlanadi.
+ */
+export function productTitle(product: Product): string {
+  const name = seoProductName(product);
+  const type = productTypeLabel(product);
+  const variants = [
+    `${name} — ${type}, bo'lib to'lash | ${siteConfig.siteName}`,
+    `${name} — ${type} | ${siteConfig.siteName}`,
+    `${name} — ${type}, bo'lib to'lash`,
+    `${name} — ${type}`,
+  ];
+  return variants.find((v) => v.length <= TITLE_MAX) ?? variants[variants.length - 1];
+}
+
+/**
+ * Faqat tasdiqlangan va'dalar (docs/HOLAT.md "Egasi qarorlari").
+ * 160 belgidan oshmaydi: notalar faqat joy qolsa qo'shiladi — narx va
+ * bo'lib to'lash matni kesilmaydi (avval 300 gacha kesilardi).
+ */
 export function productMetaDescription(product: Product): string {
   const f = getFragranceView(product);
-  const price = formatUzs(productPriceUzs(product)).replace(/ /g, " ");
+  const price = formatUzs(productPriceUzs(product)).replace(/\u00a0/g, " ");
   const notes = f.notes ? [...f.notes.top, ...f.notes.heart, ...f.notes.base].slice(0, 4) : [];
   const lead = `${seoProductName(product)} — ${productTypeLabel(product).toLowerCase()}, ${price} so'm.`;
   const pay = " 3, 6 yoki 12 oyga bo'lib to'lash (Uzum Nasiya). Tez yetkazib berish, Toshkent.";
-  const notesPart = notes.length ? ` Notalar: ${notes.join(", ")}.` : "";
-  return (lead + notesPart + pay).slice(0, 300);
+  for (let n = notes.length; n > 0; n--) {
+    const withNotes = `${lead} Notalar: ${notes.slice(0, n).join(", ")}.${pay}`;
+    if (withNotes.length <= DESCRIPTION_MAX) return withNotes;
+  }
+  const plain = lead + pay;
+  if (plain.length <= DESCRIPTION_MAX) return plain;
+  // Juda uzun nomli atir: so'z chegarasida kesiladi
+  const cut = plain.slice(0, DESCRIPTION_MAX - 1);
+  const space = cut.lastIndexOf(" ");
+  return `${space > 0 ? cut.slice(0, space) : cut}…`;
 }
 
 export function productJsonLd(product: Product) {

@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@supabase/supabase-js';
+import { siteConfig } from '@/config/site';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://parfumelux.uz';
+  const baseUrl = siteConfig.siteUrl.replace(/\/$/, '');
   
   /**
    * `alternates.languages` — hreflang ning sitemapdagi ko'rinishi.

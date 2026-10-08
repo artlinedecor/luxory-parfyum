@@ -5,7 +5,7 @@ import ProductDetailClient from "@/components/ProductDetailClient";
 import { siteConfig } from "@/config/site";
 import {
   seoProductName,
-  productTypeLabel,
+  productTitle,
   productMetaDescription,
   productUrl,
   productJsonLd,
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     const name = seoProductName(product);
-    const title = `${name} — ${productTypeLabel(product)}, bo'lib to'lash | ${siteConfig.siteName}`;
+    const title = productTitle(product);
     const description = productMetaDescription(product);
     const url = productUrl(product);
 

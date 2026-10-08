@@ -28,14 +28,29 @@ const unbounded = Unbounded({
   display: "swap",
 });
 
+/** Tasdiqlash kodlari: env > config; bo'sh bo'lsa teg chiqmaydi. */
+function verification(): Metadata["verification"] {
+  const google =
+    process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim() || siteConfig.googleSiteVerification;
+  const yandex =
+    process.env.NEXT_PUBLIC_YANDEX_VERIFICATION?.trim() || siteConfig.yandexVerification;
+  const facebook = siteConfig.facebookDomainVerification;
+  return {
+    ...(google ? { google } : {}),
+    ...(yandex ? { yandex } : {}),
+    ...(facebook ? { other: { "facebook-domain-verification": facebook } } : {}),
+  };
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
   title: siteConfig.seoTitle,
   description: siteConfig.seoDescription,
   keywords: [...siteConfig.seoKeywords],
-  alternates: {
-    canonical: "https://parfumelux.uz/",
-  },
+  // ⚠️ canonical bu yerda BERILMAYDI: layout'dagi canonical o'zi yo'q
+  // barcha sahifalarga (maxfiylik siyosati, savat, login…) meros bo'lib
+  // o'tib, ularni bosh sahifaning dublikati deb ko'rsatardi. Har bir
+  // indekslanadigan sahifa canonical'ni o'zi beradi.
   openGraph: {
     title: siteConfig.seoTitle,
     description: siteConfig.seoDescription,
@@ -51,13 +66,7 @@ export const metadata: Metadata = {
     description: siteConfig.seoDescription,
     images: [siteConfig.ogImage.url],
   },
-  verification: {
-    google: "3CAgz1XkqiojYhPFeqPz52IlpY03fJUlMzchSDJ8XcY",
-    yandex: "a1ae49387e10bf4b",
-    other: {
-      "facebook-domain-verification": "jws9hd9fxfxfdbjfsrdv85jmsyhyxf",
-    },
-  },
+  verification: verification(),
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -68,6 +77,7 @@ export const metadata: Metadata = {
 const onlineStoreSchema = {
   "@context": "https://schema.org",
   "@type": "OnlineStore",
+  "@id": `${siteConfig.siteUrl}/#organization`,
   "name": siteConfig.siteName,
   "alternateName": ["Parfume Lux", "Elore Parfume", "Parfume Lux Toshkent"],
   "url": siteConfig.siteUrl,
@@ -84,9 +94,28 @@ const onlineStoreSchema = {
     "addressLocality": "Toshkent",
     "addressCountry": "UZ",
   },
+};
+
+/**
+ * WebSite + SearchAction. Qidiruv amali avval OnlineStore ichida edi —
+ * Google uni faqat `WebSite` turida o'qiydi. `/catalog?q=` ProductGrid
+ * tomonidan haqiqatan qo'llab-quvvatlanadi.
+ */
+const webSiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${siteConfig.siteUrl}/#website`,
+  "name": siteConfig.siteName,
+  "alternateName": ["Parfume Lux", "parfumelux.uz"],
+  "url": siteConfig.siteUrl,
+  "inLanguage": ["uz", "ru"],
+  "publisher": { "@id": `${siteConfig.siteUrl}/#organization` },
   "potentialAction": {
     "@type": "SearchAction",
-    "target": `${siteConfig.siteUrl}/catalog?q={search_term_string}`,
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": `${siteConfig.siteUrl}/catalog?q={search_term_string}`,
+    },
     "query-input": "required name=search_term_string",
   },
 };
@@ -106,7 +135,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(onlineStoreSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify([onlineStoreSchema, webSiteSchema]) }}
         />
         <SettingsProvider>
           <I18nProvider>

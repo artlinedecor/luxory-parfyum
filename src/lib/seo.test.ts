@@ -1,5 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { tidyCase, seoProductName, productJsonLd, productMetaDescription } from "./seo";
+import {
+  tidyCase,
+  seoProductName,
+  productJsonLd,
+  productMetaDescription,
+  productTitle,
+  TITLE_MAX,
+  DESCRIPTION_MAX,
+} from "./seo";
 import type { Product } from "./types";
 
 const base: Product = {
@@ -49,5 +57,21 @@ describe("mahsulot SEO", () => {
     expect(d).toContain("800 000 so'm");
     expect(d).toContain("3, 6 yoki 12 oyga");
     expect(d).not.toMatch(/0-0-6|1–3 kun|Tekshirib/);
+  });
+
+  it("sarlavha 60 belgidan oshmaydi va atir nomini saqlaydi", () => {
+    const t = productTitle(base);
+    expect(t.length).toBeLessThanOrEqual(TITLE_MAX);
+    expect(t).toContain("Hugo Boss Boss The Scent EDT 100 ml");
+  });
+
+  it("meta tavsif 160 belgidan oshmaydi, uzun nomda ham", () => {
+    expect(productMetaDescription(base).length).toBeLessThanOrEqual(DESCRIPTION_MAX);
+    const long = productMetaDescription({
+      ...base,
+      title: "MAISON FRANCIS KURKDJIAN BACCARAT ROUGE 540 EXTRAIT DE PARFUM LIMITED EDITION GOLD 200ML",
+    });
+    expect(long.length).toBeLessThanOrEqual(DESCRIPTION_MAX);
+    expect(long.length).toBeGreaterThan(70);
   });
 });
