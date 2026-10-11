@@ -57,10 +57,24 @@ export function seoProductName(product: Product): string {
   return parts.filter(Boolean).join(" ").replace(/\s{2,}/g, " ").trim();
 }
 
+/** URL uchun: "Dolce & Gabbana" → "dolce-gabbana" */
+export function slugify(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, " ")
+    .replace(/['’`]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 /** Mijozga ko'rinadigan tur: "klon" so'zi ishlatilmaydi (egasi, 2026-09-27) */
 export function productTypeLabel(product: Pick<Product, "product_type">): string {
   return product.product_type === "original" ? "Original atir" : "Premium atir";
 }
+
+const GENDER_UZ = { male: "erkaklar uchun", female: "ayollar uchun", unisex: "erkak va ayol uchun" } as const;
 
 export function productPriceUzs(product: Pick<Product, "price_usd" | "product_type">): number {
   return priceOfProductUzs({ price_usd: product.price_usd, product_type: product.product_type ?? "lux_copy" });
@@ -101,7 +115,8 @@ export function productMetaDescription(product: Product): string {
   const f = getFragranceView(product);
   const price = formatUzs(productPriceUzs(product)).replace(/\u00a0/g, " ");
   const notes = f.notes ? [...f.notes.top, ...f.notes.heart, ...f.notes.base].slice(0, 4) : [];
-  const lead = `${seoProductName(product)} — ${productTypeLabel(product).toLowerCase()}, ${price} so'm.`;
+  const who = product.gender ? `${GENDER_UZ[product.gender]} ` : "";
+  const lead = `${seoProductName(product)} — ${who}${productTypeLabel(product).toLowerCase()}, ${price} so'm.`;
   const pay = " 3, 6 yoki 12 oyga bo'lib to'lash (Uzum Nasiya). Tez yetkazib berish, Toshkent.";
   for (let n = notes.length; n > 0; n--) {
     const withNotes = `${lead} Notalar: ${notes.slice(0, n).join(", ")}.${pay}`;
@@ -158,13 +173,17 @@ export function productJsonLd(product: Product) {
 }
 
 export function productBreadcrumbJsonLd(product: Product) {
+  const brand = getFragranceView(product).brand;
+  const brandSlug = brand ? slugify(brand) : "";
+  const trail = [
+    { name: "Bosh sahifa", item: siteConfig.siteUrl },
+    { name: "Katalog", item: `${siteConfig.siteUrl}/catalog` },
+    ...(brand && brandSlug ? [{ name: `${brand} atiri`, item: `${siteConfig.siteUrl}/brend/${brandSlug}` }] : []),
+    { name: seoProductName(product), item: productUrl(product) },
+  ];
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Bosh sahifa", item: siteConfig.siteUrl },
-      { "@type": "ListItem", position: 2, name: "Katalog", item: `${siteConfig.siteUrl}/catalog` },
-      { "@type": "ListItem", position: 3, name: seoProductName(product), item: productUrl(product) },
-    ],
+    itemListElement: trail.map((t, i) => ({ "@type": "ListItem", position: i + 1, ...t })),
   };
 }

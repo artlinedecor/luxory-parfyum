@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import HomePage from "@/components/HomePage";
 import { fetchCatalogProductsServer } from "@/lib/products-query.server";
+import { SeoLinks } from "@/components/SeoLinks";
+import { groupBrands } from "@/lib/seo-landing";
 
 /**
  * hreflang juftligi IKKI TOMONLI bo'lishi kerak: o'zbekcha sahifa ham
@@ -41,5 +43,5 @@ export const revalidate = 3600;
 
 export default async function Page() {
   const initialProducts = await fetchCatalogProductsServer();
-  return <HomePage initialProducts={initialProducts} />;
+  return <HomePage initialProducts={initialProducts} seoSlot={<SeoLinks brands={groupBrands(initialProducts)} />} />;
 }

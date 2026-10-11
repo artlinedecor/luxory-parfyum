@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@supabase/supabase-js';
 import { siteConfig } from '@/config/site';
+import { CATEGORIES, categoryPath, brandPath, groupBrands, BRAND_MIN_INDEX } from '@/lib/seo-landing';
+import { fetchCatalogProductsServer } from '@/lib/products-query.server';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = siteConfig.siteUrl.replace(/\/$/, '');
@@ -51,6 +53,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
       alternates: tillar('/catalog'),
     },
+    ...CATEGORIES.map((c) => ({
+      url: `${baseUrl}${categoryPath(c.slug)}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.8,
+    })),
+    {
+      url: `${baseUrl}/brendlar`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
     {
       url: `${baseUrl}/privacy-policy`,
       lastModified: new Date(),
@@ -74,7 +88,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
       }));
       
-      return [...routes, ...productRoutes];
+      // Brend sahifalari: faqat indekslanadiganlari (kamida BRAND_MIN_INDEX atir)
+      const brandRoutes = groupBrands(await fetchCatalogProductsServer())
+        .filter((b) => b.products.length >= BRAND_MIN_INDEX)
+        .map((b) => ({
+          url: `${baseUrl}${brandPath(b.slug)}`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly' as const,
+          priority: 0.7,
+        }));
+
+      return [...routes, ...brandRoutes, ...productRoutes];
     }
   } catch (e) {
     console.error("Error generating sitemap", e);

@@ -8,9 +8,11 @@ import { useEffect, useState } from "react";
 import { fetchCatalogProducts } from "@/lib/products-query";
 import { Product } from "@/lib/types";
 import { useShopSettings } from "@/lib/settings-context";
+import type { ReactNode } from "react";
 
 export default function CatalogView({
   initialProducts = [],
+  seoSlot,
 }: {
   /**
    * Serverda olingan ro'yxat. Shu tufayli mahsulotlar serverdan kelgan
@@ -18,6 +20,8 @@ export default function CatalogView({
    * "hozircha mahsulot yo'q" degan yolg'on javob ketardi.
    */
   initialProducts?: Product[];
+  /** Serverda yasalgan ichki havolalar (toifa/brend) — SEO uchun */
+  seoSlot?: ReactNode;
 }) {
   const { t } = useI18n();
   const { shopPhone, telegramAdminUsername, telegramChannel } = useShopSettings();
@@ -48,6 +52,7 @@ export default function CatalogView({
           {/* Products Grid */}
           <ProductGrid products={products} />
         </div>
+        {seoSlot}
       </main>
       <BottomNav />
       <div className="h-20 md:hidden" />

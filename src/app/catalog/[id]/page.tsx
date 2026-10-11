@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import ProductDetailClient from "@/components/ProductDetailClient";
+import { ProductSeoBlock } from "@/components/SeoLinks";
 import { siteConfig } from "@/config/site";
 import {
   seoProductName,
@@ -113,7 +114,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ProductDetailClient product={product} />
+      <ProductDetailClient product={product} seoSlot={<ProductSeoBlock product={product} />} />
     </>
   );
 }
