@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import CatalogView from "@/components/CatalogView";
 import { fetchCatalogProductsServer } from "@/lib/products-query.server";
 import { siteConfig } from "@/config/site";
+import { SeoLinks } from "@/components/SeoLinks";
+import { groupBrands } from "@/lib/seo-landing";
 
 export const metadata: Metadata = {
   title: `Atirlar Katalogi — ${siteConfig.siteName}`,
@@ -35,5 +37,5 @@ export const metadata: Metadata = {
  */
 export default async function CatalogPage() {
   const initialProducts = await fetchCatalogProductsServer();
-  return <CatalogView initialProducts={initialProducts} />;
+  return <CatalogView initialProducts={initialProducts} seoSlot={<SeoLinks brands={groupBrands(initialProducts)} />} />;
 }

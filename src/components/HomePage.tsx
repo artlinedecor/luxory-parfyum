@@ -18,9 +18,11 @@ import { useShopSettings } from "@/lib/settings-context";
 import Link from "next/link";
 import BrandLogo from "@/components/BrandLogo";
 import Reveal from "@/components/motion/Reveal";
+import type { ReactNode } from "react";
 
 export default function HomePage({
   initialProducts = [],
+  seoSlot,
 }: {
   /**
    * Serverda olingan mahsulotlar (app/page.tsx dan keladi).
@@ -31,6 +33,8 @@ export default function HomePage({
    * botlar (GPTBot, ClaudeBot, PerplexityBot) aynan shuni o'qirdi.
    */
   initialProducts?: Product[];
+  /** Serverda yasalgan ichki havolalar (toifa/brend) — SEO uchun */
+  seoSlot?: ReactNode;
 }) {
   const { t, lang } = useI18n();
   const { shopName, shopAddress, telegramAdminUsername, telegramChannel, shopPhone } = useShopSettings();
@@ -121,6 +125,8 @@ export default function HomePage({
           {/* Products with Tabs */}
           <ProductGrid products={products} />
         </section>
+
+        {seoSlot}
 
         {/* Footer */}
         <footer id="footer" className="py-14 px-4 sm:px-6 lg:px-8 border-t border-border bg-secondary/30">

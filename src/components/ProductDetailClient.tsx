@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -39,9 +39,11 @@ const UZUM_ENABLED = process.env.NEXT_PUBLIC_UZUM_ENABLED === "true";
 
 interface ProductDetailClientProps {
   product: Product;
+  /** Serverda yasalgan matn va ichki havolalar — SEO uchun */
+  seoSlot?: ReactNode;
 }
 
-export default function ProductDetailClient({ product }: ProductDetailClientProps) {
+export default function ProductDetailClient({ product, seoSlot }: ProductDetailClientProps) {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
@@ -462,6 +464,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </Tabs.Root>
           </div>
         </div>
+        {seoSlot}
       </main>
       <div
         className="fixed inset-x-0 z-40 md:hidden border-t border-border bg-background/95 backdrop-blur-md px-4 pt-2.5 pb-2.5"
