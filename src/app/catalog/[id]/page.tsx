@@ -112,7 +112,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
       {/* JSON-LD Rich Snippet for search engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <ProductDetailClient product={product} seoSlot={<ProductSeoBlock product={product} />} />
     </>

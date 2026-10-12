@@ -31,7 +31,7 @@ export default function SeoLanding({
   const ld = [...jsonLd, ...(faq.length ? [faqJsonLd(faq)] : [])];
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
       <Header />
       <main className="flex-1 pt-20 sm:pt-24 pb-24 md:pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
