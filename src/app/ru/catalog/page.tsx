@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import CatalogView from "@/components/CatalogView";
 import { I18nProvider } from "@/lib/i18n-context";
 import { fetchCatalogProductsServer } from "@/lib/products-query.server";
@@ -37,6 +38,8 @@ export const metadata: Metadata = {
 };
 
 export default async function RuCatalogPage() {
+  // Ruscha katalog ham har ochilganda joriy mahsulotlarni oladi.
+  await connection();
   const initialProducts = await fetchCatalogProductsServer();
   return (
     <I18nProvider initialLang="ru">

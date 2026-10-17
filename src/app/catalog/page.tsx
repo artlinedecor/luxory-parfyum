@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import CatalogView from "@/components/CatalogView";
 import { fetchCatalogProductsServer } from "@/lib/products-query.server";
 import { siteConfig } from "@/config/site";
@@ -36,6 +37,8 @@ export const metadata: Metadata = {
  * yozuvi turardi. Bot uchun bu yolg'on javob edi.
  */
 export default async function CatalogPage() {
+  // Katalog build paytidagi ro'yxatda qolmasin: yangi atirlar darhol qidirilsin.
+  await connection();
   const initialProducts = await fetchCatalogProductsServer();
   return <CatalogView initialProducts={initialProducts} seoSlot={<SeoLinks brands={groupBrands(initialProducts)} />} />;
 }
