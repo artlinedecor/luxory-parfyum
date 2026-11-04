@@ -1,8 +1,14 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/api-guard";
 import { serverSupabase } from "@/lib/supabase-server";
 import { isAbandonedDmOrder } from "@/lib/dm-pay-link";
 import { getUsdRate } from "@/lib/usd-rate-server";
+import { finishCheckout } from "@/lib/uzum-checkout-server";
+import type { CheckoutOrder } from "@/lib/uzum-checkout-store";
+import { rateLimit } from "@/lib/rate-limit";
+import { reconciliationCandidates } from "@/lib/uzum-reconciliation";
+
+export const maxDuration = 120;
 
 /**
  * Dashboard uchun o'qish — barcha sahifalar shu yerdan ma'lumot oladi.
@@ -38,6 +44,15 @@ export async function GET(req: Request) {
       // Bu jadval yo'qligi umumiy dashboard'ni to'xtatmasin — faqat log.
       console.error("[dashboard/data] uzum_contracts", ucRes.error);
     }
+
+    // A buyer need not return from Uzum: the admin view also reconciles saved contracts.
+    // Run after the response so opening the dashboard never waits for the bank.
+    const linked = new Set<string>((ucRes.data ?? []).filter(c => c.status === "created" || c.status === "signed").map(c => c.order_row_id).filter(Boolean));
+    const pendingUzum = reconciliationCandidates((ordRes.data ?? []) as CheckoutOrder[], linked);
+    if (pendingUzum.length && rateLimit("uzum-admin-reconcile", 1, 60000)) after(async () => {
+      const results = await Promise.allSettled(pendingUzum.map(o => finishCheckout((o as CheckoutOrder).id, true)));
+      results.forEach(r => { if (r.status === "rejected") console.error("[uzum/reconcile]", r.reason instanceof Error ? r.reason.message : "unknown"); });
+    });
 
     return NextResponse.json({
       products: prodRes.data ?? [],

@@ -1,10 +1,12 @@
 "use client";
 
 import { trackMetaEvent } from "@/lib/meta-tracker";
+import { clearCheckoutSession, readCheckoutRequest } from "./uzum-checkout-session";
 
 const KEY = "uzum_pending";
-
 export interface PendingOrder {
+  order_row_id?: string;
+  recovery_token?: string;
   contract_id: number;
   order: number;
   period: string;
@@ -14,124 +16,61 @@ export interface PendingOrder {
   ts: number;
 }
 
-/** Shartnoma tuzilgach — bazaga YOZMAYMIZ, faqat brauzerda saqlab turamiz */
+/** Optional browser cache; the server already owns the durable order before redirect. */
 export function savePending(p: PendingOrder) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(p));
-  } catch {}
+  try { localStorage.setItem(KEY, JSON.stringify(p)); } catch { /* recover with the HttpOnly checkout cookie */ }
 }
-
 export function readPending(): PendingOrder | null {
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return null;
-    const p = JSON.parse(raw) as PendingOrder;
-    // 24 soatdan eski bo'lsa — tashlab yuboramiz
-    if (!p?.contract_id || Date.now() - (p.ts || 0) > 86400000) {
-      localStorage.removeItem(KEY);
-      return null;
-    }
-    return p;
-  } catch {
-    return null;
-  }
+    const p = JSON.parse(localStorage.getItem(KEY) || "null") as PendingOrder | null;
+    return p?.contract_id ? p : null;
+  } catch { return null; }
+}
+export function clearPending() { try { localStorage.removeItem(KEY); } catch { /* optional cache */ } }
+
+export interface PendingResult {
+  state: "signed" | "pending" | "cancelled" | "none" | "error";
+  webview_path?: string;
+  needs_review?: boolean;
+  error?: string;
 }
 
-export function clearPending() {
-  try {
-    localStorage.removeItem(KEY);
-  } catch {}
-}
-
-/**
- * Buyurtmani SERVER orqali yozadi.
- *
- * ⚠️ Audit D1: oldin bu yerda brauzerdan to'g'ridan-to'g'ri Supabase'ga
- * yozilardi. Birinchi insert bazada MAVJUD BO'LMAGAN `uzum_contract_id`
- * ustuniga yozardi — ya'ni har doim yiqilardi. Zaxira insertning xatosi
- * esa umuman tekshirilmasdi va funksiya hech qachon throw qilmasdi.
- * Mijoz qarz shartnomasini imzolab, buyurtmasiz qolishi mumkin edi.
- *
- * Endi xato bo'lsa THROW qiladi — chaqiruvchi localStorage'ni
- * tozalamaydi va mijoz qayta urinib ko'ra oladi.
- */
-async function insertOrder(p: PendingOrder): Promise<string> {
-  const res = await fetch("/api/uzumnasiya/finalize", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contract_id: p.contract_id,
-      uzum_order: p.order,
-      period: p.period,
-      client: p.client,
-      // ⚠️ narx YUBORILMAYDI — server bazadan hisoblaydi
-      items: p.items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
-    }),
-  });
-  const j = await res.json();
-  if (!res.ok || !j.order_id) {
-    throw new Error(j.error || "Buyurtmani saqlab bo'lmadi");
-  }
-  return String(j.order_id);
-}
-export type PendingResult = "signed" | "not_signed" | "none" | "error";
-
-/**
- * Kutilayotgan shartnomani tekshiradi.
- * Imzolangan bo'lsa (status 1 yoki 2) — buyurtmani bazaga yozadi va
- * Meta'ga Purchase yuboradi. Imzolanmagan bo'lsa — HECH NARSA yozmaydi.
- */
 export async function resolvePending(): Promise<PendingResult> {
-  const p = readPending();
-  if (!p) return "none";
-
+  const pending = readPending();
+  const queryId = new URLSearchParams(window.location.search).get("uzum_order_id");
+  const request = readCheckoutRequest();
+  const orderId = queryId || pending?.order_row_id || request?.request_id;
   try {
-    const r = await fetch("/api/uzumnasiya/contracts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "status", contract_id: p.contract_id }),
+    const response = await fetch("/api/uzumnasiya/finalize", {
+      method: "POST", headers: { "Content-Type": "application/json" }, cache: "no-store",
+      body: JSON.stringify({ order_id: orderId,
+        recovery_token: pending?.order_row_id === orderId ? pending?.recovery_token : request?.request_id === orderId ? request?.recovery_token : undefined,
+        recovery_receipt: request?.request_id === orderId ? request?.recovery_receipt : undefined,
+        contract_id: !orderId ? pending?.contract_id : undefined }),
     });
-    const j = await r.json();
-    if (!r.ok) throw new Error(j.error || "Xatolik");
-
-    const st = Number(j.data?.contract_status);
-    if (st !== 1 && st !== 2) return "not_signed"; // imzolanmagan — buyurtma yaratilmaydi
-
-    // Ikki marta yozilmasin
-    const savedKey = `uzum_saved_${p.contract_id}`;
-    if (!localStorage.getItem(savedKey)) {
-      await insertOrder(p);
-      localStorage.setItem(savedKey, "1");
-
-      // Telegram botga tasdiqlash tugmalari bilan yuboramiz
-      fetch("/api/uzumnasiya/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contract_id: p.contract_id,
-          order: p.order,
-          period: p.period,
-          total: p.total,
-          client: p.client,
-          items: p.items,
-        }),
-      }).catch(() => {});
-
-      const eid = `pur_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-      trackMetaEvent("Purchase", eid, {}, {
-        value: p.total,
-        currency: "UZS",
-        content_type: "product",
-        content_ids: p.items.map((i) => i.product_id),
-        order_id: String(p.contract_id),
-      });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Buyurtma holatini tekshirib bo'lmadi.");
+    if (result.state === "signed") {
+      if (pending && (!queryId || pending.order_row_id === queryId)) {
+        try {
+          const savedKey = `uzum_saved_${result.order_id}`;
+          if (!localStorage.getItem(savedKey)) {
+            localStorage.setItem(savedKey, "1");
+            trackMetaEvent("Purchase", `uzum_${result.order_id}`, {}, {
+              value: Number(result.total) || pending.total, currency: "UZS", content_type: "product",
+              content_ids: pending.items.map(i => i.product_id), order_id: result.order_id,
+            });
+          }
+        } catch { /* analytics must not reverse a verified order */ }
+        clearPending();
+      }
+      clearCheckoutSession();
+    } else if (result.state === "cancelled") {
+      if (!queryId || pending?.order_row_id === queryId) clearPending();
+      clearCheckoutSession();
     }
-    // ⚠️ Faqat MUVAFFAQIYATDA tozalanadi. Xato bo'lsa pending saqlanib
-    // qoladi va mijoz sahifani qayta ochganda avtomatik qayta urinadi.
-    clearPending();
-    return "signed";
-  } catch (e) {
-    console.error("[uzum] buyurtmani yakunlab bo'lmadi", e);
-    return "error";
+    return result;
+  } catch (error) {
+    return { state: "error", error: error instanceof Error ? error.message : "Holatni tekshirib bo'lmadi." };
   }
 }

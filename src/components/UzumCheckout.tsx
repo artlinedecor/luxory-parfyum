@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 import { savePending } from "@/lib/uzum-pending";
+import { buyerNextStep } from "@/lib/uzum-flow";
+import { checkoutRequest, clearCheckoutRequest, readCheckoutContact, saveCheckoutContact, saveCheckoutReceipt, readCheckoutRequest } from "@/lib/uzum-checkout-session";
+import { siteConfig } from "@/config/site";
 
 interface Tariff {
   tariff: string;
@@ -15,6 +18,8 @@ interface Tariff {
   total: number;
   origin?: number;
   is_available: boolean;
+  deposit?: number;
+  first_payment_date?: string;
   /** Uzum tarif mavjud bo'lmasa SABABINI shu yerda qaytaradi */
   error_message?: string;
 }
@@ -37,10 +42,9 @@ type Step = "phone" | "tariffs" | "redirect";
 /** Uzum'ning texnik xatolarini mijozga tushunarli o'zbekchaga o'giradi */
 function friendlyError(raw: string): string {
   const t = (raw || "").toLowerCase();
+  if (/storage|quotaexceeded|securityerror/i.test(raw)) return "Brauzer xotirasiga saqlab bo'lmadi. Rasmiylashtirishni boshqa brauzerda oching yoki do'kon bilan bog'laning.";
   if (/внешний сервис|не отвеча|попробуйте позже|ulanib bo'lmadi|javob bermadi|timeout/i.test(raw))
     return "Uzum tizimi hozir javob bermayapti. Iltimos, bir necha soniyadan keyin qayta urinib ko'ring.";
-  if (/лимит|limit|balance|баланс/i.test(t))
-    return "Bo'lib to'lash limitingiz yetarli emas. Boshqa muddatni tanlang yoki Uzum ilovasidan limitni tekshiring.";
   if (/не найден|not found/i.test(t))
     return "Ma'lumot topilmadi. Telefon raqamni tekshirib, qayta urinib ko'ring.";
   if (/авторизац|token/i.test(t))
@@ -72,7 +76,7 @@ function prettyPhone(d: string): string {
   return `+${d.slice(0, 3)} ${d.slice(3, 5)} ${d.slice(5, 8)} ${d.slice(8, 10)} ${d.slice(10, 12)}`;
 }
 
-export default function UzumCheckout({ initialPhone = "", extOrderId, client, onClose }: UzumCheckoutProps) {
+export default function UzumCheckout({ initialPhone = "", client, onClose }: UzumCheckoutProps) {
   const { items } = useCart();
   const [step, setStep] = useState<Step>("phone");
   const [phone, setPhone] = useState(normalizePhone(initialPhone));
@@ -84,6 +88,12 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
   const [info, setInfo] = useState("");
   // Uzum check-status javobida bergan verifikatsiya / limit olish WebView linki
   const [webviewUrl, setWebviewUrl] = useState("");
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [recoveryPath, setRecoveryPath] = useState("");
+  const creating = useRef(false);
+  const phoneAttempt = useRef(0);
+  const mounted = useRef(true);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
 
   // ⚠️ Original atirlar narxi BOSHQACHA hisoblanadi. Oldin bu yerda hammaga
   // calculatePremiumPriceUzs (qat'iy 800 000) qo'llanardi va original mahsulot
@@ -96,6 +106,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
 
   // 1) check-status -> agar status=4 bo'lsa 2) calculate
   const handlePhone = async () => {
+    const attempt = ++phoneAttempt.current;
     const ph = normalizePhone(phone);
     if (!isValidUzPhone(ph)) {
       setError(
@@ -103,7 +114,8 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
       );
       return;
     }
-    setError(""); setInfo(""); setLoading(true);
+    setError(""); setInfo(""); setWebviewUrl(""); setNeedsVerification(false);
+    setUserId(null); setTariffs([]); setSelected(""); setStep("phone"); setLoading(true);
     try {
       const r = await fetch("/api/uzumnasiya/check-status", {
         method: "POST",
@@ -111,59 +123,26 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         body: JSON.stringify({ phone: ph }),
       });
       const j = await r.json();
+      if (attempt !== phoneAttempt.current || !mounted.current) return;
       if (!r.ok) throw new Error(j.error || "Xatolik");
 
-      const status = Number(j.data?.status);
-      // ⚠️ Uzum 'buyer_id' qaytaradi (user_id emas)
-      const uid = Number(j.data?.buyer_id ?? j.data?.user_id ?? j.data?.id);
-
-      // Uzum registratsiya / verifikatsiya linkini HAR DOIM saqlab qolamiz —
-      // status=4 bo'lsa ham kerak bo'lishi mumkin (limit olinmagan holat).
-      if (j.data?.webview) setWebviewUrl(String(j.data.webview));
-
-      if (status === 4 && uid) {
-        // status=4 = "tasdiqlangan", lekin bu LIMIT BOR degani EMAS.
-        // Limitsiz mijozda calculate hamma tarifni is_available:false qaytaradi
-        // va oldin mijoz "Mavjud tarif topilmadi" degan boshi berk ko'chaga tushardi.
-        const hasLimit = j.data?.has_limit !== false;
-        const balance = Number(j.data?.balance ?? 0);
-        const total = items.reduce((sum, it) => sum + priceOf(it.product) * it.quantity, 0);
-
-        if (!hasLimit || balance <= 0) {
-          setInfo(
-            "Raqamingiz Uzum Nasiyada tasdiqlangan, lekin bo'lib to'lash LIMITI hali ochilmagan. " +
-              "Limit olish uchun Uzum Nasiyada verifikatsiyadan o'ting, so'ng shu yerga qaytib qayta urinib ko'ring."
-          );
-          return;
-        }
-        if (balance < total) {
-          setInfo(
-            `Limitingiz ${formatUzs(Math.round(balance))} so'm, buyurtma summasi esa ${formatUzs(Math.round(total))} so'm. ` +
-              "Savatdan mahsulot kamaytiring yoki Uzum Nasiyada limitingizni oshiring."
-          );
-          return;
-        }
-
-        setUserId(uid);
-        await loadTariffs(uid);
+      const next = buyerNextStep(j.data || {});
+      if (next.step === "calculate" && next.userId) {
+        setUserId(next.userId);
+        await loadTariffs(next.userId, attempt);
         return;
       }
-      // Rad etilgan statuslar
-      if ([8, 9, 13, 14, 403].includes(status)) {
-        setInfo("Afsuski, bu raqam bo'yicha bo'lib to'lash hozircha mumkin emas. Uzum Nasiya qo'llab-quvvatlash markaziga murojaat qiling.");
-        return;
+      if (next.step === "verify") {
+        setNeedsVerification(true);
+        setWebviewUrl(next.webview || "");
       }
-      // Registratsiya kerak — Uzum bergan webview'ga yo'naltiramiz
-      if (j.data?.webview) {
-        setInfo("Ro'yxatdan o'tish sahifasiga yo'naltirilmoqda...");
-        setTimeout(() => { window.location.href = j.data.webview; }, 1200);
-        return;
-      }
-      setInfo("Bo'lib to'lash uchun avval Uzum Nasiya ilovasida ro'yxatdan o'ting va kartangizni qo'shing, so'ng qayta urinib ko'ring.");
+      if (next.step === "error") setError(next.message || "Uzum javobini tekshirib bo'lmadi.");
+      else setInfo(next.message || "Uzum ilovasida holatingizni tekshiring.");
     } catch (e) {
+      if (attempt !== phoneAttempt.current || !mounted.current) return;
       setError(friendlyError(e instanceof Error ? e.message : ""));
     } finally {
-      setLoading(false);
+      if (attempt === phoneAttempt.current && mounted.current) setLoading(false);
     }
   };
 
@@ -179,12 +158,14 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
   }, []);
 
   const changePhone = () => {
+    phoneAttempt.current++; setLoading(false);
     setStep("phone"); setTariffs([]); setSelected(""); setUserId(null);
     setError(""); setInfo("");
+    setWebviewUrl(""); setNeedsVerification(false);
   };
 
   // 2) calculate -> tariflar
-  const loadTariffs = async (uid: number) => {
+  async function loadTariffs(uid: number, attempt = phoneAttempt.current) {
     setLoading(true); setError("");
     try {
       const products = items.map((it) => ({
@@ -198,6 +179,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         body: JSON.stringify({ user_id: uid, products }),
       });
       const j = await r.json();
+      if (attempt !== phoneAttempt.current || !mounted.current) return;
       if (!r.ok) throw new Error(j.error || "Tariflar olinmadi");
       const all: Tariff[] = j.tariffs || [];
       const avail = all.filter((t) => t.is_available);
@@ -218,15 +200,17 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
       setSelected(avail[0].tariff);
       setStep("tariffs");
     } catch (e) {
+      if (attempt !== phoneAttempt.current || !mounted.current) return;
       setError(friendlyError(e instanceof Error ? e.message : ""));
     } finally {
-      setLoading(false);
+      if (attempt === phoneAttempt.current && mounted.current) setLoading(false);
     }
-  };
+  }
 
   // 3) create-order -> webview_path ga yo'naltirish
   const handleCreate = async () => {
-    if (!userId || !selected) return;
+    if (!userId || !selected || creating.current) return;
+    creating.current = true;
     setLoading(true); setError("");
     try {
       const products = items.map((it) => ({
@@ -235,18 +219,29 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         price: priceOf(it.product),
         amount: it.quantity,
       }));
+      const request = checkoutRequest(JSON.stringify({ userId, selected, products, client }));
       const r = await fetch("/api/uzumnasiya/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, period: selected, products, ext_order_id: extOrderId }),
+        body: JSON.stringify({ user_id: userId, period: selected, products, client: { ...client, phone: normalizePhone(phone) },
+          expected_total: tariffs.find(t => t.tariff === selected)?.total, ...request }),
       });
       const j = await r.json();
-      if (!r.ok || !j.webview_path) throw new Error(j.error || "Shartnoma yaratilmadi");
+      if (j.recovery_receipt) saveCheckoutReceipt(request.request_id, j.recovery_receipt);
+      if (!mounted.current) return;
+      if (j.recovery_path && (!r.ok || !j.webview_path)) {
+        window.location.href = j.recovery_path;
+        return;
+      }
+      if (!r.ok || !j.webview_path) {
+        if (r.status === 400 || r.status === 409) clearCheckoutRequest();
+        throw new Error(j.error || "Shartnoma yaratilmadi");
+      }
 
-      // ⚠️ Buyurtma bazaga HOZIR yozilmaydi — mijoz OTP kiritmasdan chiqib
-      // ketsa dashboard'da soxta buyurtma qolardi. Faqat brauzerda saqlaymiz;
-      // shartnoma imzolangani tasdiqlangach (resolvePending) yoziladi.
+      // Server already persisted the pending order. This is an optional recovery cache.
       savePending({
+        order_row_id: j.order_row_id,
+        recovery_token: request.recovery_token,
         contract_id: j.contract_id,
         order: j.order,
         period: selected,
@@ -264,8 +259,13 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
       setStep("redirect");
       window.location.href = j.webview_path;
     } catch (e) {
+      if (!mounted.current) return;
       setError(friendlyError(e instanceof Error ? e.message : ""));
+      const request = readCheckoutRequest();
+      setRecoveryPath(request ? `/payment-success?uzum_order_id=${request.request_id}` : "");
       setLoading(false);
+    } finally {
+      creating.current = false;
     }
   };
 
@@ -279,7 +279,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
             <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#6100FF] text-white text-sm font-semibold">U</span>
             <div>
               <h3 className="font-heading text-base font-bold text-foreground">Uzum Nasiya</h3>
-              <p className="text-[11px] text-muted-foreground">Bo'lib to'lash</p>
+              <p className="text-[11px] text-muted-foreground">Bo&apos;lib to&apos;lash</p>
             </div>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-secondary">✕</button>
@@ -293,13 +293,18 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         {error && (
           <div className="p-3.5 rounded-xl bg-destructive/8 border border-destructive/25 text-xs text-destructive leading-relaxed">{error}</div>
         )}
+        {error && recoveryPath && <a href={recoveryPath} className="btn btn-outline btn-block btn-sm">Oldingi rasmiylashtirish holatini tekshirish</a>}
 
         {/* Limit yo'q / tarif yo'q holatida mijozni boshi berk ko'chada qoldirmaymiz */}
-        {webviewUrl && (info || error) && step === "phone" && (
+        {needsVerification && webviewUrl && step === "phone" && (
           <a
             href={webviewUrl}
             className="btn btn-uzum btn-block no-underline"
             rel="noopener noreferrer"
+            onClick={() => {
+              if (client) saveCheckoutContact({ ...client, phone: normalizePhone(phone), region: readCheckoutContact()?.region || client.region });
+              try { sessionStorage.setItem("uzum_resume", "1"); } catch { /* form may need to be re-entered */ }
+            }}
           >
             {"Uzum Nasiyada verifikatsiyadan o'tish"}
           </a>
@@ -314,7 +319,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
               type="tel"
               inputMode="numeric"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => { phoneAttempt.current++; setLoading(false); setPhone(e.target.value); setWebviewUrl(""); setNeedsVerification(false); setInfo(""); setError(""); }}
               placeholder="998 90 123 45 67"
               className="field w-full"
             />
@@ -343,7 +348,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
                   <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Limit tekshirilmoqda…
                 </>
-              ) : "Davom etish"}
+              ) : info || error ? "Qayta tekshirish" : "Davom etish"}
             </button>
           </div>
         )}
@@ -351,6 +356,7 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         {/* Step: tariffs */}
         {step === "tariffs" && (
           <div className="space-y-3">
+            {error && <button type="button" className="btn btn-outline btn-block btn-sm" disabled={loading} onClick={() => userId && void loadTariffs(userId)}>Tariflarni qayta hisoblash</button>}
             <p className="text-sm font-semibold text-foreground">Muddatni tanlang</p>
             <p className="text-xs text-muted-foreground -mt-1">
               Raqam:{" "}
@@ -377,12 +383,18 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
                       {t.title_uz || `${t.period_months} oy`}
                     </div>
                     <div className="text-[11px] text-muted-foreground">
-                      Jami: {formatUzs(Math.round(t.total))} so'm
+                      Jami: {formatUzs(Math.round(t.total))} so&apos;m
                     </div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Boshlang&apos;ich to&apos;lov: {formatUzs(Number(t.deposit) || 0)} so&apos;m
+                    </div>
+                    {t.first_payment_date && <div className="text-[11px] text-muted-foreground">
+                      Birinchi to&apos;lov: {t.first_payment_date.slice(0, 10).split("-").reverse().join(".")}
+                    </div>}
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-bold text-foreground">
-                      {formatUzs(Math.round(t.month))} so'm
+                      {formatUzs(Math.round(t.month))} so&apos;m
                     </div>
                     <div className="text-[10px] text-muted-foreground">oyiga</div>
                   </div>
@@ -402,13 +414,14 @@ export default function UzumCheckout({ initialPhone = "", extOrderId, client, on
         {step === "redirect" && (
           <div className="py-8 text-center space-y-3">
             <span className="inline-block w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
-            <p className="text-sm text-muted-foreground">Uzum Nasiya sahifasiga yo'naltirilmoqda...</p>
+            <p className="text-sm text-muted-foreground">Uzum Nasiya sahifasiga yo&apos;naltirilmoqda...</p>
           </div>
         )}
 
         <p className="text-[10px] text-muted-foreground/60 text-center leading-relaxed">
           Tasdiqlash SMS-kod (OTP) orqali Uzum Nasiya sahifasida amalga oshiriladi.
         </p>
+        {(error || info) && <a className="btn btn-outline btn-block btn-sm" href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}>Do&apos;kon bilan bog&apos;lanish</a>}
       </div>
     </div>
   );

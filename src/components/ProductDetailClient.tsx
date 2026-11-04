@@ -350,11 +350,11 @@ export default function ProductDetailClient({ product, seoSlot }: ProductDetailC
               {UZUM_ENABLED && (
                 <div className="mt-3 rounded-xl bg-[#6100FF]/[0.06] px-4 py-3">
                   <p className="text-sm font-semibold text-foreground">
-                    {ru ? "Закажите сегодня — сейчас платите 0 сум" : "Bugun buyurtma bering — hozir 0 so'm to'laysiz"}
+                    {ru ? "Рассчитайте доступные условия в Uzum Nasiya" : "Uzum Nasiyada mavjud to'lov shartlarini hisoblang"}
                   </p>
                   <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                     {/* "3 · 6 · 12 oy" — yuqoridagi Uzum satrida bor, takrorlanmaydi */}
-                    {ru ? "Карта не нужна · телефон + SMS · 2 минуты" : "Karta shart emas · telefon + SMS · 2 daqiqa"}
+                    {ru ? "Доступность и условия определяет Uzum Nasiya" : "Mavjud tarif va talablarni Uzum Nasiya belgilaydi"}
                   </p>
                 </div>
               )}
@@ -491,9 +491,9 @@ export default function ProductDetailClient({ product, seoSlot }: ProductDetailC
         {UZUM_ENABLED && (
           <p className="mt-1.5 truncate text-center text-[11px] leading-tight text-muted-foreground">
             <b className="font-semibold text-foreground">
-              {ru ? "Закажите сегодня — сейчас 0 сум" : "Bugun buyurtma bering — hozir 0 so'm"}
+              {ru ? "Рассчитайте доступные условия рассрочки" : "Mavjud bo'lib to'lash shartlarini hisoblang"}
             </b>
-            {ru ? " · карта не нужна" : " · karta shart emas"}
+            {ru ? " · с проверкой лимита" : " · limit tekshiriladi"}
           </p>
         )}
       </div>

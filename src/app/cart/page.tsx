@@ -15,6 +15,7 @@ import { useI18n } from "@/lib/i18n-context";
 import { trackMetaEvent } from "@/lib/meta-tracker";
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 import UzumCheckout from "@/components/UzumCheckout";
+import { readCheckoutContact, saveCheckoutContact } from "@/lib/uzum-checkout-session";
 
 const REGIONS = [
   "region_tashkent_city",
@@ -40,6 +41,23 @@ export default function CartPage() {
   const [clientPhone, setClientPhone] = useState("");
   const [clientRegion, setClientRegion] = useState("");
   const [clientAddress, setClientAddress] = useState("");
+  const contactReady = useRef(false);
+  useEffect(() => {
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const saved = readCheckoutContact();
+      if (saved) {
+        setClientName(saved.name); setClientPhone(saved.phone); setClientAddress(saved.address);
+        if (REGIONS.includes(saved.region)) setClientRegion(saved.region);
+      }
+      contactReady.current = true;
+    });
+    return () => { cancelled = true; };
+  }, []);
+  useEffect(() => {
+    if (contactReady.current) saveCheckoutContact({ name: clientName, phone: clientPhone, address: clientAddress, region: clientRegion });
+  }, [clientName, clientPhone, clientAddress, clientRegion]);
   const [submitted, setSubmitted] = useState(false);
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null);
   const [finalAmount, setFinalAmount] = useState<number>(0);
@@ -47,9 +65,6 @@ export default function CartPage() {
   const [checkoutError, setCheckoutError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [dynPaymentCard, setDynPaymentCard] = useState<string>(siteConfig.paymentCard);
-  const [dynPaymentCardHolder, setDynPaymentCardHolder] = useState<string>(siteConfig.paymentCardHolder);
-  const [dynTelegramAdminUsername, setDynTelegramAdminUsername] = useState<string>(siteConfig.telegramAdminUsername);
 
   // Atir sahifasidagi "Bo'lib to'lash" / "Karta bilan" → /cart?pay=uzum|card.
   // Mijoz qayerdan davom etishini bilsin: birinchi bo'sh maydonga fokus.
@@ -69,17 +84,6 @@ export default function CartPage() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    const s = localStorage.getItem("shop_settings");
-    if (s) {
-      try {
-        const parsed = JSON.parse(s);
-        if (parsed.paymentCard) setDynPaymentCard(parsed.paymentCard);
-        if (parsed.paymentCardHolder) setDynPaymentCardHolder(parsed.paymentCardHolder);
-        if (parsed.telegramAdminUsername) setDynTelegramAdminUsername(parsed.telegramAdminUsername);
-      } catch { /* ignore */ }
-    }
-  }, []);
 
   // InitiateCheckout — savatcha sahifasi ochilganda (agar mahsulotlar bo'lsa)
   useEffect(() => {
@@ -95,9 +99,6 @@ export default function CartPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const hasOriginal = items.some(
-    (item) => item.product.product_type === "original"
-  );
 
   const paymentAmount = totalPrice;
   const uzumEnabled = process.env.NEXT_PUBLIC_UZUM_ENABLED === "true";
@@ -110,6 +111,14 @@ export default function CartPage() {
   const formReady = missingFields.length === 0;
 
   const [showUzum, setShowUzum] = useState(false);
+  useEffect(() => {
+    if (!formReady || !items.length || !uzumEnabled) return;
+    try {
+      if (sessionStorage.getItem("uzum_resume") !== "1") return;
+      sessionStorage.removeItem("uzum_resume");
+      queueMicrotask(() => setShowUzum(true));
+    } catch { /* the form remains available for manual continuation */ }
+  }, [formReady, items.length, uzumEnabled]);
 
   const handleUzumCheckout = () => {
     if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion) return;
@@ -484,7 +493,7 @@ export default function CartPage() {
             </button>
             )}
             {uzumEnabled && (
-              <p className="-mt-2 text-xs text-muted-foreground text-center">0 so&apos;m hozir · 3, 6 yoki 12 oyda to&apos;laysiz</p>
+              <p className="-mt-2 text-xs text-muted-foreground text-center">Mavjud muddat va to&apos;lovlar Uzum kalkulyatorida ko&apos;rsatiladi</p>
             )}
             <button
               id="checkout-btn"

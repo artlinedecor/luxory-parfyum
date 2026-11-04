@@ -256,16 +256,16 @@ async function uzumFetch<T>(
 
 // ── 1) Foydalanuvchi statusi ────────────────────────────────────────────
 // phone: 998XXXXXXXXX (12 raqam)
-export function checkBuyerStatus(phone: number) {
-  return uzumFetch<BuyerStatusData>("/api/v1/buyers/check-status", { phone }, 2);
+export function checkBuyerStatus(phone: number, retries = 2) {
+  return uzumFetch<BuyerStatusData>("/api/v1/buyers/check-status", { phone }, retries);
 }
 
 // ── 2) Tariflarni hisoblash ─────────────────────────────────────────────
-export function calculateTariffs(user_id: number, products: CalculateProduct[]) {
+export function calculateTariffs(user_id: number, products: CalculateProduct[], retries = 2) {
   return uzumFetch<CalculatedTariff[]>(
     "/api/v1/orders/calculate",
     { user_id, products },
-    2
+    retries
   );
 }
 
@@ -300,7 +300,7 @@ export function cancelContract(order: number) {
 }
 
 /** Holat tekshirish — `contract_id` bilan. */
-export function checkContractStatus(contract_id: number) {
+export function checkContractStatus(contract_id: number, retries = 2) {
   return uzumFetch<{
     id: number;
     status: number;
@@ -309,5 +309,5 @@ export function checkContractStatus(contract_id: number) {
     is_signed: boolean;
     qr_status: number;
     type: string;
-  }>("/api/v1/contracts/check-status", { contract_id }, 2);
+  }>("/api/v1/contracts/check-status", { contract_id }, retries);
 }

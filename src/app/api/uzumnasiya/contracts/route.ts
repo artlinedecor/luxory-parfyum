@@ -9,6 +9,8 @@ import {
 } from "@/lib/uzumnasiya";
 import { syncOrderAfterContractAction } from "@/lib/uzum-order-sync";
 
+export const maxDuration = 90;
+
 /**
  * 4-bosqich: shartnomani boshqarish.
  *
@@ -26,7 +28,7 @@ export async function POST(req: Request) {
       order?: number;
     };
 
-    if (!action) {
+    if (!["status", "confirm", "cancel"].includes(action)) {
       return NextResponse.json({ error: "action majburiy" }, { status: 400 });
     }
 

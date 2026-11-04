@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { calculateTariffs, productIdToInt, uzumErrorPayload } from "@/lib/uzumnasiya";
 import { computeOrderTotal } from "@/lib/pricing-server";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
+
+export const maxDuration = 90;
 
 /**
  * 2-bosqich: savat bo'yicha tariflarni hisoblash.
@@ -9,6 +12,7 @@ import { computeOrderTotal } from "@/lib/pricing-server";
  */
 export async function POST(req: Request) {
   try {
+    if (!rateLimit(`uz-calc:${clientIp(req)}`, 25, 10 * 60 * 1000)) return NextResponse.json({ error: "Juda ko'p urinish. Birozdan keyin qayta tekshiring." }, { status: 429 });
     const { user_id, products } = (await req.json()) as {
       user_id: number;
       products: { product_id: string | number; price: number; amount: number }[];
@@ -52,7 +56,7 @@ export async function POST(req: Request) {
       });
     }
 
-    return NextResponse.json({ success: true, tariffs: res.data });
+    return NextResponse.json({ success: true, tariffs: res.data }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     const { body, status } = uzumErrorPayload(error);
     return NextResponse.json(body, { status });

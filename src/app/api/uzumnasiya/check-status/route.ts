@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { checkBuyerStatus, uzumErrorPayload } from "@/lib/uzumnasiya";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 
+export const maxDuration = 90;
+
 /**
  * 1-bosqich: foydalanuvchi statusi.
  * Kutadi: { phone: "998XXXXXXXXX" | number }
@@ -21,7 +23,7 @@ export async function POST(req: Request) {
 
     const { phone } = await req.json();
     const digits = Number(String(phone).replace(/\D/g, ""));
-    if (!digits || String(digits).length !== 12) {
+    if (!/^998\d{9}$/.test(String(digits))) {
       return NextResponse.json(
         { error: "Telefon 998XXXXXXXXX (12 raqam) formatda bo'lishi kerak" },
         { status: 400 }
@@ -41,9 +43,10 @@ export async function POST(req: Request) {
       has_overdue_contracts: d?.has_overdue_contracts,
       has_webview: Boolean(d?.webview),
       available_periods: d?.available_periods?.length ?? 0,
+      period_limits: d?.available_periods?.map(p => ({ period: p.period, available_balance: p.available_balance })),
     });
 
-    return NextResponse.json({ success: true, data: res.data });
+    return NextResponse.json({ success: true, data: res.data }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     const { body, status } = uzumErrorPayload(error);
     return NextResponse.json(body, { status });

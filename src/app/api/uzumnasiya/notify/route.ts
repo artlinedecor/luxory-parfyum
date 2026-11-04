@@ -1,104 +1,21 @@
 import { NextResponse } from "next/server";
-import { getAdminChatIds, sendTelegram } from "@/lib/telegram";
-import { formatUzs } from "@/lib/utils";
-import { checkContractStatus } from "@/lib/uzumnasiya";
+import { checkoutStore } from "@/lib/uzum-checkout-store";
+import { finishCheckout } from "@/lib/uzum-checkout-server";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 
-/**
- * Imzolangan Uzum Nasiya buyurtmasini Telegram'ga yuboradi —
- * "Tasdiqlash" / "Bekor qilish" tugmalari bilan.
- *
- * Tugmalar telegram-webhook orqali Uzum API'ga ulanadi:
- *   uzok_<contract_id>  -> contracts/confirm
- *   uzno_<order>        -> contracts/cancel  (cancel 'order' id talab qiladi)
- */
+export const maxDuration = 90;
+
+/** Compatibility endpoint: notification content comes exclusively from the server order. */
 export async function POST(req: Request) {
+  if (!rateLimit(`ntf:${clientIp(req)}`, 20, 10 * 60 * 1000)) return NextResponse.json({ error: "Juda ko'p urinish" }, { status: 429 });
   try {
-    const { contract_id, order, client, items, total, period } = (await req.json()) as {
-      contract_id: number;
-      order: number;
-      period?: string;
-      total?: number;
-      client?: { name?: string; phone?: string; address?: string; region?: string };
-      items?: { title: string; quantity: number; price: number }[];
-    };
-
-    if (!contract_id) {
-      return NextResponse.json({ error: "contract_id majburiy" }, { status: 400 });
-    }
-
-    // ⚠️ Audit X11: bu route'ni mijoz brauzeri chaqiradi
-    // (uzum-pending.ts:116), shuning uchun admin tekshiruvi qo'yib
-    // bo'lmaydi. Oldin har kim ixtiyoriy contract_id bilan adminga
-    // "Tasdiqlash" tugmali xabar yuborib, uni aldab bosdira olardi.
-    //
-    // Yechim: contract_id HAQIQATDAN Uzumda bor va imzolangan bo'lishi
-    // shart — buni Uzum API dan so'rab tekshiramiz.
-    if (!rateLimit(`ntf:${clientIp(req)}`, 20, 10 * 60 * 1000)) {
-      return NextResponse.json({ error: "Juda ko'p so'rov" }, { status: 429 });
-    }
-
-    try {
-      const chk = await checkContractStatus(Number(contract_id));
-      const cs = Number(chk.data?.contract_status);
-      // 1 = ACTIVE, 2 = MODERATION — faqat shu ikkisida xabar yuboriladi
-      if (cs !== 1 && cs !== 2) {
-        return NextResponse.json(
-          { error: "Shartnoma imzolanmagan" },
-          { status: 409 }
-        );
-      }
-    } catch (e) {
-      console.error("[uzum/notify] shartnomani tasdiqlab bo'lmadi", e);
-      return NextResponse.json(
-        { error: "Shartnomani tekshirib bo'lmadi" },
-        { status: 502 }
-      );
-    }
-
-    const lines = (items || [])
-      .map((i) => `• ${i.title} × ${i.quantity} — ${formatUzs(i.price)} so'm`)
-      .join("\n");
-
-    const text =
-      `💳 <b>YANGI BUYURTMA — Uzum Nasiya</b>\n` +
-      `<i>Shartnoma imzolandi, tasdiqlashingizni kutmoqda</i>\n\n` +
-      `👤 ${client?.name || "—"}\n` +
-      `📞 ${client?.phone || "—"}\n` +
-      `📍 ${client?.region || ""} ${client?.address || ""}\n\n` +
-      `📦 <b>Mahsulotlar:</b>\n${lines || "—"}\n\n` +
-      `💰 Jami: <b>${formatUzs(Number(total) || 0)} so'm</b>\n` +
-      `📅 Muddat: ${period || "—"}\n` +
-      `🔖 Shartnoma: <code>${contract_id}</code>\n\n` +
-      `⚠️ Omborda tovar borligini tekshirib tasdiqlang.`;
-
-    const buttons = [
-      [
-        { text: "✅ Tasdiqlash", callback_data: `uzok_${contract_id}` },
-        { text: "❌ Bekor qilish", callback_data: `uzno_${order || contract_id}` },
-      ],
-    ];
-
-    const ids = await getAdminChatIds();
-    if (!ids.length) {
-      console.error("[uzum/notify] admin chat_id topilmadi — xabar hech kimga yuborilmadi", {
-        contract_id,
-      });
-    }
-    // ⚠️ Oldin `sent: ids.length` qaytarilardi — chaqiruv soniga qarab,
-    // haqiqiy Telegram natijasiga qaramasdan. Endi FAQAT chindan
-    // yetib borgan xabarlar sanaladi.
-    let delivered = 0;
-    for (const id of ids) {
-      if (await sendTelegram(id, text, buttons)) delivered++;
-    }
-    if (delivered === 0 && ids.length > 0) {
-      console.error("[uzum/notify] hech bir chatga yetib bormadi", { contract_id, tried: ids });
-    }
-
-    return NextResponse.json({ ok: true, sent: delivered, tried: ids.length });
-  } catch (error) {
-    console.error("Uzum telegram notify error:", error);
-    return NextResponse.json({ ok: true, error: "notify_failed" });
+    const { contract_id } = await req.json();
+    if (!Number.isSafeInteger(contract_id) || contract_id <= 0) return NextResponse.json({ error: "contract_id majburiy" }, { status: 400 });
+    const row = await checkoutStore.byContract(contract_id);
+    if (!row) return NextResponse.json({ error: "Buyurtma topilmadi" }, { status: 404 });
+    const result = await finishCheckout(row.id, true);
+    return NextResponse.json({ ok: result.state === "signed", state: result.state });
+  } catch {
+    return NextResponse.json({ error: "Buyurtmani tekshirib bo'lmadi" }, { status: 503 });
   }
 }

@@ -6,7 +6,7 @@ import { AlertTriangle, ArrowLeft, Check, Phone } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { readPending, resolvePending } from "@/lib/uzum-pending";
 
-type State = "checking" | "signed" | "not_completed" | "generic" | "error";
+type State = "checking" | "signed" | "pending" | "cancelled" | "generic" | "error";
 
 /**
  * ⚠️ Uzum mijozni callback'ga HAR DOIM qaytaradi — OTP kiritdimi yoki
@@ -16,11 +16,15 @@ type State = "checking" | "signed" | "not_completed" | "generic" | "error";
  */
 export default function UzumPaymentResult() {
   const [state, setState] = useState<State>("checking");
+  const [attempt, setAttempt] = useState(0);
+  const [resumeUrl, setResumeUrl] = useState("");
+  const [detail, setDetail] = useState("");
   const { clearCart, items } = useCart();
 
   useEffect(() => {
     // Uzum oqimi emas (masalan Click to'lovi) — eski xatti-harakat saqlanadi
-    if (!readPending()) {
+    const query = new URLSearchParams(window.location.search);
+    if (!readPending() && !query.has("uzum_order_id") && !/^\d+$/.test(query.get("order_id") || "")) {
       // localStorage'dagi kutilayotgan buyurtma — tashqi holat,
       // uni faqat brauzerda o'qish mumkin.
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -31,19 +35,22 @@ export default function UzumPaymentResult() {
       // Shartnoma imzolangan bo'lsa — buyurtma AYNAN SHU YERDA bazaga
       // yoziladi va Purchase yuboriladi. Imzolanmagan bo'lsa — hech narsa.
       const res = await resolvePending();
-      if (res === "signed") {
+      if (res.state === "signed") {
         setState("signed");
         if (items.length > 0) clearCart();
-      } else if (res === "not_signed") {
-        setState("not_completed");
-      } else if (res === "none") {
-        setState("generic");
+      } else if (res.state === "pending") {
+        setState("pending"); setResumeUrl(res.webview_path || "");
+        setDetail(res.needs_review
+          ? "Uzum javobi hali tasdiqlanmagan. Yangi shartnoma ochmang; buyurtma holatini qayta tekshiring yoki do'kon bilan bog'laning."
+          : "Uzum imzolash yakunlanganini hali tasdiqlamadi. Rasmiylashtirishni davom ettiring yoki holatni qayta tekshiring.");
+      } else if (res.state === "cancelled") {
+        setState("cancelled"); setDetail("Uzum shartnomani bekor qilingan deb qaytardi. Savatga qaytib boshqa to'lov usulini tanlashingiz mumkin.");
       } else {
-        setState("error");
+        setState("error"); setDetail(res.error || "Bu buyurtmani tasdiqlovchi ma'lumot topilmadi. Do'kon bilan bog'laning.");
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [attempt]);
 
   // Buyurtma haqiqatan qabul qilinganda — juda vazmin tilla salyut.
   // Faqat muvaffaqiyatli holatda va animatsiya so'ralmagan bo'lsa.
@@ -83,7 +90,7 @@ export default function UzumPaymentResult() {
   }
 
   // ❌ Imzolanmagan — mijozni chalg'itmaymiz
-  if (state === "not_completed" || state === "error") {
+  if (state === "pending" || state === "cancelled" || state === "error") {
     const isErr = state === "error";
     return (
       <div className="max-w-md mx-auto px-4 text-center animate-fade-in">
@@ -92,23 +99,23 @@ export default function UzumPaymentResult() {
         </span>
 
         <h1 className="font-heading mt-8 text-3xl sm:text-4xl text-foreground">
-          {isErr ? "Holatni aniqlab bo'lmadi" : "Rasmiylashtirish yakunlanmadi"}
+          {isErr ? "Holatni aniqlab bo'lmadi" : state === "cancelled" ? "Shartnoma bekor qilingan" : "Tasdiqlash kutilmoqda"}
         </h1>
 
         <div className="gold-hairline w-16 mx-auto mt-6" />
 
         <p className="mt-6 text-sm text-muted-foreground leading-[1.9]">
-          {isErr
-            ? "Shartnoma holatini tekshirib bo'lmadi. Iltimos, biz bilan bog'laning — buyurtmangizni qo'lda tekshiramiz."
-            : "Bo'lib to'lash shartnomasi imzolanmadi (SMS-kod kiritilmagan). Buyurtma rasmiylashtirilmadi va sizdan hech qanday to'lov olinmadi."}
+          {detail}
         </p>
 
         <div className="mt-10 flex flex-col gap-2.5">
+          {state !== "cancelled" && <button className="btn btn-primary btn-block" onClick={() => { setState("checking"); setAttempt(v => v + 1); }}>Holatni qayta tekshirish</button>}
+          {resumeUrl && state === "pending" && <a href={resumeUrl} className="btn btn-primary btn-block">Uzumda davom etish</a>}
           <Link
             href="/cart"
             className="btn btn-primary btn-block"
           >
-            Qayta urinib ko&apos;rish
+            Savatga qaytish
           </Link>
           <a
             href="tel:+998992620101"
