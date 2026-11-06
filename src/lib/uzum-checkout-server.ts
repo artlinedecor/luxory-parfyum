@@ -5,6 +5,7 @@ import { buyerNextStep, isSignedContract } from "./uzum-flow";
 import { checkoutStore, type CheckoutOrder, type UzumCheckoutMeta } from "./uzum-checkout-store";
 import { notifyUzumCheckout } from "./uzum-checkout-notify";
 import { createRecoveryReceipt, readRecoveryReceipt } from "./uzum-checkout-receipt";
+import { parseUzumQuote } from "./uzum-quote";
 
 export const UZUM_CHECKOUT_COOKIE = "uzum_checkout";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -15,6 +16,7 @@ export class CheckoutError extends Error {
 export interface StartCheckoutInput {
   request_id: string; recovery_token: string; user_id: number; period: string; expected_total: number;
   recovery_receipt?: string;
+  expected_quote?: { month: number; deposit: number; first_payment_date: string };
   client: { name: string; phone: string; address: string; region: string };
   products: { product_id: string; amount: number }[];
 }
@@ -107,6 +109,10 @@ export async function startCheckout(input: StartCheckoutInput) {
     if (checkoutMeta(existing)?.fingerprint !== fingerprint) throw new CheckoutError("Savat o'zgardi. Avval oldingi buyurtma holatini tekshiring.");
     return resume(await repairCheckout(existing, input.recovery_receipt));
   }
+  const quote = parseUzumQuote(input.expected_quote);
+  if (!quote) {
+    throw new CheckoutError("Tarif shartlarini qayta hisoblab tasdiqlang. Oylik va boshlang'ich to'lov ma'lumoti kerak.", 400);
+  }
   const buyer = await checkBuyerStatus(Number(input.client.phone), 0);
   const next = buyerNextStep(buyer.data);
   if (next.step !== "calculate" || next.userId !== input.user_id) throw new CheckoutError(next.message || "Uzum raqamini qayta tekshiring.");
@@ -118,11 +124,18 @@ export async function startCheckout(input: StartCheckoutInput) {
   if (!Number.isFinite(Number(tariff.total)) || Math.abs(Number(tariff.total) - input.expected_total) > 0.01) {
     throw new CheckoutError("Tarif summasi o'zgardi. Tariflarni qayta hisoblab, yangi shartlarni tasdiqlang.");
   }
+  const freshQuote = parseUzumQuote(tariff);
+  if (!freshQuote) throw new CheckoutError("Uzum tarifning oylik, boshlang'ich to'lov yoki birinchi to'lov sanasini to'liq qaytarmadi. Qayta tekshiring.", 502);
+  const { month, deposit, first_payment_date: date } = freshQuote;
+  if (Math.abs(month - quote.month) > 0.01 || Math.abs(deposit - quote.deposit) > 0.01 || date !== quote.first_payment_date) {
+    throw new CheckoutError("Tarif shartlari o'zgardi. Tariflarni qayta hisoblab, yangi shartlarni tasdiqlang.");
+  }
   // Keep the known-working positive 31-bit API range, stable across retries.
   const extId = parseInt(hash(input.request_id).slice(0, 8), 16) % 2147483647 || 1;
   if (await checkoutStore.byExternal(extId)) throw new CheckoutError("Buyurtma raqami band. Sahifani yangilab qayta urinib ko'ring.");
   const meta: UzumCheckoutMeta = { ext_order_id: extId,
-    token_hash: hash(input.recovery_token), fingerprint, buyer_id: input.user_id, period: input.period, quoted_total: Number(tariff.total) };
+    token_hash: hash(input.recovery_token), fingerprint, buyer_id: input.user_id, period: input.period, quoted_total: Number(tariff.total),
+    quoted_month: month, quoted_deposit: deposit, quoted_first_payment_date: date };
   const order: CheckoutOrder = { id: input.request_id, items: lines, client_name: input.client.name,
     client_phone: input.client.phone, client_address: input.client.address, region: input.client.region,
     order_type: "uzum_nasiya", status: "pending", payment_status: "unpaid", total_amount: totalUzs };

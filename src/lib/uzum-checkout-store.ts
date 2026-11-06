@@ -8,6 +8,9 @@ export interface UzumCheckoutMeta {
   buyer_id: number;
   period: string;
   quoted_total: number;
+  quoted_month?: number;
+  quoted_deposit?: number;
+  quoted_first_payment_date?: string;
   contract_id?: number;
   uzum_order_id?: number;
   webview_path?: string;

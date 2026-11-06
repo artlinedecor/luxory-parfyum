@@ -28,13 +28,14 @@ import { startCheckout, finishCheckout, processUzumWebhook, authorizeCheckout } 
 const input = {
   request_id: "c01ea122-96ab-4fcb-b378-2cbb12e70101", recovery_token: "c01ea122-96ab-4fcb-b378-2cbb12e70102",
   user_id: 123, period: "3 Default", expected_total: 800000,
+  expected_quote: { month: 266667, deposit: 0, first_payment_date: "2026-12-01" },
   client: { name: "Test", phone: "998901234567", address: "Test address", region: "Toshkent" },
   products: [{ product_id: "p1", amount: 1 }],
 };
 beforeEach(() => {
-  vi.clearAllMocks(); f.rows.clear(); f.links.clear(); f.events.length = 0;
+  vi.resetAllMocks(); f.rows.clear(); f.links.clear(); f.events.length = 0;
   f.buyer.mockResolvedValue({ data: { status: 4, buyer_id: 123, has_limit: true } });
-  f.calculate.mockResolvedValue({ data: [{ tariff: "3 Default", is_available: true, total: 800000, month: 266667 }] });
+  f.calculate.mockResolvedValue({ data: [{ tariff: "3 Default", is_available: true, total: 800000, month: 266667, deposit: 0, first_payment_date: "2026-12-01" }] });
   f.create.mockImplementation(async () => { f.events.push("bank-create"); return { data: {
     paymart_client: { contract_id: 777, order: 888, price_month: "266667", total: "800000" },
     webview_path: "https://auth.uzumnasiya.uz/sign", client_act_pdf: "https://example.test/act.pdf",
@@ -67,6 +68,29 @@ describe("durable Uzum checkout", () => {
   });
   it("does not call orders for a stale calculator quote", async () => {
     await expect(startCheckout({ ...input, expected_total: 700000 })).rejects.toThrow(/o'zgardi/);
+    expect(f.create).not.toHaveBeenCalled();
+  });
+  it.each([{ month: 270000 }, { deposit: 100000 }, { first_payment_date: "2026-12-02" }])("does not create a loan when approved payment terms change: %j", async (change) => {
+    f.calculate.mockResolvedValueOnce({ data: [{ tariff: "3 Default", is_available: true, total: 800000, month: 266667, deposit: 0, first_payment_date: "2026-12-01", ...change }] });
+    await expect(startCheckout(input)).rejects.toThrow(/shartlari o'zgardi/);
+    expect(f.create).not.toHaveBeenCalled();
+    expect(f.rows.size).toBe(0);
+  });
+  it("requires approved terms for new loans but keeps existing loan recovery compatible", async () => {
+    await expect(startCheckout({ ...input, expected_quote: undefined })).rejects.toThrow(/Tarif/);
+    expect(f.create).not.toHaveBeenCalled();
+    await startCheckout(input);
+    await startCheckout({ ...input, expected_quote: undefined });
+    expect(f.create).toHaveBeenCalledTimes(1);
+  });
+  it("does not invent a zero deposit for a partial bank quote", async () => {
+    f.calculate.mockResolvedValueOnce({ data: [{ tariff: "3 Default", is_available: true, total: 800000, month: 266667, first_payment_date: "2026-12-01" }] });
+    await expect(startCheckout(input)).rejects.toThrow();
+    expect(f.create).not.toHaveBeenCalled(); expect(f.rows.size).toBe(0);
+  });
+  it("does not accept an absent first payment date as an approved schedule", async () => {
+    f.calculate.mockResolvedValueOnce({ data: [{ tariff: "3 Default", is_available: true, total: 800000, month: 266667, deposit: 0 }] });
+    await expect(startCheckout({ ...input, expected_quote: { ...input.expected_quote, first_payment_date: "" } })).rejects.toThrow();
     expect(f.create).not.toHaveBeenCalled();
   });
   it("does not repeat an ambiguous bank timeout", async () => {

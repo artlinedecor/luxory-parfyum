@@ -24,6 +24,7 @@ export const siteConfig = {
   telegramAdmin: "https://t.me/Jelyor",        // Admin lichka (Checkout xabar shu yerga boradi)
   telegramAdminUsername: "https://t.me/Jelyor",  // Admin lichka link
   telegramChannel: "https://t.me/eloreparfum", // Kanal
+  uzumSupportTelegram: "https://t.me/I004uzb",
 
   // ── To'lov ───────────────────────────────────────
   paymentCard: "5614 6821 1469 4302",
