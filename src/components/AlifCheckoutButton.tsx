@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n-context";
 import { ALIF_SESSION, readAlifSession, writeAlifSession } from "@/lib/alif-client";
+import PaymentOptionButton from "@/components/PaymentOptionButton";
 
 interface Props {
   disabled: boolean; expectedTotal: number; items: { product_id: string; quantity: number }[];
@@ -50,13 +51,13 @@ export default function AlifCheckoutButton({ disabled, expectedTotal, items, cli
     finally { lock.current = false; setBusy(false); }
   }
   return <div className="space-y-2">
-    <button id="alif-checkout-btn" type="button" onClick={start} disabled={disabled || busy}
-      className="btn btn-outline btn-block disabled:opacity-40 disabled:cursor-not-allowed">
-      {busy ? (ru ? "Подождите…" : "Kuting…") : `${ru ? "Оплатить через Alif" : "Alif orqali to'lash"}${config.sandbox ? " · TEST" : ""}`}
-    </button>
-    <p className="text-xs text-muted-foreground text-center">{config.sandbox
-      ? (ru ? "Тестовый режим. Настоящие деньги не списываются." : "Test rejimi. Haqiqiy pul yechilmaydi.")
-      : (ru ? "Доступные способы и условия — на странице Alif." : "Mavjud usullar va shartlar Alif sahifasida ko'rsatiladi.")}</p>
+    <PaymentOptionButton id="alif-checkout-btn" provider="alif" onClick={start} disabled={disabled || busy}
+      loading={busy} badge={config.sandbox ? "TEST" : undefined}
+      title={ru ? "Оплатить через Alif" : "Alif orqali to'lash"}
+      description={ru ? "Рассрочка на 3 месяца" : "3 oyga bo'lib to'lash"} />
+    {config.sandbox && <p className="px-1 text-xs text-muted-foreground">
+      {ru ? "Тестовый режим. Настоящие деньги не списываются." : "Test rejimi. Haqiqiy pul yechilmaydi."}
+    </p>}
     {error && <div role="alert" className="text-sm text-destructive space-y-2"><p>{error}</p>
       {recoveryId && <Link className="underline" href={`/alif-payment?order_id=${recoveryId}`}>{ru ? "Проверить счёт" : "Hisobni tekshirish"}</Link>}
     </div>}
