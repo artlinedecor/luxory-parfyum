@@ -1,7 +1,20 @@
 # Loyiha holati — yangi chat shu yerdan boshlasin
 
-Oxirgi yangilanish: 2026-09-26. Sayt: parfumelux.uz, brend **ELORE PARFUME**.
-Yangi chatda avval shu faylni o'qing.
+Oxirgi yangilanish: 2026-09-29. Sayt: parfumelux.uz, brend **ELORE PARFUME**.
+Bu fayl CLAUDE.md orqali har yangi chatda avtomatik o'qiladi.
+
+## ChatPlace bot va savdo tizimi — joriy holat (2026-09-29)
+- Bot: Instagram @elore_parfumes, botId `01a0cf0f-4962-716b-a290-6dde8241ce2b`, AI "Asal". Sozlash tarixi: `docs/chatplace-bot-sozlash.md`, savdo tizimi: `docs/chatplace-savdo-tizimi.md`.
+- **Model darajasi**: egasi "smart" qilgan edi, 2026-09-29 da yana "fast" ekan — "fast"da bot havolasiz / chala javob beradi. Faqat ChatPlace ilovasida o'zgartiriladi (MCP'da yo'q).
+- `delayedActionEnabled` va `generateButtons` o'chirildi (2026-09-29): bot "havolasini yuboraman" deb havolasiz qolardi.
+- Global qoidalar: 1) til = mijoz yozuvi (lotin / o'zbek kirill / rus), 2) har atirga `https://parfumelux.uz/a/<nom>` havola, 3) oktyabr aksiyasi va shoshiltirish, "premium atir" (klon/original demaydi), rasmiylashtirish 5 qadam faqat sayt orqali, BTS (muddatsiz), 3 oy narx o'zgarmaydi / 12 oy 96 000 / 6 oy summa aytilmaydi, 650 000 taklif faqat mijoz naqd/Click so'rasa, KATALOG ro'yxati (243 nom).
+- Bilim bazasi: har atirga statik yozuv (~242) + e'tirozlar (qimmat, sifat, stoykost, ishonch, o'ylab ko'raman, to'lov, Click). Shablon (`[brend-nom]`) yozma — havolani buzadi.
+- Avtomatizatsiya: faqat "+ — asosiy oqim" faol (Direct/izohda "+" → shartlar, erkak/ayol tugmalari, 20 soatlik eslatma). "To'ladim" va "REELS SHABLON" egasi tomonidan o'chirilgan. Izohlarga AI javobi o'chiq (karta raqami xavfi).
+- **31-oktyabrdan keyin**: botdagi 3-qoida (aksiya) va "o'ylab ko'raman"/"qimmat" KB javoblaridagi aksiya matnini olib tashlash. Saytda aksiya o'zi o'chadi (`src/config/promo.ts`).
+- Telegram (sayt boti, Uzum bilan bir): Uzum — tasdiqlash tugmalari; Click — avtomatik qabul, tugmasiz xabar; yo'q atir — "Bizning segment / Sotmaymiz" tugmalari → Omborxona ro'yxati (`app_settings.missing_perfumes`). Adminlar: `users` jadvali (superadmin, `<chat_id>@telegram.bot`), egasi 7889583510.
+- Katalog: mashhurlar birinchi (`src/lib/popularity.ts`), 244 atir, "Premium atir" yozuvi.
+- Reels: `docs/reels-plus-2026-09.md`, 5 ta faceless ssenariy — egasi ish stolida `ELORE_Reels_5_ssenariy.pdf`.
+- Hal qilinmagan: reklamada brend nomlari xavfi; sayt meta'larida "original va premium atirlar" iborasi; bosh sahifa CLS ~0.09 (hero shrifti).
 
 ## Sotuv yo'li
 Target reklama → ChatPlace AI sotuvchi → mijozga aniq atir havolasi → atir sahifasi →
