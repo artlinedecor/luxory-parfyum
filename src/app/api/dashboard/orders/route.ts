@@ -5,6 +5,7 @@ import { computeOrderTotal } from "@/lib/pricing-server";
 import { orderRevenueUzs } from "@/lib/accounting";
 import { getUsdRate } from "@/lib/usd-rate-server";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isAlifSandboxOrder } from "@/lib/alifpay";
 
 /**
  * Buyurtma amallari — butun biznes mantiq SERVER tomonda.
@@ -73,6 +74,7 @@ export async function POST(req: Request) {
       const { data: order, error } = await supabase
         .from("orders").select("*").eq("id", order_id).single();
       if (error || !order) throw new Error("Buyurtma topilmadi");
+      if (isAlifSandboxOrder(order)) throw new Error("Alif test buyurtmasini yetkazib berishga o'tkazib bo'lmaydi");
 
       const o = order as OrderRow;
       const items = o.items ?? [];
