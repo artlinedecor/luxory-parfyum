@@ -32,6 +32,10 @@ The provider can return an empty payment object for an unpaid invoice; this was 
 
 ## Deployment and production requirements
 
+Follow-up: Vercel team access was granted. The preview build logs reproduced a Turbopack next/font import failure (`@vercel/turbopack-next/internal/font/google/font`, "queries have exactly one entry"). The package build command now explicitly uses `next build --webpack`; the exact `npm run build` completed successfully after this change. The 25 Alif tests also passed again.
+
+Separate production credentials were saved in ignored local settings and Vercel sensitive production variables. An authenticated production getInvoice lookup of a random nonexistent invoice returned HTTP 200/business code 1004, confirming token acceptance without creating an invoice or payment. Sandbox credentials, mode=sandbox and the HTTPS site origin were added to production environment settings for admin-only tests. No production fiscal handling has been selected: the owner does not yet know who issues fiscal receipts. Real Alif purchases remain disabled.
+
 Vercel project: `y06042025-8137s-projects/luxory-parfyum`, verified from the existing successful main commit status. Environment configuration currently requires signing into the owning Vercel account. Local `.env.local` contains sandbox settings only and remains ignored by Git.
 
 For deployed admin-only sandbox testing, configure ALIFPAY_MODE=sandbox, ALIFPAY_TEST_API_TOKEN, ALIFPAY_TEST_WEBHOOK_SECRET, and ALIFPAY_SITE_URL for the deployed HTTPS origin. Never commit credentials. Re-test a fresh invoice with a real provider-delivered callback after deployment.
