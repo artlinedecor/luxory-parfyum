@@ -7,6 +7,7 @@ import { finishCheckout } from "@/lib/uzum-checkout-server";
 import type { CheckoutOrder } from "@/lib/uzum-checkout-store";
 import { rateLimit } from "@/lib/rate-limit";
 import { reconciliationCandidates } from "@/lib/uzum-reconciliation";
+import { isAlifSandboxOrder } from "@/lib/alifpay";
 
 export const maxDuration = 120;
 
@@ -57,7 +58,7 @@ export async function GET(req: Request) {
     return NextResponse.json({
       products: prodRes.data ?? [],
       // /tolov havolasi har ochilganda buyurtma yaratadi — to'lovga o'tmaganlari ko'rsatilmaydi.
-      orders: (ordRes.data ?? []).filter((o) => !isAbandonedDmOrder(o)),
+      orders: (ordRes.data ?? []).filter((o) => !isAbandonedDmOrder(o) && !isAlifSandboxOrder(o)),
       transactions: txRes.data ?? [],
       uzumContracts: ucRes.data ?? [],
       usdRate,

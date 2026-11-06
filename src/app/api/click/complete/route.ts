@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { internalHeaders } from "@/lib/api-guard";
 import crypto from 'crypto';
 import { serverSupabase } from "@/lib/supabase-server";
+import { isAlifOrder } from "@/lib/alifpay";
 import { submitOfdData } from '@/lib/click-merchant';
 
 // ⚠️ Audit X7: RLS yoqilgach anon kalit orders jadvaliga kira olmaydi.
@@ -50,7 +51,7 @@ export async function POST(req: NextRequest) {
       .eq('id', merchant_trans_id)
       .single();
 
-    if (dbError || !order) {
+    if (dbError || !order || isAlifOrder(order)) {
       return NextResponse.json({
         error: -5,
         error_note: 'Order not found'

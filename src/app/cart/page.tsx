@@ -15,6 +15,7 @@ import { useI18n } from "@/lib/i18n-context";
 import { trackMetaEvent } from "@/lib/meta-tracker";
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 import UzumCheckout from "@/components/UzumCheckout";
+import AlifCheckoutButton from "@/components/AlifCheckoutButton";
 import { readCheckoutContact, saveCheckoutContact } from "@/lib/uzum-checkout-session";
 
 const REGIONS = [
@@ -468,6 +469,10 @@ export default function CartPage() {
                 To&apos;ldiring: {missingFields.join(", ")}
               </p>
             )}
+
+            <AlifCheckoutButton disabled={loading || !formReady} expectedTotal={totalPrice}
+              items={items.map(it => ({ product_id: it.product.id, quantity: it.quantity }))}
+              client={{ name: clientName, phone: clientPhone, address: clientAddress, region: t(clientRegion) }} />
 
             {/* Uzum Nasiya Checkout Button — faqat kalit sozlanganda ko'rinadi */}
             {uzumEnabled && (
