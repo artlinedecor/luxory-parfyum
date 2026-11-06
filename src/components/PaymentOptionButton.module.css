@@ -1,0 +1,62 @@
+.option {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 96px;
+  padding: 18px 20px;
+  border: 1px solid #dedce4;
+  border-radius: 16px;
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 2px 4px rgb(29 20 51 / 3%);
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.option:hover:not(:disabled) {
+  border-color: #aaa3ba;
+  box-shadow: 0 3px 10px rgb(29 20 51 / 6%);
+}
+
+.option:active:not(:disabled) { background: #faf8fd; }
+.option:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+.option:disabled { cursor: not-allowed; opacity: 0.55; box-shadow: none; }
+.highlighted { border-color: var(--ring); }
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  min-height: 48px;
+  padding-right: 16px;
+  border-right: 1px solid #e7e4ed;
+}
+
+.alif { color: #07852e; font-size: 31px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
+.card { color: #2156d9; flex-shrink: 0; }
+.copy { min-width: 0; }
+.heading { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
+.title { flex: 1; min-width: 0; font-size: 16px; line-height: 1.4; font-weight: 700; }
+.description { display: block; margin-top: 4px; color: var(--muted-foreground); font-size: 13px; line-height: 1.5; font-weight: 400; }
+.badge { flex-shrink: 0; border: 1px solid #e7ac43; border-radius: 999px; padding: 2px 8px; background: #fff9ed; color: #8a5000; font-size: 10px; line-height: 1.5; font-weight: 700; letter-spacing: 0.03em; }
+.spinner { width: 24px; height: 24px; border: 2px solid #ddd7ea; border-top-color: var(--foreground); border-radius: 50%; animation: spin 800ms linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 380px) {
+  .option { grid-template-columns: 52px minmax(0, 1fr); padding: 16px 14px; gap: 12px; }
+  .brand { padding-right: 12px; }
+  .alif { font-size: 28px; }
+  .title { font-size: 14px; }
+  .description { font-size: 12px; }
+  .badge { padding: 2px 6px; font-size: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option { transition: none; }
+  .spinner { animation: none; }
+}

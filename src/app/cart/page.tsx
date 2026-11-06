@@ -9,13 +9,14 @@ import { siteConfig } from "@/config/site";
 import { clickPayUrl, clickConfigured } from "@/lib/click-links";
 import ClickPayByCard from "@/components/ClickPayByCard";
 import ClickQrCode from "@/components/ClickQrCode";
-import { ClickLogo, ClickMark, UzumLogo, UzcardMark, HumoMark } from "@/components/PaymentLogos";
+import { ClickLogo, ClickMark, UzcardMark, HumoMark } from "@/components/PaymentLogos";
 import { useState, useRef, useEffect } from "react";
 import { useI18n } from "@/lib/i18n-context";
 import { trackMetaEvent } from "@/lib/meta-tracker";
 import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "@/lib/utils";
 import UzumCheckout from "@/components/UzumCheckout";
 import AlifCheckoutButton from "@/components/AlifCheckoutButton";
+import PaymentOptionButton from "@/components/PaymentOptionButton";
 import { readCheckoutContact, saveCheckoutContact } from "@/lib/uzum-checkout-session";
 
 const REGIONS = [
@@ -37,7 +38,7 @@ const REGIONS = [
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart, totalPrice } = useCart();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [clientRegion, setClientRegion] = useState("");
@@ -435,13 +436,15 @@ export default function CartPage() {
           </div>
 
           {/* Total + CTA */}
-          <div className="glass-card p-6 space-y-5">
-            <div className="flex items-baseline justify-between gap-3">
+          <div className="glass-card p-5 sm:p-6 space-y-5">
+            <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border pb-5">
               <span className="text-sm font-semibold text-foreground whitespace-nowrap">
                 {t("cart_payable_amount")}
               </span>
-              <span className="text-xl font-semibold text-foreground tabular-nums whitespace-nowrap">{formatUzs(paymentAmount)} so&apos;m</span>
+              <span className="ml-auto text-xl font-semibold text-foreground tabular-nums whitespace-nowrap">{formatUzs(paymentAmount)} so&apos;m</span>
             </div>
+
+            <h3 className="text-base font-semibold text-foreground">{lang === "ru" ? "Выберите способ оплаты" : "To'lov usulini tanlang"}</h3>
 
             {checkoutError && (
               <div className="p-4 bg-destructive/8 border border-destructive/25 space-y-3">
@@ -470,56 +473,35 @@ export default function CartPage() {
               </p>
             )}
 
+            <div className="space-y-3">
             <AlifCheckoutButton disabled={loading || !formReady} expectedTotal={totalPrice}
               items={items.map(it => ({ product_id: it.product.id, quantity: it.quantity }))}
               client={{ name: clientName, phone: clientPhone, address: clientAddress, region: t(clientRegion) }} />
 
             {/* Uzum Nasiya Checkout Button — faqat kalit sozlanganda ko'rinadi */}
             {uzumEnabled && (
-            <button
+            <PaymentOptionButton
               id="uzum-checkout-btn"
+              provider="uzum"
               onClick={handleUzumCheckout}
               disabled={loading || !formReady}
-              className={`btn btn-uzum btn-block
-                         hover:bg-[#5000E0] active:scale-[0.98] transition-all duration-300
-                         shadow-lg shadow-[#6100FF]/25
-                         disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
-                         flex items-center justify-center gap-2
-                         ${payHint === "uzum" ? "ring-2 ring-[#6100FF]/35 ring-offset-2 ring-offset-background" : ""}`}
-            >
-              {loading ? (
-                <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <UzumLogo size={20} />
-                  <span className="opacity-90 text-sm">&mdash; bo&apos;lib to&apos;lash</span>
-                </>
-              )}
-            </button>
+              loading={loading}
+              highlighted={payHint === "uzum"}
+              title="Uzum Nasiya"
+              description={lang === "ru" ? "Рассрочка на 3, 6 или 12 месяцев" : "3, 6 yoki 12 oyga bo'lib to'lash"}
+            />
             )}
-            {uzumEnabled && (
-              <p className="-mt-2 text-xs text-muted-foreground text-center">Mavjud muddat va to&apos;lovlar Uzum kalkulyatorida ko&apos;rsatiladi</p>
-            )}
-            <button
+            <PaymentOptionButton
               id="checkout-btn"
+              provider="card"
               onClick={handleCheckout}
               disabled={loading || !formReady}
-              className={`btn ${uzumEnabled ? "btn-outline" : "btn-primary"} btn-block
-                         hover:opacity-90 active:scale-[0.98] transition-all duration-300
-                                                  disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
-                         flex items-center justify-center gap-2`}
-            >
-              {loading ? (
-                <span className="w-5 h-5 border-2 border-current/20 border-t-current rounded-full animate-spin" />
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                  {uzumEnabled ? "Karta bilan to'lash" : t("cart_btn_checkout")}
-                </>
-              )}
-            </button>
-
-
+              loading={loading}
+              highlighted={payHint === "card"}
+              title={lang === "ru" ? "Оплатить картой" : "Karta bilan to'lash"}
+              description={lang === "ru" ? "Через Uzcard / Humo" : "Uzcard / Humo orqali"}
+            />
+            </div>
           </div>
 
           {/* Telegram Channel */}
