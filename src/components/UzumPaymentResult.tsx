@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { AlertTriangle, ArrowLeft, Check, Phone } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { readPending, resolvePending } from "@/lib/uzum-pending";
+import UzumSupport from "@/components/UzumSupport";
 
 type State = "checking" | "signed" | "pending" | "cancelled" | "generic" | "error";
 
@@ -85,6 +86,7 @@ export default function UzumPaymentResult() {
         <p className="text-sm text-muted-foreground">
           Buyurtma holati tekshirilmoqda...
         </p>
+        <UzumSupport collapsible />
       </div>
     );
   }
@@ -107,6 +109,7 @@ export default function UzumPaymentResult() {
         <p className="mt-6 text-sm text-muted-foreground leading-[1.9]">
           {detail}
         </p>
+        <div className="mt-5 text-left"><UzumSupport /></div>
 
         <div className="mt-10 flex flex-col gap-2.5">
           {state !== "cancelled" && <button className="btn btn-primary btn-block" onClick={() => { setState("checking"); setAttempt(v => v + 1); }}>Holatni qayta tekshirish</button>}

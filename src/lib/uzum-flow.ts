@@ -20,9 +20,17 @@ export function buyerNextStep(data: {
       const url = new URL(String(data.webview));
       if (url.protocol === "https:" && (url.hostname === "uzumnasiya.uz" || url.hostname.endsWith(".uzumnasiya.uz"))) webview = url.href;
     } catch { /* no registration URL */ }
-    return { step: "verify", webview, message: status === 2
-      ? "Uzum hujjatlaringizni tekshirmoqda. Tekshiruv holatini ko'ring, so'ng qayta tekshiring."
-      : "Uzum Nasiyada ro'yxatdan o'tish yoki verifikatsiyani yakunlang, so'ng shu sahifaga qayting." };
+    if (!webview) return { step: "verify", message: "Uzum verifikatsiya havolasini qaytarmadi. Qayta tekshiring yoki Telegram orqali yordam so'rang." };
+    const messages: Record<number, string> = {
+      0: "Bu raqam Uzum Nasiyada ro'yxatdan o'tmagan. Uzum sahifasida ro'yxatdan o'ting, so'ng shu sahifaga qayting.",
+      1: "Uzum sahifasida ro'yxatdan o'tishni yakunlang va talab qilingan kartani qo'shing, so'ng qayta tekshiring.",
+      2: "Uzum hujjatlaringizni tekshirmoqda. Tekshiruv holatini ko'ring, so'ng qayta tekshiring.",
+      5: "Uzum pasport suratini yuklashni so'rayapti. Hujjatni faqat Uzum sahifasida yuboring.",
+      10: "Uzum pasport bilan selfi yuklashni so'rayapti. Verifikatsiyani Uzum sahifasida yakunlang.",
+      11: "Uzum pasportning ro'yxatga olingan manzil ko'rsatilgan sahifasini so'rayapti. Hujjatni Uzum sahifasida yuboring.",
+      12: "Uzum kontakt shaxs ma'lumotini qo'shishni so'rayapti. Verifikatsiyani Uzum sahifasida yakunlang.",
+    };
+    return { step: "verify", webview, message: messages[status] };
   }
   return { step: "error", message: "Uzumdan noma'lum holat olindi. Qayta urinib ko'ring yoki do'kon bilan bog'laning." };
 }

@@ -17,6 +17,19 @@ describe("Uzum buyer routing", () => {
   it("blocks blacklisted buyers even when status is verified", () => {
     expect(buyerNextStep({ status: 4, buyer_id: 123, is_in_black_list: true }).step).toBe("blocked");
   });
+  it("explains the missing registration link instead of sending the buyer nowhere", () => {
+    const result = buyerNextStep({ status: 1 });
+    expect(result.step).toBe("verify");
+    expect(result.webview).toBeUndefined();
+    expect(result.message).toMatch(/havola.*qaytarmadi/i);
+  });
+  it.each([[5, /pasport.*surat/i], [10, /selfi/i], [11, /ro'yxatga olingan.*sahifa/i], [12, /kontakt/i]])("gives an actionable explanation for status %s", (status, expected) => {
+    expect(buyerNextStep({ status, webview: "https://auth.uzumnasiya.uz/register" }).message).toMatch(expected);
+  });
+  it.each(["http://auth.uzumnasiya.uz/", "https://uzumnasiya.uz.evil.example/", "javascript:alert(1)"])("does not offer an unsafe verification URL %s", (webview) => {
+    expect(buyerNextStep({ status: 1, webview }).webview).toBeUndefined();
+    expect(buyerNextStep({ status: 1, webview }).message).toMatch(/havola.*qaytarmadi/i);
+  });
 });
 
 describe("Uzum signature", () => {
