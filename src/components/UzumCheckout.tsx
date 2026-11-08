@@ -8,6 +8,7 @@ import { buyerNextStep } from "@/lib/uzum-flow";
 import { checkoutRequest, clearCheckoutRequest, readCheckoutContact, saveCheckoutContact, saveCheckoutReceipt, readCheckoutRequest } from "@/lib/uzum-checkout-session";
 import { siteConfig } from "@/config/site";
 import UzumSupport from "@/components/UzumSupport";
+import UzPhoneInput from "@/components/UzPhoneInput";
 import { fetchUzumRead, friendlyUzumError as friendlyError } from "@/lib/uzum-checkout-client";
 import type { BuyerStatusData } from "@/lib/uzumnasiya";
 import { parseUzumQuote } from "@/lib/uzum-quote";
@@ -306,15 +307,7 @@ export default function UzumCheckout({ initialPhone = "", client, onClose }: Uzu
         {step === "phone" && (
           <div className="space-y-4">
             <label htmlFor="uzum-phone" className="block text-sm font-semibold text-foreground">Uzum Nasiyadagi telefon raqamingiz</label>
-            <input
-              id="uzum-phone"
-              type="tel"
-              inputMode="numeric"
-              value={phone}
-              onChange={(e) => { phoneAttempt.current++; setLoading(false); setPhone(e.target.value); setWebviewUrl(""); setNeedsVerification(false); setInfo(""); setError(""); }}
-              placeholder="998 90 123 45 67"
-              className="field w-full"
-            />
+            <UzPhoneInput id="uzum-phone" value={phone} onChange={value => { phoneAttempt.current++; setLoading(false); setPhone(value); setWebviewUrl(""); setNeedsVerification(false); setInfo(""); setError(""); }} />
             {/* Mijoz xato raqamni oldindan ko'rsin — SMS aynan shu raqamga ketadi */}
             {isValidUzPhone(normalizePhone(phone)) ? (
               <p className="text-[11px] text-muted-foreground">

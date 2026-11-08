@@ -17,6 +17,8 @@ import { calculateOriginalPriceUzs, calculatePremiumPriceUzs, formatUzs } from "
 import UzumCheckout from "@/components/UzumCheckout";
 import AlifCheckoutButton from "@/components/AlifCheckoutButton";
 import PaymentOptionButton from "@/components/PaymentOptionButton";
+import UzPhoneInput from "@/components/UzPhoneInput";
+import { isUzPhone, uzPhoneDigits } from "@/lib/uz-phone";
 import { readCheckoutContact, saveCheckoutContact } from "@/lib/uzum-checkout-session";
 
 const REGIONS = [
@@ -50,7 +52,7 @@ export default function CartPage() {
       if (cancelled) return;
       const saved = readCheckoutContact();
       if (saved) {
-        setClientName(saved.name); setClientPhone(saved.phone); setClientAddress(saved.address);
+        setClientName(saved.name); const digits = /^998\d{0,9}$/.test(saved.phone) ? saved.phone.slice(3) : uzPhoneDigits(saved.phone); setClientPhone(digits ? `998${digits}` : ""); setClientAddress(saved.address);
         if (REGIONS.includes(saved.region)) setClientRegion(saved.region);
       }
       contactReady.current = true;
@@ -106,7 +108,7 @@ export default function CartPage() {
   const uzumEnabled = process.env.NEXT_PUBLIC_UZUM_ENABLED === "true";
   const missingFields = [
     !clientName.trim() && t("cart_name").toLowerCase(),
-    !clientPhone.trim() && t("cart_phone").toLowerCase(),
+    !isUzPhone(clientPhone) && t("cart_phone").toLowerCase(),
     !clientRegion && t("cart_region").toLowerCase(),
     !clientAddress.trim() && t("cart_address").toLowerCase(),
   ].filter(Boolean) as string[];
@@ -123,7 +125,7 @@ export default function CartPage() {
   }, [formReady, items.length, uzumEnabled]);
 
   const handleUzumCheckout = () => {
-    if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion) return;
+    if (!clientName.trim() || !isUzPhone(clientPhone) || !clientAddress.trim() || !clientRegion) return;
     // InitiateCheckout (Uzum) event
     const eid = `ic_uzum_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
     trackMetaEvent("InitiateCheckout", eid, {}, {
@@ -136,7 +138,7 @@ export default function CartPage() {
   };
 
   const handleCheckout = async () => {
-    if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim() || !clientRegion) return;
+    if (!clientName.trim() || !isUzPhone(clientPhone) || !clientAddress.trim() || !clientRegion) return;
 
     setCheckoutError("");
     setLoading(true);
@@ -413,7 +415,7 @@ export default function CartPage() {
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="client-phone" className="text-xs text-muted-foreground">{t("cart_phone")}</label>
-                <input id="client-phone" type="tel" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="+998 XX XXX XX XX" className="field w-full" />
+                <UzPhoneInput id="client-phone" value={clientPhone} onChange={setClientPhone} />
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="client-region" className="text-xs text-muted-foreground">{t("cart_region")}</label>
