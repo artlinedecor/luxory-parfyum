@@ -46,6 +46,7 @@ export default function AlifPaymentPage() {
         ? (ru ? "Срок счёта истёк. Для нового счёта свяжитесь с магазином." : "Hisob muddati tugagan. Yangi hisob uchun do'kon bilan bog'laning.")
         : (ru ? "Оплата ещё не подтверждена. Проверьте статус после завершения оплаты." : "To'lov hali tasdiqlanmagan. To'lovdan so'ng holatni qayta tekshiring.")}</p>}
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+      {result?.receipt_urls?.map((url, index) => <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-block">{ru ? "Фискальный чек" : "Fiskal chek"}{result.receipt_urls!.length > 1 ? ` ${index + 1}` : ""}</a>)}
       <button onClick={check} disabled={busy} className="btn btn-primary btn-block">{busy ? (ru ? "Проверяем…" : "Tekshirilmoqda…") : (ru ? "Проверить статус" : "Holatni tekshirish")}</button>
       {result?.checkout_url && <a className="btn btn-outline btn-block" href={result.checkout_url}>{ru ? "Продолжить в Alif" : "Alif'da davom etish"}</a>}
       {result && (result.state !== "pending" || result.expired) && <button className="btn btn-ghost btn-block" onClick={() => { sessionStorage.removeItem(ALIF_SESSION); window.location.assign("/cart"); }}>{ru ? "Вернуться в корзину" : "Savatga qaytish"}</button>}
