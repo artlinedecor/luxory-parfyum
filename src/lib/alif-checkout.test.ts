@@ -23,6 +23,21 @@ beforeEach(() => {
   f.invoice.mockResolvedValue(invoice()); f.get.mockResolvedValue(invoice("SUCCEEDED"));
 });
 describe("Alif durable checkout", () => {
+  it("only exposes HTTPS fiscal receipt links from the tax service", async () => {
+    await startAlifCheckout(input());
+    f.get.mockResolvedValue({ ...invoice("SUCCEEDED"), payment: { ...invoice("SUCCEEDED").payment, receipt: { results: [
+      { url: "https://ofd.soliq.uz/epi?t=test" }, { url: "https://evil.test/receipt" }, { url: "javascript:alert(1)" }
+    ] } } });
+    expect((await refreshAlifCheckout(id)).receipt_urls).toEqual(["https://ofd.soliq.uz/epi?t=test"]);
+  });
+  it("requests automatic fiscal receipts with explicit product fields and buyer phone", async () => {
+    vi.stubEnv("ALIFPAY_FISCAL_MODE", "alif");
+    vi.stubEnv("ALIFPAY_SPIC", "03303001001000000"); vi.stubEnv("ALIFPAY_VAT_PERCENT", "12");
+    await startAlifCheckout(input());
+    expect(f.invoice.mock.calls[0][0]).toMatchObject({ receipt: true, phone: input().client.phone,
+      items: [{ spic: "03303001001000000", vat_percent: 12, price: 80000000 }] });
+    vi.unstubAllEnvs();
+  });
   it("persists a draft before calling Alif, prices on server and reuses the invoice", async () => {
     f.invoice.mockImplementation(async (body) => { expect(f.rows.has(id)).toBe(true); expect(body.items[0].price).toBe(80000000); return invoice(); });
     const result = await startAlifCheckout(input());

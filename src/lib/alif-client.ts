@@ -1,7 +1,7 @@
 "use client";
 export const ALIF_SESSION = "alif_checkout_request";
 export interface AlifSession { request_id: string; recovery_token: string; recovery_receipt?: string; fingerprint: string; sandbox?: boolean }
-export interface AlifResult { order_id: string; state: "pending" | "paid" | "refunded"; order_status: string; sandbox: boolean; checkout_url?: string; expired: boolean; total_uzs: number }
+export interface AlifResult { order_id: string; state: "pending" | "paid" | "refunded"; order_status: string; sandbox: boolean; checkout_url?: string; expired: boolean; total_uzs: number; receipt_urls?: string[] }
 export function readAlifSession(): AlifSession | null {
   try {
     const value = JSON.parse(sessionStorage.getItem(ALIF_SESSION) || "null");

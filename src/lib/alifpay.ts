@@ -1,7 +1,8 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 export type AlifMode = "sandbox" | "production";
-export interface AlifConfig { mode: AlifMode; api: string; checkout: string; token: string; secret: string }
+export interface AlifConfig { mode: AlifMode; api: string; checkout: string; token: string; secret: string;
+  fiscal?: { spic: string; vat_percent: number } }
 export class AlifError extends Error {
   attemptNotCreated = false;
   constructor(message: string, public status = 409, public recoveryReceipt?: string) { super(message); }
@@ -13,10 +14,19 @@ export function alifConfig(mode = process.env.ALIFPAY_MODE): AlifConfig {
   const sandbox = mode === "sandbox";
   const token = sandbox ? process.env.ALIFPAY_TEST_API_TOKEN : process.env.ALIFPAY_API_TOKEN;
   const secret = sandbox ? process.env.ALIFPAY_TEST_WEBHOOK_SECRET : process.env.ALIFPAY_WEBHOOK_SECRET;
-  if (!token || !secret || (!sandbox && process.env.ALIFPAY_FISCAL_MODE !== "external")) {
+  const fiscalMode = process.env.ALIFPAY_FISCAL_MODE;
+  let fiscal: AlifConfig["fiscal"];
+  if (fiscalMode === "alif") {
+    const spic = process.env.ALIFPAY_SPIC || "", vat = process.env.ALIFPAY_VAT_PERCENT;
+    if (!/^\d{17}$/.test(spic) || !vat?.trim() || !Number.isInteger(Number(vat)) || Number(vat) < 0 || Number(vat) > 100) {
+      throw new AlifError("Alif fiskal chek rekvizitlari to'liq emas", 503);
+    }
+    fiscal = { spic, vat_percent: Number(vat) };
+  }
+  if (!token || !secret || (!sandbox && fiscalMode !== "external" && fiscalMode !== "alif")) {
     throw new AlifError("Alif sozlamalari to'liq emas", 503);
   }
-  return { mode, token, secret, api: sandbox ? "https://api-dev.alifpay.uz/v2" : "https://api.alifpay.uz/v2",
+  return { mode, token, secret, fiscal, api: sandbox ? "https://api-dev.alifpay.uz/v2" : "https://api.alifpay.uz/v2",
     checkout: sandbox ? "https://checkout-dev.alifpay.uz/" : "https://checkout.alifpay.uz/" };
 }
 
@@ -28,7 +38,7 @@ export function toTiyin(uzs: number): number {
 
 export interface AlifInvoice {
   id: string; price: number; meta?: { order_id?: string; mode?: string };
-  payment?: { id?: string; amount?: number; status?: string };
+  payment?: { id?: string; amount?: number; status?: string; receipt?: { results?: { url?: string }[] } };
 }
 
 /** No simulation, SMS, charge or refund method is exposed by the app client. */

@@ -4,6 +4,16 @@ import { alifConfig, alifRequest, toTiyin, verifyAlifSignature, alifPaymentState
 
 afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
 describe("Alif protocol", () => {
+  it("requires explicit fiscal fields for automatic Alif receipts", () => {
+    vi.stubEnv("ALIFPAY_MODE", "production"); vi.stubEnv("ALIFPAY_API_TOKEN", "prod"); vi.stubEnv("ALIFPAY_WEBHOOK_SECRET", "key");
+    vi.stubEnv("ALIFPAY_FISCAL_MODE", "alif"); vi.stubEnv("ALIFPAY_SPIC", "");
+    expect(() => alifConfig()).toThrow();
+    vi.stubEnv("ALIFPAY_SPIC", "03303001001000000"); vi.stubEnv("ALIFPAY_VAT_PERCENT", "");
+    expect(() => alifConfig()).toThrow();
+    vi.stubEnv("ALIFPAY_VAT_PERCENT", "12");
+    expect(alifConfig()).toMatchObject({ fiscal: { spic: "03303001001000000", vat_percent: 12 } });
+    vi.stubEnv("ALIFPAY_VAT_PERCENT", "12.5"); expect(() => alifConfig()).toThrow();
+  });
   it("defaults off and separates sandbox credentials from production", () => {
     vi.stubEnv("ALIFPAY_MODE", "");
     expect(() => alifConfig()).toThrow();

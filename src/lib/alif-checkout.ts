@@ -104,8 +104,8 @@ export async function startAlifCheckout(input: AlifStartInput) {
   if (!await alifStore.insert(row)) throw new AlifError("Buyurtma yaratilmoqda. Mavjud hisobni qayta tekshiring.", 409);
   const returnUrl = new URL(`/alif-payment?order_id=${row.id}`, base).toString();
   const invoice = await alifRequest("invoice", {
-    items: lines.map(line => ({ name: line.title, amount: line.quantity, price: toTiyin(line.price_uzs) })),
-    receipt: false, timeout: 3600, redirect_url: returnUrl, cancel_url: returnUrl,
+    items: lines.map(line => ({ name: line.title, amount: line.quantity, price: toTiyin(line.price_uzs), ...config.fiscal })),
+    receipt: !!config.fiscal, ...(config.fiscal ? { phone: input.client.phone } : {}), timeout: 3600, redirect_url: returnUrl, cancel_url: returnUrl,
     webhook_url: new URL(`/api/alifpay/webhook?order_id=${row.id}`, base).toString(), meta: { order_id: row.id, mode: config.mode },
   }, config);
   // Retain a signed mapping even if the provider response or DB validation is unexpected.
@@ -140,7 +140,13 @@ export async function refreshAlifCheckout(id: string) {
       }
     }
     const updated = await alifStore.cas(row, changes);
-    if (updated) return result(updated, config);
+    if (updated) {
+      const receipt_urls = (invoice.payment?.receipt?.results || []).flatMap(item => {
+        try { const url = new URL(item.url || ""); return url.protocol === "https:" && url.hostname === "ofd.soliq.uz" && !url.username && !url.password ? [url.href] : []; }
+        catch { return []; }
+      });
+      return { ...result(updated, config), receipt_urls };
+    }
   }
   throw new AlifError("Buyurtma yangilanmoqda. Qayta tekshiring.", 503);
 }
